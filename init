@@ -29,6 +29,11 @@ function cpan-install {
   $HELPER_ROOT/cpan-install "$@"
 }
 
+function coverage-setup {
+  cover -delete -silent
+  export HARNESS_PERL_SWITCHES='-MDevel::Cover=-ignore,^x?t/,-blib,0'
+}
+
 function coverage-report {
   [ -z "$COVERAGE" ] && return
   local cover_opts
@@ -37,7 +42,5 @@ function coverage-report {
   fi
   cover $cover_opts
 }
-
-#travis-install --coverage
 
 # vim: ft=sh
