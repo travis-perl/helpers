@@ -1,0 +1,64 @@
+#!/bin/bash
+
+function clean_up {
+  kill $PROG
+  wait 2>/dev/null
+}
+
+export PERL_CPANM_OPT="--mirror http://www.cpan.org/"
+
+function cpanm_install {
+  local dep="$1"
+  printf "Installing (without testing) $dep ..."
+  (
+    while true; do
+      sleep 3
+      printf '.'
+    done
+  ) &
+  local PROG=$!
+  trap "clean_up $PROG; exit 1" SIGHUP SIGINT SIGTERM
+  local OUT=$(cpanm --verbose --no-interactive --no-man-pages --notest --skip-satisfied $dep 2>&1 )
+  local STATUS=$?
+  kill $PROG
+  wait $PROG 2>/dev/null
+  trap - SIGHUP SIGINT SIGTERM
+  if [ $STATUS != 0 ]; then
+    echo ' Failed!'
+    echo "$OUT"
+    return $?
+  fi
+  echo ' Done'
+}
+
+function get_deps {
+  local AUTHOR_OPTS=''
+  if [ -z "$AUTHOR_TESTING" ] || [ "$AUTHOR_TESTING" -ne 0 ]; then
+    AUTHOR_OPTS='--with-recommends'
+  fi
+  cpanm --showdeps -q . --with-develop $AUTHOR_OPTS
+}
+
+for arg; do
+  case $arg in
+    --deps)
+      for dep in $(get_deps); do
+        case $dep in
+          perl*) ;;
+          *)
+            cpanm_install $dep || exit
+          ;;
+        esac
+      done
+    ;;
+    --coverage)
+      if [ -n "$COVERAGE" ]; then
+        cpanm_install Devel::Cover || exit
+        cpanm_install Devel::Cover::Report::Coveralls
+      fi
+    ;;
+    *)
+      cpanm_install $arg || exit
+    ;;
+  esac
+done
