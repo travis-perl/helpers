@@ -43,4 +43,12 @@ function coverage-report {
   cover $cover_opts
 }
 
+function test-dirs {
+  local TEST_DIRS='t xt'
+  if [ -n "$AUTHOR_TESTING" ] && [ "$AUTHOR_TESTING" -eq 0 ]; then
+    TEST_DIRS='t'
+  fi
+  echo "$TEST_DIRS"
+}
+
 # vim: ft=sh
