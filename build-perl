@@ -1,0 +1,27 @@
+function build-perl {
+  local BREWVER=${TRAVIS_PERL_VERSION/_*/}
+  local BREWOPTS=
+  [[ "${TRAVIS_PERL_VERSION}_" =~ '_thr_' ]] && BREWOPTS="$BREWOPTS -Duseithreads"
+  [[ "$(sed -n -E -e's/^5\.([0-9]+).*/\1/p' <<< $TRAVIS_PERL_VERSION)" -ge 14 ]] && BREWOPTS="$BREWOPTS -j 2"
+
+  if ! perlbrew use | grep -q "Currently using $TRAVIS_PERL_VERSION"; then
+    echo "Building perl $TRAVIS_PERL_VERSION..."
+    local PERLBUILD=$(perlbrew install --as $TRAVIS_PERL_VERSION --notest --noman --verbose $BREWOPTS $BREWVER 2>&1)
+    perlbrew use $TRAVIS_PERL_VERSION
+    if ! perlbrew use | grep -q "Currently using $TRAVIS_PERL_VERSION"; then
+      echo "Unable to switch to $TRAVIS_PERL_VERSION - compilation failed...?" 1>&2
+      echo "$PERLBUILD" 1>&2
+      return 1
+    fi
+  fi
+  perlbrew install-cpanm -f > /dev/null
+}
+
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+  echo "This script must be sourced, not run directly" 1>&2
+  exit 1
+elif [ "${#BASH_SOURCE[@]}" = "1" ]; then
+  build-perl "$@"
+fi
+
+# vim: ft=sh
