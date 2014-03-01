@@ -30,6 +30,7 @@ function cpan-install {
 }
 
 function coverage-setup {
+  [ -z "$COVERAGE" ] && return
   cover -delete -silent
   export HARNESS_PERL_SWITCHES='-MDevel::Cover=-ignore,^x?t/,-blib,0'
 }
