@@ -1,4 +1,7 @@
 #!/bin/bash
+if [ -z "$MODERN_PERL" ]; then
+  MODERN_PERL=perl
+fi
 
 function clean_up {
   kill $PROG
@@ -31,7 +34,7 @@ function cpanm_install {
   echo ' Done'
 }
 
-function get_deps {
+function dynamic_deps {
   local AUTHOR_OPTS=''
   if [ -z "$AUTHOR_TESTING" ] || [ "$AUTHOR_TESTING" -ne 0 ]; then
     AUTHOR_OPTS='--with-recommends'
@@ -39,10 +42,36 @@ function get_deps {
   cpanm --showdeps -q . --with-develop $AUTHOR_OPTS
 }
 
+function get_deps {
+  local PHASE=$1
+  local TYPE=$2
+  local META_FILE
+  for meta in MYMETA.* META.*; do
+    META_FILE=$meta
+  done
+  if [ -z "$META_FILE" ]; then
+    return
+  fi
+  $MODERN_PERL -MCPAN::Meta -e'
+    my ($file, $phase, $type) = @ARGV;
+    my $prereq = CPAN::Meta->load_file($file)->effective_prereqs;
+    my $req = $prereq->requirements_for($phase, $type)->as_string_hash;
+    for my $module (sort keys %$req) {
+      next if $module eq "perl";
+      my $version = $req->{$module};
+      print $module . ($version ? "~$version" : "") . "\n";
+    }
+  ' $META_FILE $PHASE $TYPE
+}
+
 for arg; do
   case $arg in
     --deps)
-      for dep in $(get_deps); do
+      for dep in $(get_deps configure requires); do
+        cpanm_install $dep || exit
+      done
+
+      for dep in $(dynamic_deps); do
         case $dep in
           perl*) ;;
           *)
