@@ -1,5 +1,8 @@
 #!/bin/bash
+set -e
 
 BUILD_DIR=$1
 
-perlbrew exec --with 5.18 sh -c "perl Makefile.PL DISTVNAME=$BUILD_DIR && make manifest && make distdir"
+$MODERN_PERL Makefile.PL DISTVNAME=$BUILD_DIR
+make manifest
+make distdir
