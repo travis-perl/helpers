@@ -3,6 +3,21 @@ set -e
 
 BUILD_DIR=$1
 
-$MODERN_PERL Makefile.PL DISTVNAME=$BUILD_DIR
-make manifest
-make distdir
+if [ -e 'dist.ini' ]; then
+  PATH="$(dirname $MODERN_PERL):$PATH"
+  $HELPER_ROOT/cpan-install Dist::Zilla
+  $HELPER_ROOT/cpan-install $(dzil authordeps | grep -v '^inc::')
+  dzil build --in="$BUILD_DIR"
+elif [ -e 'Makefile.PL' ]; then
+  $MODERN_PERL Makefile.PL DISTVNAME=$BUILD_DIR
+  make manifest
+  make distdir
+elif [ -e 'Build.PL' ]; then
+  $MODERN_PERL Build.PL
+  ./Build distdir
+  DIST_DIR=$(perl -e'my $d = (do "_build/build_params")->[2]; print "$d->{dist_name}-$d->{dist_version}\n"')
+  mv "$DIST_DIR" "$BUILD_DIR"
+else
+  echo "Don't know how to build this dist!" >&2
+  exit 1
+fi
