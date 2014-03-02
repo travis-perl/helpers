@@ -35,4 +35,9 @@ function test-dirs {
   echo "$TEST_DIRS"
 }
 
+function test-files {
+  local TEST_FILES="$(find $(test-dirs) -name '*.t')"
+  echo $TEST_FILES
+}
+
 # vim: ft=sh
