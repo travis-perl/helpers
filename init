@@ -1,5 +1,6 @@
 export HELPER_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export MODERN_PERL="$(perlbrew exec --with=5.18 perl -e'print STDERR "$^X"' 2>&1 >/dev/null)"
+export CPAN_MIRROR='http://www.cpan.org/'
 
 function build-dist {
   BUILD_DIR="$(pwd)/build_dir"

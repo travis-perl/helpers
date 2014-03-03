@@ -3,12 +3,12 @@ if [ -z "$MODERN_PERL" ]; then
   MODERN_PERL=perl
 fi
 
+[ -n "$CPAN_MIRROR" ] && export PERL_CPANM_OPT="--mirror $MIRROR"
+
 function clean_up {
   kill $PROG
   wait 2>/dev/null
 }
-
-export PERL_CPANM_OPT="--mirror http://www.cpan.org/"
 
 function cpanm_install {
   local dep="$1"
