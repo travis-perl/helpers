@@ -10,7 +10,7 @@ function clean_up {
   wait 2>/dev/null
 }
 
-function cpanm_install {
+function cpan_install {
   local dep="$1"
   printf "Installing (without testing) $dep ..."
   (
@@ -68,26 +68,26 @@ for arg; do
   case $arg in
     --deps)
       for dep in $(get_deps configure requires); do
-        cpanm_install $dep || exit
+        cpan_install $dep || exit
       done
 
       for dep in $(dynamic_deps); do
         case $dep in
           perl*) ;;
           *)
-            cpanm_install $dep || exit
+            cpan_install $dep || exit
           ;;
         esac
       done
     ;;
     --coverage)
       if [ -n "$COVERAGE" ]; then
-        cpanm_install Devel::Cover || exit
-        cpanm_install Devel::Cover::Report::Coveralls
+        cpan_install Devel::Cover || exit
+        cpan_install Devel::Cover::Report::Coveralls
       fi
     ;;
     *)
-      cpanm_install $arg || exit
+      cpan_install $arg || exit
     ;;
   esac
 done
