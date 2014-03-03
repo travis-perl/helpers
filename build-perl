@@ -48,4 +48,7 @@ if ! perlbrew_check "$perl_version"; then
   echo 1>&2
   exit 1
 fi
+
+$HELPER_ROOT/cpan-config
+
 echo "Done."

@@ -7,7 +7,7 @@ PERL_VERSION="$(perl -e'print $] * 1_000_000')"
 if [[ "$PERL_VERSION" -ge 5008000 ]]; then
   INSTALL_CMD="cpanm --verbose --no-interactive --no-man-pages --notest --skip-satisfied"
 else
-  INSTALL_CMD="perl -MCPAN -e'install(@ARGV)'"
+  INSTALL_CMD="cpan-installer"
 fi
 if which apt-get >/dev/null; then
   OS_INSTALLER="sudo apt-get install"
@@ -75,6 +75,11 @@ function os-install {
   done < $HELPER_ROOT/os-prereqs.txt
 }
 
+function cpan-installer {
+  local dep="$1"
+  perl -MCPAN -e'install(@ARGV)' "$dep"
+}
+
 function install-module {
   for dep in "$@"; do
     os-install "$dep"
@@ -84,7 +89,11 @@ function install-module {
 }
 
 function dynamic_deps {
-  cpanm --showdeps -q . --with-recommends $AUTHOR_OPTS
+  if [[ "$PERL_VERSION" -ge 5008000 ]]; then
+    cpanm --showdeps -q . --with-recommends $AUTHOR_OPTS
+  else
+    $HELPER_ROOT/cpan-prereqs
+  fi
 }
 
 function get_deps {
