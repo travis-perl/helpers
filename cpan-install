@@ -2,6 +2,13 @@
 if [ -z "$MODERN_PERL" ]; then
   MODERN_PERL=perl
 fi
+PERL_VERSION="$(perl -e'print $] * 1_000_000')"
+
+if [[ "$PERL_VERSION" -ge 5008000 ]]; then
+  INSTALL_CMD="cpanm --verbose --no-interactive --no-man-pages --notest --skip-satisfied"
+else
+  INSTALL_CMD="perl -MCPAN -e'install(@ARGV)'"
+fi
 
 [ -n "$CPAN_MIRROR" ] && export PERL_CPANM_OPT="--mirror $MIRROR"
 
@@ -21,7 +28,7 @@ function cpan_install {
   ) &
   local PROG=$!
   trap "clean_up $PROG; exit 1" SIGHUP SIGINT SIGTERM
-  local OUT=$(cpanm --verbose --no-interactive --no-man-pages --notest --skip-satisfied $dep 2>&1 )
+  local OUT=$($INSTALL_CMD $dep 2>&1 )
   local STATUS=$?
   kill $PROG
   wait $PROG 2>/dev/null

@@ -3,6 +3,7 @@ function build-perl {
   [ -z "$PERL_VERSION" ] && PERL_VERSION="$TRAVIS_PERL_VERSION"
   local BREWVER=${PERL_VERSION/_*/}
   local BREWOPTS=
+  perlbrew install-cpanm -f > /dev/null
   [[ "${PERL_VERSION}_" =~ '_thr_' ]] && BREWOPTS="$BREWOPTS -Duseithreads"
   [[ "$(sed -n -E -e's/^5\.([0-9]+).*/\1/p' <<< $PERL_VERSION)" -ge 14 ]] && BREWOPTS="$BREWOPTS -j 2"
 
@@ -10,13 +11,12 @@ function build-perl {
     echo "Building perl $PERL_VERSION..."
     local PERLBUILD=$(perlbrew install --as $PERL_VERSION --notest --noman --verbose $BREWOPTS $BREWVER 2>&1)
     perlbrew use $PERL_VERSION
-    if ! perlbrew use | grep -q "Currently using $PERL_VERSION"; then
+    if [ "$PERLBREW_PERL" == "$PERL_VERSION" ]; then
       echo "Unable to switch to $PERL_VERSION - compilation failed...?" 1>&2
       echo "$PERLBUILD" 1>&2
       return 1
     fi
   fi
-  perlbrew install-cpanm -f > /dev/null
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
