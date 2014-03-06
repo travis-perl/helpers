@@ -75,10 +75,12 @@ function get_deps {
 for arg; do
   case $arg in
     --deps)
+      echo "Configure prerequisites:"
       for dep in $(get_deps configure requires); do
         cpan_install $dep || exit
       done
 
+      echo "Other prerequisites:"
       for dep in $(dynamic_deps); do
         case $dep in
           perl*) ;;
