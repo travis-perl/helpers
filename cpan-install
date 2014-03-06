@@ -53,7 +53,7 @@ function get_deps {
   local PHASE=$1
   local TYPE=$2
   local META_FILE
-  for meta in MYMETA.* META.*; do
+  for meta in MYMETA.json MYMETA.yml META.json META.yml; do
     [ -e "$meta" ] || break
     META_FILE="$meta"
   done
