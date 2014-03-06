@@ -54,7 +54,8 @@ function get_deps {
   local TYPE=$2
   local META_FILE
   for meta in MYMETA.* META.*; do
-    META_FILE=$meta
+    [ -e "$meta" ] || break
+    META_FILE="$meta"
   done
   if [ -z "$META_FILE" ]; then
     return
