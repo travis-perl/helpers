@@ -54,8 +54,10 @@ function get_deps {
   local TYPE=$2
   local META_FILE
   for meta in MYMETA.json MYMETA.yml META.json META.yml; do
-    [ -e "$meta" ] || break
-    META_FILE="$meta"
+    if [ -e "$meta" ]; then
+      META_FILE="$meta"
+      break
+    fi
   done
   if [ -z "$META_FILE" ]; then
     return
