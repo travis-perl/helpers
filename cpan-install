@@ -79,7 +79,7 @@ for arg; do
     --deps)
       echo "Configure prerequisites:"
       for dep in $(get_deps configure requires); do
-        cpan_install $dep || exit
+        cpan_install $dep
       done
 
       echo "Other prerequisites:"
@@ -87,19 +87,19 @@ for arg; do
         case $dep in
           perl*) ;;
           *)
-            cpan_install $dep || exit
+            cpan_install $dep
           ;;
         esac
       done
     ;;
     --coverage)
       if [ -n "$COVERAGE" ]; then
-        cpan_install Devel::Cover || exit
+        cpan_install Devel::Cover
         cpan_install Devel::Cover::Report::Coveralls
       fi
     ;;
     *)
-      cpan_install $arg || exit
+      cpan_install $arg
     ;;
   esac
 done
