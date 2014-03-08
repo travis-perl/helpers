@@ -79,32 +79,36 @@ function get_deps {
   ' $META_FILE $PHASE $TYPE
 }
 
-for arg; do
-  case $arg in
-    --deps)
-      echo "Configure prerequisites:"
-      for dep in $(get_deps configure requires); do
-        cpan_install $dep
-      done
+function do-install {
+  for arg in "$@"; do
+    case $arg in
+      --deps)
+        echo "Configure prerequisites:"
+        for dep in $(get_deps configure requires); do
+          cpan_install $dep
+        done
 
-      echo "Other prerequisites:"
-      for dep in $(dynamic_deps); do
-        case $dep in
-          perl*) ;;
-          *)
-            cpan_install $dep
-          ;;
-        esac
-      done
-    ;;
-    --coverage)
-      if [ -n "$COVERAGE" ]; then
-        cpan_install Devel::Cover
-        cpan_install Devel::Cover::Report::Coveralls
-      fi
-    ;;
-    *)
-      cpan_install $arg
-    ;;
-  esac
-done
+        echo "Other prerequisites:"
+        for dep in $(dynamic_deps); do
+          case $dep in
+            perl*) ;;
+            *)
+              cpan_install $dep
+            ;;
+          esac
+        done
+      ;;
+      --coverage)
+        if [ -n "$COVERAGE" ]; then
+          cpan_install Devel::Cover
+          cpan_install Devel::Cover::Report::Coveralls
+        fi
+      ;;
+      *)
+        cpan_install $arg
+      ;;
+    esac
+  done
+}
+
+do-install "$@"
