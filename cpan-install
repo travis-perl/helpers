@@ -77,7 +77,31 @@ function os-install {
 
 function cpan-installer {
   local dep="$1"
-  perl -MCPAN -e'install(@ARGV)' "$dep"
+  case "$dep" in
+    *.git|*.git@*|git+*://*|git://*)
+      cpan-git-install "$dep"
+    ;;
+    *)
+      perl -MCPAN -e'install(@ARGV)' "$dep"
+    ;;
+  esac
+}
+
+function cpan-git-install {
+  local dep="$1"
+  local repo="${dep/@*/}"
+  local branch="${dep/*@/}"
+  if [ "$dep" == "$branch" ]; then
+    branch=''
+  else
+    branch="--branch $branch"
+  fi
+  local clone_dir="$(mktemp -d -t local-lib-XXXXXX)/repo"
+  git clone "$repo" $branch "$clone_dir"
+  cd "$clone_dir"
+  $HELPER_ROOT/build-dist build_dir
+  cd build_dir
+  do-install .
 }
 
 function install-module {
@@ -148,6 +172,14 @@ function do-install {
         if [ "$COVERAGE" -eq 1 ]; then
           install-module Devel::Cover
           install-module Devel::Cover::Report::Coveralls
+        fi
+      ;;
+      .)
+        do-install --deps
+        if [ -e 'Makefile' ]; then
+          make install
+        elif [ -e 'Build' ]; then
+          ./Build install
         fi
       ;;
       *)
