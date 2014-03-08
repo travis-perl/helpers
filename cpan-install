@@ -23,27 +23,28 @@ function clean_up {
 }
 
 function cpan_install {
-  local dep="$1"
-  printf "Installing (without testing) $dep ..."
-  (
-    while true; do
-      sleep 3
-      printf '.'
-    done
-  ) &
-  local PROG=$!
-  trap "clean_up $PROG; exit 1" SIGHUP SIGINT SIGTERM
-  local OUT=$($INSTALL_CMD $dep 2>&1 )
-  local STATUS=$?
-  kill $PROG
-  wait $PROG 2>/dev/null
-  trap - SIGHUP SIGINT SIGTERM
-  if [ $STATUS != 0 ]; then
-    echo ' Failed!'
-    echo "$OUT"
-    return $?
-  fi
-  echo ' Done'
+  for dep in "$@"; do
+    printf "Installing (without testing) $dep ..."
+    (
+      while true; do
+        sleep 3
+        printf '.'
+      done
+    ) &
+    local PROG=$!
+    trap "clean_up $PROG; exit 1" SIGHUP SIGINT SIGTERM
+    local OUT=$($INSTALL_CMD $dep 2>&1 )
+    local STATUS=$?
+    kill $PROG
+    wait $PROG 2>/dev/null
+    trap - SIGHUP SIGINT SIGTERM
+    if [ $STATUS != 0 ]; then
+      echo ' Failed!'
+      echo "$OUT"
+      return $?
+    fi
+    echo ' Done'
+  done
 }
 
 function dynamic_deps {
