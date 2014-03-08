@@ -22,28 +22,32 @@ function clean_up {
   wait 2>/dev/null
 }
 
-function cpan_install {
+function show-on-fail {
+  (
+    while true; do
+      sleep 3
+      printf '.'
+    done
+  ) &
+  local PROG=$!
+  trap "clean_up $PROG; exit 1" SIGHUP SIGINT SIGTERM
+  local OUT=$("$@" 2&>1 )
+  local STATUS=$?
+  kill $PROG
+  wait $PROG 2>/dev/null
+  trap - SIGHUP SIGINT SIGTERM
+  if [ $STATUS != 0 ]; then
+    echo ' Failed!'
+    echo "$OUT"
+    return $?
+  fi
+  echo ' Done'
+}
+
+function install-module {
   for dep in "$@"; do
     printf "Installing (without testing) $dep ..."
-    (
-      while true; do
-        sleep 3
-        printf '.'
-      done
-    ) &
-    local PROG=$!
-    trap "clean_up $PROG; exit 1" SIGHUP SIGINT SIGTERM
-    local OUT=$($INSTALL_CMD $dep 2>&1 )
-    local STATUS=$?
-    kill $PROG
-    wait $PROG 2>/dev/null
-    trap - SIGHUP SIGINT SIGTERM
-    if [ $STATUS != 0 ]; then
-      echo ' Failed!'
-      echo "$OUT"
-      return $?
-    fi
-    echo ' Done'
+    show-on-fail $INSTALL_CMD $dep
   done
 }
 
@@ -86,7 +90,7 @@ function do-install {
       --deps)
         echo "Configure prerequisites:"
         for dep in $(get_deps configure requires); do
-          cpan_install $dep
+          install-module $dep
         done
 
         echo "Other prerequisites:"
@@ -94,19 +98,19 @@ function do-install {
           case $dep in
             perl*) ;;
             *)
-              cpan_install $dep
+              install-module $dep
             ;;
           esac
         done
       ;;
       --coverage)
         if [ -n "$COVERAGE" ]; then
-          cpan_install Devel::Cover
-          cpan_install Devel::Cover::Report::Coveralls
+          install-module Devel::Cover
+          install-module Devel::Cover::Report::Coveralls
         fi
       ;;
       *)
-        cpan_install $arg
+        install-module $arg
       ;;
     esac
   done
