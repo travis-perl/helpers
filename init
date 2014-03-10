@@ -41,4 +41,14 @@ function test-files {
   echo $TEST_FILES
 }
 
+function local-lib {
+  local ll_root="$1"
+  [ -z "$ll_root" ] && ll_root="$(mktemp -d -t local-lib-XXXXXX)"
+  export PERL_LOCAL_LIB_ROOT="$ll_root"
+  export PATH="$ll_root/bin:$PATH"
+  export PERL5LIB="$ll_root/lib/perl5:$PERL5LIB"
+  export PERL_MM_OPT="INSTALL_BASE=$ll_root"
+  export PERL_MB_OPT="--install_base $ll_root"
+}
+
 # vim: ft=sh
