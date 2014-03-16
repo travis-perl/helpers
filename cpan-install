@@ -31,16 +31,19 @@ function show-on-fail {
   ) &
   local PROG=$!
   trap "clean_up $PROG; exit 1" SIGHUP SIGINT SIGTERM
-  local OUT=$("$@" 2&>1 )
-  local STATUS=$?
+  local log_file="$(mktemp -t cpan-install-log-XXXXXX)"
+  "$@" > "$log_file" 2>&1
+  local STATUS="$?"
   kill $PROG
   wait $PROG 2>/dev/null
   trap - SIGHUP SIGINT SIGTERM
-  if [ $STATUS != 0 ]; then
+  if [ "$STATUS" != 0 ]; then
     echo ' Failed!'
-    echo "$OUT"
+    cat "$log_file"
+    rm "$log_file"
     return $?
   fi
+  rm "$log_file"
   echo ' Done'
 }
 
