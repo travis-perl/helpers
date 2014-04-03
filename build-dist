@@ -4,15 +4,25 @@ set -e
 BUILD_DIR=$1
 
 if [ -e 'dist.ini' ]; then
-  PATH="$(dirname $MODERN_PERL):$PATH"
+  echo "Building with Dist::Zilla"
+  PATH="$(dirname $($MODERN_PERL -e'print $^X')):$PATH"
+  PERL5LIB=
+  source "$HELPER_ROOT/local-lib"
+  local-lib
+  set -x
   $HELPER_ROOT/cpan-install Dist::Zilla
-  $HELPER_ROOT/cpan-install $(dzil authordeps | grep -v '^inc::')
+  AUTHOR_DEPS="$(dzil authordeps | grep -v '^inc::')"
+  $HELPER_ROOT/cpan-install $AUTHOR_DEPS
   dzil build --in="$BUILD_DIR"
 elif [ -e 'Makefile.PL' ]; then
+  echo "Building with Makefile.PL"
+  set -x
   $MODERN_PERL Makefile.PL DISTVNAME=$BUILD_DIR
   make manifest
   make distdir
 elif [ -e 'Build.PL' ]; then
+  echo "Building with Build.PL"
+  set -x
   $MODERN_PERL Build.PL
   ./Build distdir
   DIST_DIR=$(perl -e'my $d = (do "_build/build_params")->[2]; print "$d->{dist_name}-$d->{dist_version}\n"')

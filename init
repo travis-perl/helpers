@@ -1,5 +1,7 @@
 export HELPER_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-export MODERN_PERL="env PERL5LIB='' $(perlbrew exec --with=5.18 perl -e'print STDERR "$^X"' 2>&1 >/dev/null)"
+export MODERN_PERL="$(perlbrew exec --with=5.18 perl -e'print STDERR "$^X"' 2>&1 >/dev/null)"
+[ -z "$MODERN_PERL" ] && MODERN_PERL="$(which perl)"
+MODERN_PERL="env PERL5LIB= $MODERN_PERL"
 export CPAN_MIRROR='http://www.cpan.org/'
 
 function build-dist {
@@ -8,6 +10,7 @@ function build-dist {
 }
 
 source "$HELPER_ROOT/build-perl"
+source "$HELPER_ROOT/local-lib"
 
 function cpan-install {
   $HELPER_ROOT/cpan-install "$@"
@@ -39,16 +42,6 @@ function test-dirs {
 function test-files {
   local TEST_FILES="$(find $(test-dirs) -name '*.t')"
   echo $TEST_FILES
-}
-
-function local-lib {
-  local ll_root="$1"
-  [ -z "$ll_root" ] && ll_root="$(mktemp -d -t local-lib-XXXXXX)"
-  export PERL_LOCAL_LIB_ROOT="$ll_root"
-  export PATH="$ll_root/bin:$PATH"
-  export PERL5LIB="$ll_root/lib/perl5:$PERL5LIB"
-  export PERL_MM_OPT="INSTALL_BASE=$ll_root"
-  export PERL_MB_OPT="--install_base $ll_root"
 }
 
 # vim: ft=sh
