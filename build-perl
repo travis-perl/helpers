@@ -1,29 +1,43 @@
-function build-perl {
-  local PERL_VERSION="$1"
-  [ -z "$PERL_VERSION" ] && PERL_VERSION="$TRAVIS_PERL_VERSION"
-  local BREWVER=${PERL_VERSION/_*/}
-  local BREWOPTS=
-  perlbrew install-cpanm -f > /dev/null
-  [[ "${PERL_VERSION}_" =~ '_thr_' ]] && BREWOPTS="$BREWOPTS -Duseithreads"
-  [[ "$(sed -n -E -e's/^5\.([0-9]+).*/\1/p' <<< $PERL_VERSION)" -ge 14 ]] && BREWOPTS="$BREWOPTS -j 2"
+#!/bin/bash
 
-  if ! perlbrew use | grep -q "Currently using $PERL_VERSION"; then
-    echo "Building perl $PERL_VERSION..."
-    local PERLBUILD=$(perlbrew install --as $PERL_VERSION --notest --noman --verbose $BREWOPTS $BREWVER 2>&1)
-    perlbrew use $PERL_VERSION
-    if [ "$PERLBREW_PERL" != "$PERL_VERSION" ]; then
-      echo "Unable to switch to $PERL_VERSION - compilation failed...?" 1>&2
-      echo "$PERLBUILD" 1>&2
-      return 1
-    fi
-  fi
-}
-
-if [ "${BASH_SOURCE[0]}" = "$0" ]; then
-  echo "This script must be sourced, not run directly" 1>&2
+if [ -z "$PERLBREW_ROOT" ]; then
+  echo "Must be run under perlbrew!"
   exit 1
-elif [ "${#BASH_SOURCE[@]}" = "1" ]; then
-  build-perl "$@"
+fi
+if [ -z "$1" ]; then
+  echo "Perl to build must be specified!"
+  exit 1
 fi
 
-# vim: ft=sh
+source "$PERLBREW_ROOT/etc/bashrc"
+
+perl_version="$1"
+brewver="${perl_version/_*/}"
+brewopts="--notest --noman --verbose"
+minor_version="$(sed -n -E -e's/^5\.([0-9]+).*/\1/p' <<< "$brewver")"
+cores="$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)"
+
+[[ "$brewver" == blead || "$minor_version" -ge 14 ]] && brewopts="$brewopts -j $((cores + 1))"
+[[ "${perl_version}_" =~ '_thr_' ]] && brewopts="$brewopts -Duseithreads"
+[[ "${perl_version}_" =~ '_mb_' ]]  && brewopts="$brewopts -Dusemorebits"
+[[ "${perl_version}_" =~ '_dbg_' ]] && brewopts="$brewopts -DDEBUGGING"
+
+perlbrew install-cpanm -f > /dev/null
+
+function perlbrew_check {
+  perlbrew list | cut -c3- | awk '{ print $1 }' | grep -q -x -F "$1"
+}
+
+if perlbrew_check "$perl_version"; then
+  echo "Perl ${perl_version} already installed."
+else
+  echo "Building Perl ${perl_version}..."
+  perlbuild="$(perlbrew install --as "$perl_version" $brewopts "$brewver" 2>&1)"
+  if ! perlbrew_check "$perl_version"; then
+    echo "Perl $perl_version was not installed - compilation failed...?" 1>&2
+    echo "$perlbuild" 1>&2
+    echo 1>&2
+    exit 1
+  fi
+  echo "Done."
+fi
