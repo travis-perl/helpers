@@ -32,9 +32,9 @@ function coverage-report {
 }
 
 function test-dirs {
-  local TEST_DIRS='t xt'
-  if [ -n "$AUTHOR_TESTING" ] && [ "$AUTHOR_TESTING" -eq 0 ]; then
-    TEST_DIRS='t'
+  local TEST_DIRS='t'
+  if [ -z "$AUTHOR_TESTING" ] || [ "$AUTHOR_TESTING" -ne 0 ] && [ -d xt ]; then
+    TEST_DIRS="$TEST_DIRS xt"
   fi
   echo "$TEST_DIRS"
 }
