@@ -1,0 +1,25 @@
+language: perl
+perl:
+  - "5.18"
+  - "5.8.8"
+  - "5.8.8_thr"
+  - "5.8.8_mb"
+  - "5.8.8_dbg"
+  - "blead"
+before_install:
+  - source ./init
+  - cd t/dist
+  - build-perl
+  - perl -V
+  - build-dist
+  - cd $BUILD_DIR
+install:
+  - cpan-install --deps
+script:
+  - prove -lv $(test-dirs)
+branches:
+  except:
+    - /^wip\//
+    - /^blocked/
+notifications:
+  email: false

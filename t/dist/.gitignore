@@ -1,0 +1,14 @@
+/MANIFEST
+/MANIFEST.bak
+/META.*
+/MYMETA.*
+/Makefile
+/Makefile.old
+/README
+/blib/
+/pm_to_blib
+*~
+*#
+.#*
+/Travis-Test-Dist-*
+/cover_db/
