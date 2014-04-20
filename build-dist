@@ -7,8 +7,7 @@ if [ -e 'dist.ini' ]; then
   echo "Building with Dist::Zilla"
   PATH="$(dirname $($MODERN_PERL -e'print $^X')):$PATH"
   PERL5LIB=
-  source "$HELPER_ROOT/local-lib"
-  local-lib
+  eval "$($HELPER_ROOT/local-lib)"
   set -x
   $HELPER_ROOT/cpan-install Dist::Zilla
   AUTHOR_DEPS="$(dzil authordeps | grep -v '^inc::')"
