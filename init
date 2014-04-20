@@ -9,7 +9,9 @@ function build-dist {
   $HELPER_ROOT/build-dist build_dir
 }
 
-source "$HELPER_ROOT/local-lib"
+function local-lib {
+  eval "$($HELPER_ROOT/local-lib "$@")"
+}
 
 function build-perl {
   $HELPER_ROOT/build-perl "$TRAVIS_PERL_VERSION" || return 1
