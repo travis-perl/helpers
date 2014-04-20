@@ -15,7 +15,10 @@ function local-lib {
 
 function build-perl {
   $HELPER_ROOT/build-perl "$TRAVIS_PERL_VERSION" || return 1
-  perlbrew use "$TRAVIS_PERL_VERSION"
+  perlbrew use "$TRAVIS_PERL_VERSION" || return 1
+  if [ "$SPLIT_BUILD" == "0" ]; then
+    MODERN_PERL="env PERL5LIB= $(which perl)"
+  fi
 }
 
 function cpan-install {
