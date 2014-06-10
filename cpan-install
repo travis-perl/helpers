@@ -62,7 +62,6 @@ function install-module {
 }
 
 function dynamic_deps {
-  local AUTHOR_OPTS=''
   cpanm --showdeps -q . --with-recommends $AUTHOR_OPTS
 }
 
