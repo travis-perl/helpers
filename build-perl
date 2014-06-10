@@ -11,8 +11,25 @@ fi
 
 source "$PERLBREW_ROOT/etc/bashrc"
 
+function perlbrew_check {
+  perlbrew list | cut -c3- | awk '{ print $1 }' | grep -q -x -F "$1"
+}
+
+perlbrew install-cpanm -f > /dev/null
+
 perl_version="$1"
-brewver="${perl_version/_*/}"
+
+if perlbrew_check "$perl_version"; then
+  echo "Perl ${perl_version} already installed."
+  exit 0;
+fi
+
+if [[ "$perl_version" =~ ^[0-9].[0-9][0-9]?$ ]]; then
+  brewver="$(perlbrew available | cut -c3- | grep "perl-$perl_version.")"
+else
+  brewver="${perl_version/_*/}"
+fi
+
 brewopts="--notest --noman --verbose"
 minor_version="$(sed -n -E -e's/^5\.([0-9]+).*/\1/p' <<< "$brewver")"
 cores="$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)"
@@ -22,22 +39,13 @@ cores="$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || ec
 [[ "${perl_version}_" =~ '_mb_' ]]  && brewopts="$brewopts -Dusemorebits"
 [[ "${perl_version}_" =~ '_dbg_' ]] && brewopts="$brewopts -DDEBUGGING"
 
-perlbrew install-cpanm -f > /dev/null
 
-function perlbrew_check {
-  perlbrew list | cut -c3- | awk '{ print $1 }' | grep -q -x -F "$1"
-}
-
-if perlbrew_check "$perl_version"; then
-  echo "Perl ${perl_version} already installed."
-else
-  echo "Building Perl ${perl_version}..."
-  perlbuild="$(perlbrew install --as "$perl_version" $brewopts "$brewver" 2>&1)"
-  if ! perlbrew_check "$perl_version"; then
-    echo "Perl $perl_version was not installed - compilation failed...?" 1>&2
-    echo "$perlbuild" 1>&2
-    echo 1>&2
-    exit 1
-  fi
-  echo "Done."
+echo "Building Perl ${perl_version}..."
+perlbuild="$(perlbrew install --as "$perl_version" $brewopts "$brewver" 2>&1)"
+if ! perlbrew_check "$perl_version"; then
+  echo "Perl $perl_version was not installed - compilation failed...?" 1>&2
+  echo "$perlbuild" 1>&2
+  echo 1>&2
+  exit 1
 fi
+echo "Done."
