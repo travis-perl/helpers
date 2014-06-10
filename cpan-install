@@ -15,6 +15,13 @@ export PERL_AUTOINSTALL_PREFER_CPAN=1
 export PERL_MM_USE_DEFAULT=1
 export NONINTERACTIVE_TESTING=1
 export PERL_MM_NONINTERACTIVE=1
+
+[ "$AUTHOR_TESTING" -ne 0 ] && AUTHOR_OPTS='--with-develop'
+unset AUTHOR_TESTING
+unset RELEASE_TESTING
+unset SMOKE_TESTING
+unset CONTINUOUS_INTEGRATION
+
 exec </dev/null
 
 function clean_up {
@@ -56,9 +63,6 @@ function install-module {
 
 function dynamic_deps {
   local AUTHOR_OPTS=''
-  if [ "$AUTHOR_TESTING" -ne 0 ]; then
-    AUTHOR_OPTS='--with-develop'
-  fi
   cpanm --showdeps -q . --with-recommends $AUTHOR_OPTS
 }
 
