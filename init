@@ -6,6 +6,7 @@ export CPAN_MIRROR='http://www.cpan.org/'
 if [ -z "$AUTHOR_TESTING" ]; then
   export AUTHOR_TESTING=1
 fi
+export SYSTEM_CORES=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)
 
 function build-dist {
   BUILD_DIR="$(pwd)/build_dir"
