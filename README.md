@@ -33,6 +33,25 @@ Example .travis.yml
     after_success:
       - coverage-report
 
+Environment Variables
+---------------------
+
+  * COVERAGE
+
+    This should be set to report coverage when running tests.  If not set, the
+    cpan-install --coverage option and the coverage-setup/coverage-report
+    commands will be no-ops.
+
+  * AUTHOR_TESTING
+
+    Controls if the developer prerequisites will be installed, and if the xt
+    tests are run.  If not set, treated as true.
+
+  * SPLIT_BUILD
+
+    Controls if the dist should be built with modern version of perl rather
+    than the version of perl listed for the build
+
 Commands
 --------
   * build-perl
@@ -41,8 +60,10 @@ Commands
 
   * build-dist
 
-    Builds a dist directory for the module with a modern perl.  Sets the
-    BUILD_DIR environment variable to the path of the built dist.
+    Builds a dist directory for the module.  Sets the BUILD_DIR environment
+    variable to the path of the built dist.  If SPLIT_BUILD is set to 0, it
+    the selected perl version will be used to build the dist.  If it is set to 1
+    or unset, a modern version of perl will be used to build.
 
   * cpan-install
 
@@ -55,14 +76,14 @@ Commands
     Devel::Cover::Report::Coveralls.  If the environment variable is not set,
     does nothing.
 
-  * coverage-setup
-
-    Sets up the environment to record coverage data when running tests.
-
   * tests-dirs
 
     Outputs either "t xt" normally, or just "t" if the AUTHOR_TESTING
     environment variable is set to 0.
+
+  * coverage-setup
+
+    Sets up the environment to record coverage data when running tests.
 
   * coverage-report
 
