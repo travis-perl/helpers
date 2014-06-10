@@ -3,6 +3,9 @@ export MODERN_PERL="$(perlbrew exec --with=5.18 perl -e'print STDERR "$^X"' 2>&1
 [ -z "$MODERN_PERL" ] && MODERN_PERL="$(which perl)"
 MODERN_PERL="env PERL5LIB= $MODERN_PERL"
 export CPAN_MIRROR='http://www.cpan.org/'
+if [ -z "$AUTHOR_TESTING" ]; then
+  export AUTHOR_TESTING=1
+fi
 
 function build-dist {
   BUILD_DIR="$(pwd)/build_dir"
@@ -42,7 +45,7 @@ function coverage-report {
 
 function test-dirs {
   local TEST_DIRS='t'
-  if [ -z "$AUTHOR_TESTING" ] || [ "$AUTHOR_TESTING" -ne 0 ] && [ -d xt ]; then
+  if [ "$AUTHOR_TESTING" -ne 0 ] && [ -d xt ]; then
     TEST_DIRS="$TEST_DIRS xt"
   fi
   echo "$TEST_DIRS"

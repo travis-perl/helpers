@@ -56,7 +56,7 @@ function install-module {
 
 function dynamic_deps {
   local AUTHOR_OPTS=''
-  if [ -z "$AUTHOR_TESTING" ] || [ "$AUTHOR_TESTING" -ne 0 ]; then
+  if [ "$AUTHOR_TESTING" -ne 0 ]; then
     AUTHOR_OPTS='--with-develop'
   fi
   cpanm --showdeps -q . --with-recommends $AUTHOR_OPTS
