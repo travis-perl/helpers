@@ -10,7 +10,7 @@ if [ -e 'dist.ini' ]; then
   eval "$($HELPER_ROOT/local-lib)"
   set -x
   $HELPER_ROOT/cpan-install Dist::Zilla
-  AUTHOR_DEPS="$(dzil authordeps | grep -v '^inc::')"
+  AUTHOR_DEPS="$(dzil authordeps --missing | grep -v '^inc::')"
   $HELPER_ROOT/cpan-install $AUTHOR_DEPS
   dzil build --in="$BUILD_DIR"
 elif [ -e 'Makefile.PL' ]; then
