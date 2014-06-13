@@ -2,12 +2,12 @@
 set -e
 
 BUILD_DIR=$1
+export PERL5LIB=
+PATH="$(dirname $(which $($MODERN_PERL -e'print $^X'))):$PATH"
+eval "$($HELPER_ROOT/local-lib)"
 
 if [ -e 'dist.ini' ]; then
   echo "Building with Dist::Zilla"
-  PATH="$(dirname $($MODERN_PERL -e'print $^X')):$PATH"
-  PERL5LIB=
-  eval "$($HELPER_ROOT/local-lib)"
   set -x
   $HELPER_ROOT/cpan-install Dist::Zilla
   AUTHOR_DEPS="$(dzil authordeps --missing | grep -v '^inc::')"
