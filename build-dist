@@ -14,13 +14,12 @@ if [ -e 'dist.ini' ]; then
   $HELPER_ROOT/cpan-install $AUTHOR_DEPS
   dzil build --in="$BUILD_DIR"
 elif [ -e 'Makefile.PL' ]; then
-  echo "Building with Makefile.PL"
-  set -x
+  echo "Building with Makefile.PL (ExtUtils::MakeMaker)"
   $MODERN_PERL Makefile.PL DISTVNAME=$BUILD_DIR
   make manifest
   make distdir
 elif [ -e 'Build.PL' ]; then
-  echo "Building with Build.PL"
+  echo "Building with Build.PL (Module::Build)"
   set -x
   $MODERN_PERL Build.PL
   ./Build distdir
