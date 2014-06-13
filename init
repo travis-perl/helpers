@@ -26,7 +26,7 @@ export MODERN_PERL="env PERL5LIB= $MODERN_PERL"
 
 function build-dist {
   export BUILD_DIR="$(pwd)/build_dir"
-  $HELPER_ROOT/build-dist build_dir
+  $HELPER_ROOT/build-dist "$BUILD_DIR"
 }
 
 function local-lib {
@@ -69,8 +69,7 @@ function test-dirs {
 }
 
 function test-files {
-  local TEST_FILES="$(find $(test-dirs) -name '*.t')"
-  echo $TEST_FILES
+  find $(test-dirs) -name '*.t'
 }
 
 # vim: ft=sh
