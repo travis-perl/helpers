@@ -28,7 +28,6 @@ function auto-install {
 
 if [ -e 'dist.ini' ]; then
   echo "Building with Dist::Zilla"
-  set -x
   $HELPER_ROOT/cpan-install Dist::Zilla
   AUTHOR_DEPS="$(dzil authordeps --missing | grep -v '^inc::')"
   $HELPER_ROOT/cpan-install $AUTHOR_DEPS
@@ -49,7 +48,6 @@ elif [ -e 'Makefile.PL' ]; then
   make distdir
 elif [ -e 'Build.PL' ]; then
   echo "Building with Build.PL (Module::Build)"
-  set -x
   $HELPER_ROOT/cpan-install Module::Build
   $MODERN_PERL Build.PL
   ./Build distdir
