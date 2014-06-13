@@ -21,6 +21,7 @@ elif [ -e 'Makefile.PL' ]; then
 elif [ -e 'Build.PL' ]; then
   echo "Building with Build.PL (Module::Build)"
   set -x
+  $HELPER_ROOT/cpan-install Module::Build
   $MODERN_PERL Build.PL
   ./Build distdir
   DIST_DIR=$(perl -e'my $d = (do "_build/build_params")->[2]; print "$d->{dist_name}-$d->{dist_version}\n"')
