@@ -1,15 +1,23 @@
 export HELPER_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-export MODERN_PERL="$(perlbrew exec --with=5.18 perl -e'print STDERR "$^X"' 2>&1 >/dev/null)"
-[ -z "$MODERN_PERL" ] && MODERN_PERL="$(which perl)"
-MODERN_PERL="env PERL5LIB= $MODERN_PERL"
-export CPAN_MIRROR='http://www.cpan.org/'
-if [ -z "$AUTHOR_TESTING" ]; then
-  export AUTHOR_TESTING=1
-fi
 export SYSTEM_CORES=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)
+MODERN_PERL="$(
+  perlbrew exec perl -MConfig -e'
+    print STDERR ($]*1000000)." ".($^X=~m{/}?$^X:$Config{perlpath})."\n";
+  ' 2>&1 >/dev/null |
+  sort -n |
+  tail -1 |
+  cut -c9-
+)"
+[ -z "$MODERN_PERL" ] && MODERN_PERL="$(which perl)"
+export MODERN_PERL="env PERL5LIB= $MODERN_PERL"
+
+[ -z "$AUTHOR_TESTING"  ] && export AUTHOR_TESTING=1
+[ -z "$CPAN_MIRROR"     ] && export CPAN_MIRROR='http://www.cpan.org/'
+[ -z "$SPLIT_BUILD"     ] && export SPLIT_BUILD=1
+[ -z "$COVERAGE"        ] && export COVERAGE=0
 
 function build-dist {
-  BUILD_DIR="$(pwd)/build_dir"
+  export BUILD_DIR="$(pwd)/build_dir"
   $HELPER_ROOT/build-dist build_dir
 }
 
