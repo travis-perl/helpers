@@ -1,3 +1,11 @@
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+  echo "This script must be sourced, not run directly." 1>&2
+  exit 1
+elif [ -z "$PERLBREW_ROOT" ]; then
+  echo "Must be run under perlbrew."
+  exit 1
+fi
+
 export HELPER_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export SYSTEM_CORES=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)
 MODERN_PERL="$(
