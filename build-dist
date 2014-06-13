@@ -14,7 +14,16 @@ if [ -e 'dist.ini' ]; then
   $HELPER_ROOT/cpan-install $AUTHOR_DEPS
   dzil build --in="$BUILD_DIR"
 elif [ -e 'Makefile.PL' ]; then
-  echo "Building with Makefile.PL (ExtUtils::MakeMaker)"
+  if grep -q 'Module::Install' 'Makefile.PL'; then
+    echo "Building with Makefile.PL (Module::Install)"
+    AUTHOR_DEPS='Module::Install'
+    while read command module; do
+      grep -q -E "$command" 'Makefile.PL' && AUTHOR_DEPS="$AUTHOR_DEPS $module"
+    done < $HELPER_ROOT/module-install-commands.txt
+    $HELPER_ROOT/cpan-install $AUTHOR_DEPS
+  else
+    echo "Building with Makefile.PL (ExtUtils::MakeMaker)"
+  fi
   $MODERN_PERL Makefile.PL DISTVNAME=$BUILD_DIR
   make manifest
   make distdir
