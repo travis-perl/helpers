@@ -6,6 +6,26 @@ export PERL5LIB=
 PATH="$(dirname $(which $($MODERN_PERL -e'print $^X'))):$PATH"
 eval "$($HELPER_ROOT/local-lib)"
 
+function auto-install {
+  local command="$1"
+  local run_log="$(mktemp -t run-log-XXXXXX)"
+  local deps
+  local last_deps
+  local status=0
+  until $command >$run_log 2>&1; do
+    status=$?
+    deps="$(perl -lne'if (/^Can'\''t locate (\S+)\.pm in \@INC/) { my $m = $1; $m =~ s{/}{::}g; print $m;} elsif (/^(\S+) version (\S+) required--this is only version /) { print "$1~$2" }' "$run_log")"
+    [ -z "$deps" ]              && break
+    [ "$deps" == "$last_deps" ] && break
+    status=0
+    $HELPER_ROOT/cpan-install $deps
+    last_deps="$deps"
+  done
+  cat "$run_log"
+  rm -f "$run_log"
+  return $status
+}
+
 if [ -e 'dist.ini' ]; then
   echo "Building with Dist::Zilla"
   set -x
@@ -24,7 +44,7 @@ elif [ -e 'Makefile.PL' ]; then
   else
     echo "Building with Makefile.PL (ExtUtils::MakeMaker)"
   fi
-  $MODERN_PERL Makefile.PL DISTVNAME=$BUILD_DIR
+  auto-install "perl Makefile.PL DISTVNAME=$BUILD_DIR"
   make manifest
   make distdir
 elif [ -e 'Build.PL' ]; then
