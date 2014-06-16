@@ -93,6 +93,10 @@ function get_deps {
 function do-install {
   for arg in "$@"; do
     case $arg in
+      --toolchain)
+        install-module ExtUtils::MakeMaker~6.30
+        install-module Exporter~5.57
+      ;;
       --deps)
         echo "Configure prerequisites:"
         for dep in $(get_deps configure requires); do
