@@ -3,7 +3,7 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
   exit 1
 elif [ -z "$PERLBREW_ROOT" ]; then
   echo "Must be run under perlbrew."
-  exit 1
+  return 1
 fi
 
 export HELPER_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
