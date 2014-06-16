@@ -110,7 +110,7 @@ function do-install {
         done
       ;;
       --coverage)
-        if [ -n "$COVERAGE" ]; then
+        if [ "$COVERAGE" -eq 1 ]; then
           install-module Devel::Cover
           install-module Devel::Cover::Report::Coveralls
         fi
