@@ -26,7 +26,11 @@ function auto-install {
   return $status
 }
 
-if [ -e 'dist.ini' ]; then
+if [ -e 'dist.ini' ] && [ -n "$DIST_INKT_PROFILE" ]; then
+  echo "Building with Dist::Inkt ($DIST_INKT_PROFILE)"
+  $HELPER_ROOT/cpan-install Dist::Inkt "$DIST_INKT_PROFILE"
+  distinkt-dist --TRAVIS --targetdir="$BUILD_DIR"
+elif [ -e 'dist.ini' ]; then
   echo "Building with Dist::Zilla"
   $HELPER_ROOT/cpan-install Dist::Zilla
   AUTHOR_DEPS="$(dzil authordeps --missing | grep -v '^inc::')"
