@@ -9,6 +9,13 @@ if [[ "$PERL_VERSION" -ge 5008000 ]]; then
 else
   INSTALL_CMD="perl -MCPAN -e'install(@ARGV)'"
 fi
+if which apt-get >/dev/null; then
+  OS_INSTALLER="sudo apt-get install"
+elif which brew >/dev/null; then
+  OS_INSTALLER="brew install"
+else
+  OS_INSTALLER="echo No installer available for "
+fi
 
 [ -n "$CPAN_MIRROR" ] && export PERL_CPANM_OPT="--mirror $CPAN_MIRROR $PERL_CPANM_OPT"
 export PERL_AUTOINSTALL_PREFER_CPAN=1
@@ -54,8 +61,23 @@ function show-on-fail {
   echo ' Done'
 }
 
+function os-install {
+  local dep="$1"
+  local prereq
+  while read -a prereq; do
+    if [ "${prereq[0]}" == "${dep/~*}" ]; then
+      unset prereq[0]
+      for os_dep in "${prereq[@]}"; do
+        echo "Installing OS package $os_dep..."
+        $OS_INSTALLER "$os_dep" || true
+      done
+    fi
+  done < $HELPER_ROOT/os-prereqs.txt
+}
+
 function install-module {
   for dep in "$@"; do
+    os-install "$dep"
     printf "Installing (without testing) $dep ..."
     show-on-fail $INSTALL_CMD $dep
   done
