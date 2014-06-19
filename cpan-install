@@ -77,14 +77,29 @@ function os-install {
 
 function cpan-installer {
   local dep="$1"
+  local version=''
+  local bare=''
   case "$dep" in
     *.git|*.git@*|git+*://*|git://*)
       cpan-git-install "$dep"
+      return
     ;;
-    *)
-      perl -MCPAN -e'install(@ARGV)' "$dep"
+    *~*)
+      version="${dep/*~/}"
+      dep="${dep/~*/}"
+    ;;
+    */*)
+      bare=1
     ;;
   esac
+  if [ -z "$bare" ] && perl -e"use $dep $version ();" &>/dev/null; then
+    return
+  fi
+  if perl -e'use CPAN 1.80 ();' &>/dev/null; then
+    perl -MCPAN -e'notest(install => @ARGV)' "$dep"
+  else
+    perl -MCPAN -e'force(install => @ARGV)' "$dep"
+  fi
 }
 
 function cpan-git-install {
