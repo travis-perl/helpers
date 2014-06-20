@@ -106,9 +106,9 @@ function cpan-installer {
     return
   fi
   if perl -e'use CPAN 1.80 ();' &>/dev/null; then
-    perl -MCPAN -e'notest(install => @ARGV)' "$dep"
+    perl -MCPAN -e'notest(install => @ARGV) or exit 1' "$dep"
   else
-    perl -MCPAN -e'force(install => @ARGV)' "$dep"
+    perl -MCPAN -e'force(install => @ARGV) or exit 1' "$dep"
   fi
 }
 
