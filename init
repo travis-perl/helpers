@@ -76,4 +76,6 @@ function test-files {
   find $(test-dirs) -name '*.t'
 }
 
+echo "Perl Travis Helpers: $(git --git-dir="$HELPER_ROOT/.git" describe --all --long HEAD)"
+
 # vim: ft=sh
