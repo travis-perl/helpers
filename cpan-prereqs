@@ -52,6 +52,15 @@ die "configure failed: $dist->{writemakefile}"
 
 my @prereqs = $dist->can('unsat_prereq') ? do {
   my $r = $dist->prereq_pm;
-  keys %$r;
+  my %r;
+  for my $p (values %$r) {
+    for my $req (keys %$p) {
+      no warnings;
+      if ($p->{$req} > $r{$req} || $p->{$req} gt $r{$req}) {
+        $r{$req} = $p->{$req};
+      }
+    }
+  }
+  map { $_ . ($r{$_} ? '~'.$r{$_} : '') } sort keys %r;
 } : $dist->needs_prereq;
 print "$_\n" for @prereqs;
