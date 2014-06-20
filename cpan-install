@@ -17,6 +17,12 @@ else
   OS_INSTALLER="echo No installer available for "
 fi
 
+if [ "$VERBOSE" -eq 1 ]; then
+  INSTALL_WRAPPER='show-verbose'
+else
+  INSTALL_WRAPPER="show-on-fail"
+fi
+
 [ -n "$CPAN_MIRROR" ] && export PERL_CPANM_OPT="--mirror $CPAN_MIRROR $PERL_CPANM_OPT"
 export PERL_AUTOINSTALL_PREFER_CPAN=1
 export PERL_MM_USE_DEFAULT=1
@@ -34,6 +40,10 @@ exec </dev/null
 function clean_up {
   kill $PROG
   wait 2>/dev/null
+}
+
+function show-verbose {
+  "$@"
 }
 
 function show-on-fail {
@@ -123,7 +133,7 @@ function install-module {
   for dep in "$@"; do
     os-install "$dep"
     printf "Installing (without testing) $dep ..."
-    show-on-fail $INSTALL_CMD $dep
+    $INSTALL_WRAPPER $INSTALL_CMD $dep
   done
 }
 
