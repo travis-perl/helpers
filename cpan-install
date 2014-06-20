@@ -174,8 +174,8 @@ function do-install {
   for arg in "$@"; do
     case $arg in
       --toolchain)
-        install-module ExtUtils::MakeMaker~6.30
-        install-module Exporter~5.57
+        install-module 'ExtUtils::MakeMaker~6.30'
+        install-module 'Exporter~5.57'
       ;;
       --deps)
         echo "Configure prerequisites:"
