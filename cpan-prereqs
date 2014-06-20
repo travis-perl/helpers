@@ -53,7 +53,10 @@ die "configure failed: $dist->{writemakefile}"
 my @prereqs = $dist->can('unsat_prereq') ? do {
   my $r = $dist->prereq_pm;
   my %r;
-  for my $p (values %$r) {
+  for my $phase (keys %$r) {
+    next
+      if $phase =~ /opt/;
+    my $p = $r->{$phase};
     for my $req (keys %$p) {
       no warnings;
       if ($p->{$req} > $r{$req} || $p->{$req} gt $r{$req}) {
