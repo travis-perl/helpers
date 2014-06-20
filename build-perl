@@ -56,7 +56,7 @@ ver_num="$(perl -e'print $]*1_000_000')"
 if [ "$ver_num" -lt 5008000 ]; then
   echo "Setting up baseline toolchain..."
   $HELPER_ROOT/cpan-config
-  $HELPER_ROOT/cpan-install ExtUtils::MakeMaker~6.68 SMUELLER/PathTools-3.40.tar.gz CPAN~2.00
+  $HELPER_ROOT/cpan-install ExtUtils::MakeMaker~6.68 PEVANS/Scalar-List-Utils-1.39.tar.gz SMUELLER/PathTools-3.40.tar.gz CPAN~2.00
   $HELPER_ROOT/cpan-config
   echo "Done."
 fi
