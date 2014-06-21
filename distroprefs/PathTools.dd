@@ -1,0 +1,9 @@
+$VAR1 = {
+  "match" => {
+    "distribution" => "^SMUELLER/PathTools-3.47.tar.gz",
+    "perlconfig" => {
+      "version" => "^5\.6\.[0-2]",
+    },
+  },
+  "goto" => "SMUELLER/PathTools-3.40.tar.gz",
+}

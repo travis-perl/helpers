@@ -7,7 +7,7 @@ PERL_VERSION="$(perl -e'print $] * 1_000_000')"
 if [[ "$PERL_VERSION" -ge 5008000 ]]; then
   INSTALL_CMD="cpanm --verbose --no-interactive --no-man-pages --notest --skip-satisfied"
 else
-  INSTALL_CMD="perl -MCPAN -e'install(@ARGV)'"
+  INSTALL_CMD="cpan-installer"
 fi
 if which apt-get >/dev/null; then
   OS_INSTALLER="sudo apt-get install"
@@ -15,6 +15,12 @@ elif which brew >/dev/null; then
   OS_INSTALLER="brew install"
 else
   OS_INSTALLER="echo No installer available for "
+fi
+
+if [ "$VERBOSE" -eq 1 ]; then
+  INSTALL_WRAPPER='show-verbose'
+else
+  INSTALL_WRAPPER="show-on-fail"
 fi
 
 [ -n "$CPAN_MIRROR" ] && export PERL_CPANM_OPT="--mirror $CPAN_MIRROR $PERL_CPANM_OPT"
@@ -34,6 +40,10 @@ exec </dev/null
 function clean_up {
   kill $PROG
   wait 2>/dev/null
+}
+
+function show-verbose {
+  "$@"
 }
 
 function show-on-fail {
@@ -75,16 +85,64 @@ function os-install {
   done < $HELPER_ROOT/os-prereqs.txt
 }
 
+function cpan-installer {
+  local dep="$1"
+  local version=''
+  local bare=''
+  case "$dep" in
+    *.git|*.git@*|git+*://*|git://*)
+      cpan-git-install "$dep"
+      return
+    ;;
+    *~*)
+      version="${dep/*~/}"
+      dep="${dep/~*/}"
+    ;;
+    */*)
+      bare=1
+    ;;
+  esac
+  if [ -z "$bare" ] && perl -e"use $dep $version ();" &>/dev/null; then
+    return
+  fi
+  if perl -e'use CPAN 1.80 ();' &>/dev/null; then
+    perl -MCPAN -e'notest(install => @ARGV) or exit 1' "$dep"
+  else
+    perl -MCPAN -e'force(install => @ARGV) or exit 1' "$dep"
+  fi
+}
+
+function cpan-git-install {
+  local dep="$1"
+  local repo="${dep/@*/}"
+  local branch="${dep/*@/}"
+  if [ "$dep" == "$branch" ]; then
+    branch=''
+  else
+    branch="--branch $branch"
+  fi
+  local clone_dir="$(mktemp -d -t local-lib-XXXXXX)/repo"
+  git clone "$repo" $branch "$clone_dir"
+  cd "$clone_dir"
+  $HELPER_ROOT/build-dist build_dir
+  cd build_dir
+  do-install .
+}
+
 function install-module {
   for dep in "$@"; do
     os-install "$dep"
     printf "Installing (without testing) $dep ..."
-    show-on-fail $INSTALL_CMD $dep
+    $INSTALL_WRAPPER $INSTALL_CMD $dep
   done
 }
 
 function dynamic_deps {
-  cpanm --showdeps -q . --with-recommends $AUTHOR_OPTS
+  if [[ "$PERL_VERSION" -ge 5008000 ]]; then
+    cpanm --showdeps -q . --with-recommends $AUTHOR_OPTS
+  else
+    $HELPER_ROOT/cpan-prereqs
+  fi
 }
 
 function get_deps {
@@ -116,8 +174,8 @@ function do-install {
   for arg in "$@"; do
     case $arg in
       --toolchain)
-        install-module ExtUtils::MakeMaker~6.30
-        install-module Exporter~5.57
+        install-module 'ExtUtils::MakeMaker~6.30'
+        install-module 'Exporter~5.57'
       ;;
       --deps)
         echo "Configure prerequisites:"
@@ -139,6 +197,14 @@ function do-install {
         if [ "$COVERAGE" -eq 1 ]; then
           install-module Devel::Cover
           install-module Devel::Cover::Report::Coveralls
+        fi
+      ;;
+      .)
+        do-install --deps
+        if [ -e 'Makefile' ]; then
+          make install
+        elif [ -e 'Build' ]; then
+          ./Build install
         fi
       ;;
       *)

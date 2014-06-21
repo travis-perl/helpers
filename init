@@ -39,6 +39,10 @@ function build-perl {
   if [ "$SPLIT_BUILD" == "0" ]; then
     MODERN_PERL="env PERL5LIB= $(which perl)"
   fi
+  if [ "$(perl -e'print int $]*1000')" -lt 5008 ]; then
+    local pver="$(perl -e'printf "%.0f.%.0f.%.0f\n", int($]), ($] - int $])*1000, ($]*1000 - int($]*1000))*1_000')"
+    CPAN_MIRROR="http://cp${pver}an.barnyard.co.uk/"
+  fi
 }
 
 function cpan-install {
@@ -71,5 +75,7 @@ function test-dirs {
 function test-files {
   find $(test-dirs) -name '*.t'
 }
+
+echo "Perl Travis Helpers: $(git --git-dir="$HELPER_ROOT/.git" describe --all --long HEAD)"
 
 # vim: ft=sh

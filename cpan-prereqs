@@ -1,0 +1,69 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use CPAN ();
+use Cwd;
+use File::Spec;
+
+{
+  package FakeFrontEnd;
+  sub AUTOLOAD { 1 }
+}
+
+$CPAN::Frontend = 'FakeFrontEnd';
+
+CPAN::Config->load;
+$CPAN::Config->{index_expire} = 1 + time / 86400;
+$CPAN::Config->{scan_cache} = 'never';
+
+my $source = '.';
+$source = CPAN::Distribution->normalize($source)
+  if CPAN::Distribution->can('normalize');
+my $dist = $CPAN::META->instance('CPAN::Distribution', $source);
+
+$CPAN::Signal = !$dist->can('unsat_prereq');
+my $err;
+{
+  local *OLDOUT;
+  local *OLDERR;
+  local *OLDIN;
+  open OLDOUT, '>&STDOUT' or die "Can't dup STDOUT: $!";
+  open OLDERR, '>&STDERR' or die "Can't dup STDERR: $!";
+  open OLDIN,  '<&STDIN'  or die "Can't dup STDIN: $!";
+  open STDOUT, '>', File::Spec->devnull or die "Can't redirect STDOUT: $!";
+  open STDERR, '>', File::Spec->devnull or die "Can't redirect STDERR: $!";
+  open STDIN,  '<', File::Spec->devnull or die "Can't redirect STDIN: $!";
+
+  $dist->{build_dir} = '.';
+  eval {
+    $dist->make;
+  };
+  my $err = $@;
+
+  open STDOUT, '>&OLDOUT';
+  open STDERR, '>&OLDERR';
+  open STDIN,  '<&OLDIN';
+}
+die $err if $err;
+die "configure failed"
+  unless $dist->{writemakefile};
+die "configure failed: $dist->{writemakefile}"
+  unless $dist->{writemakefile} eq 'YES';
+
+my @prereqs = $dist->can('unsat_prereq') ? do {
+  my $r = $dist->prereq_pm;
+  my %r;
+  for my $phase (keys %$r) {
+    next
+      if $phase =~ /opt/;
+    my $p = $r->{$phase};
+    for my $req (keys %$p) {
+      no warnings;
+      if ($p->{$req} > $r{$req} || $p->{$req} gt $r{$req}) {
+        $r{$req} = $p->{$req};
+      }
+    }
+  }
+  map { $_ . ($r{$_} ? '~'.$r{$_} : '') } sort keys %r;
+} : $dist->needs_prereq;
+print "$_\n" for @prereqs;

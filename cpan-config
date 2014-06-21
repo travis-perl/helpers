@@ -1,0 +1,34 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use CPAN ();
+use ExtUtils::MakeMaker ();
+use File::Spec;
+
+{
+  package FakeFrontEnd;
+  sub AUTOLOAD { 1 }
+}
+
+my %config = (
+  urllist => [ $ENV{CPAN_MIRROR} || 'http://www.cpan.org/' ],
+  prerequisites_policy  => 'follow',
+  prefs_dir             => "$ENV{HELPER_ROOT}/distroprefs",
+  patches_dir           => "$ENV{HELPER_ROOT}/patches",
+  recommends_policy     => 0,
+);
+
+{
+  $CPAN::Frontend = 'FakeFrontEnd';
+  no warnings 'redefine';
+  local *ExtUtils::MakeMaker::prompt = sub ($;$) {
+    $_[0] =~ /manual configuration/ ? 'no' : $_[1];
+  };
+  open STDOUT, '>', File::Spec->devnull;
+  open STDERR, '>', File::Spec->devnull;
+  $CPAN::Config = { %config };
+  eval { CPAN::Config->load };
+  $CPAN::Config = { %config };
+  CPAN::Config->init;
+  CPAN::Config->commit;
+}
