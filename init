@@ -76,6 +76,12 @@ function test-files {
   find $(test-dirs) -name '*.t'
 }
 
+function prove {
+  local HARNESS_PERL="$(which perl)"
+  export HARNESS_PERL
+  command prove "$@"
+}
+
 echo "Perl Travis Helpers: $(git --git-dir="$HELPER_ROOT/.git" describe --all --long HEAD)"
 
 # vim: ft=sh
