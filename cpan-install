@@ -17,7 +17,7 @@ else
   OS_INSTALLER="echo No installer available for "
 fi
 
-if [ "$VERBOSE" -eq 1 ]; then
+if [ -n "$VERBOSE" ] && [ "$VERBOSE" -eq 1 ]; then
   INSTALL_WRAPPER='show-verbose'
 else
   INSTALL_WRAPPER="show-on-fail"
