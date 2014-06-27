@@ -51,7 +51,7 @@ fi
 
 echo "Done."
 
-perlbrew use "${brewver}"
+perlbrew use "$perl_version"
 ver_num="$(perl -e'print $]*1_000_000')"
 if [ "$ver_num" -lt 5008000 ]; then
   echo "Setting up baseline toolchain..."
