@@ -39,10 +39,14 @@ Description
 -----------
 While Travis-CI provides simple testing with perl or other languages, it has
 several limitations to address.  It only has a limited number of perl versions
-available, and only uses the default build options.  There are also various
-other commonly used functions, like reporting code coverage.  These helpers are
-intended to be an easily reusable set of functions for testing any CPAN style
-distribution.
+available, and only uses the default build options.
+
+These helpers will build perl versions for you if they aren't available.
+Additional helpers will build a dist package using a newer perl than the tests
+are run with, or aid with installing dependencies or reporting code coverage.
+
+The helpers are meant to be usable indivitually, so you can pick only the ones
+needed for your use case.
 
 Environment Variables
 ---------------------
@@ -103,6 +107,10 @@ done, or are just set by the commands.
 
 Commands
 --------
+  * init
+
+    Sets up the helper functions, and initializes environment variables.
+
   * build-perl
 
     Builds the requested perl version if needed, and switches to it.
@@ -162,3 +170,11 @@ information.  These can be ignored.  The build will continue, allowing the
 `build-perl` command to build and switch to the requested version.  It is
 recommended to include `perl -V` after `build-perl`, so the build details of
 the perl being used will be included in the build log.
+
+Example Projects
+----------------
+  * [Moo](https://github.com/moose/Moo)
+  * [Moose](https://github.com/moose/Moose)
+  * [Match::Simple](https://github.com/tobyink/p5-match-simple)
+  * [DateTime::Format::MSSQL](https://github.com/frioux/DateTime-Format-MSSQL)
+  * [local::lib](https://github.com/Perl-Toolchain-Gang/local-lib)
