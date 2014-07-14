@@ -10,7 +10,7 @@ Example .travis.yml
     perl:
       - "5.8"                     # normal preinstalled perl
       - "5.8.4"                   # installs perl 5.8.4
-      - "5.8.4_thr"               # installs perl 5.8.4 with threading
+      - "5.8.4-thr"               # installs perl 5.8.4 with threading
       - "5.20"                    # installs latest perl 5.20 (if not already available)
       - "blead"                   # installs perl from git
     matrix:
@@ -47,6 +47,28 @@ are run with, or aid with installing dependencies or reporting code coverage.
 
 The helpers are meant to be usable indivitually, so you can pick only the ones
 needed for your use case.
+
+Perl Building
+-------------
+If the specified perl version is already installed on the Travis testing
+machine, it will be used as is.  Any requested perl version that isn't available
+will be built for you.  If the patch level isn't included in the version, the
+latest in that series will be used.  Additionally, some build flags can be
+specified by adding them as dash separated suffixes (e.g. 5.10.1-thr-mb).
+
+  * thr
+    Builds a perl with thread support.  Controls the ```useithreads``` flag.
+
+  * dbg
+    Builds a debugging perl.  Controls the ```DEBUGGING``` flag.
+
+  * mb
+    Builds a perl with 64-bit and long double support.  Controls the
+    ```usemorebits``` flag.
+
+  * shrplib
+    Builds a shared libperl used by perl.  Needed for some dynamic loading
+    cases.  Controls the ```useshrplib``` flag.
 
 Environment Variables
 ---------------------
