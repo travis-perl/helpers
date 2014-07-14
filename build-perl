@@ -37,7 +37,7 @@ cores="$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || ec
 [[ "${perl_version}_" =~ '_thr_' ]] && brewopts="$brewopts -Duseithreads"
 [[ "${perl_version}_" =~ '_mb_' ]]  && brewopts="$brewopts -Dusemorebits"
 [[ "${perl_version}_" =~ '_dbg_' ]] && brewopts="$brewopts -DDEBUGGING"
-
+[[ "${perl_version}_" =~ '_shrplib_' ]] && brewopts="$brewopts -Duseshrplib"
 
 echo "Building Perl ${perl_version}..."
 perlbuild="$(perlbrew install --as "$perl_version" $brewopts "$brewver" 2>&1)"

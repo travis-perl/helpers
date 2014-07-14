@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Config;
-use Test::More tests => 4;
+use Test::More tests => 5;
 my $want = $ENV{TRAVIS_PERL_VERSION};
 
 (my $version = $want) =~ s/_.*//;
@@ -20,6 +20,7 @@ for (
   [ thr => 'useithreads' ],
   [ mb  => 'usemorebits' ],
   [ dbg => 'DEBUGGING' ],
+  [ shrplib => 'useshrplib' ],
 ) {
   my ($vflag, $dflag) = @$_;
   my $want_flag = "${want}_" =~ /_${vflag}_/;
