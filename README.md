@@ -10,7 +10,7 @@ Example .travis.yml
     perl:
       - "5.8"                     # normal preinstalled perl
       - "5.8.4"                   # installs perl 5.8.4
-      - "5.8.4_thr"               # installs perl 5.8.4 with threading
+      - "5.8.4-thr"               # installs perl 5.8.4 with threading
       - "5.20"                    # installs latest perl 5.20 (if not already available)
       - "blead"                   # installs perl from git
     matrix:

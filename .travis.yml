@@ -2,9 +2,9 @@ language: perl
 perl:
   - "5.18"
   - "5.8.8"
-  - "5.8.8_thr"
-  - "5.8.8_mb"
-  - "5.8.8_dbg"
+  - "5.8.8-thr"
+  - "5.8.8-mb"
+  - "5.8.8-dbg"
   - "blead"
 before_install:
   - source ./init

@@ -24,7 +24,7 @@ if perlbrew_check "$perl_version"; then
   exit 0;
 fi
 
-brewver="${perl_version/_*/}"
+brewver="${perl_version/-*/}"
 if [[ "$brewver" =~ ^[0-9].[0-9][0-9]?$ ]]; then
   brewver="$(perlbrew available | cut -c3- | grep "perl-$brewver.")"
 fi
@@ -34,10 +34,10 @@ minor_version="$(sed -n -E -e's/^5\.([0-9]+).*/\1/p' <<< "$brewver")"
 cores="$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)"
 
 [[ "$brewver" == blead || "$minor_version" -ge 14 ]] && brewopts="$brewopts -j $((cores + 1))"
-[[ "${perl_version}_" =~ '_thr_' ]] && brewopts="$brewopts -Duseithreads"
-[[ "${perl_version}_" =~ '_mb_' ]]  && brewopts="$brewopts -Dusemorebits"
-[[ "${perl_version}_" =~ '_dbg_' ]] && brewopts="$brewopts -DDEBUGGING"
-[[ "${perl_version}_" =~ '_shrplib_' ]] && brewopts="$brewopts -Duseshrplib"
+[[ "${perl_version}-" =~ '-thr-' ]] && brewopts="$brewopts -Duseithreads"
+[[ "${perl_version}-" =~ '-mb-' ]]  && brewopts="$brewopts -Dusemorebits"
+[[ "${perl_version}-" =~ '-dbg-' ]] && brewopts="$brewopts -DDEBUGGING"
+[[ "${perl_version}-" =~ '-shrplib-' ]] && brewopts="$brewopts -Duseshrplib"
 
 echo "Building Perl ${perl_version}..."
 perlbuild="$(perlbrew install --as "$perl_version" $brewopts "$brewver" 2>&1)"
