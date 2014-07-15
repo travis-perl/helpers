@@ -77,8 +77,10 @@ function test-files {
 }
 
 function prove {
-  local HARNESS_PERL="$(which perl)"
-  export HARNESS_PERL
+  if [ -z "$HARNESS_PERL" ]; then
+    local HARNESS_PERL="$(which perl)"
+    export HARNESS_PERL
+  fi
   command prove "$@"
 }
 
