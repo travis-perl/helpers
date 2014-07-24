@@ -18,8 +18,8 @@ Example .travis.yml
         - perl: 5.18
           env: COVERAGE=1         # enables coverage+coveralls reporting
     before_install:
-      - git clone git://github.com/haarg/perl-travis-helper
-      - source perl-travis-helper/init
+      - git clone git://github.com/haarg/perl-travis-helper ~/perl-travis-helper
+      - source ~/perl-travis-helper/init
       - build-perl
       - perl -V
       - build-dist
