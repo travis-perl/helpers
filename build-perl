@@ -22,6 +22,13 @@ perl_version="$1"
 if perlbrew_check "$perl_version"; then
   echo "Perl ${perl_version} already installed."
   exit 0;
+elif [ -z "$REBUILD_PERL" ]; then
+  if git ls-remote --exit-code https://github.com/haarg/perl-travis-builds "refs/heads/perl-$perl_version" > /dev/null; then
+    echo "Downloading pre-built Perl ${perl_version}..."
+    git clone --depth=1 --branch="perl-$perl_version" https://github.com/haarg/perl-travis-builds "$PERLBREW_ROOT/perls/$perl_version"
+    echo Done.
+    exit 0
+  fi
 fi
 
 brewver="${perl_version/-*/}"
