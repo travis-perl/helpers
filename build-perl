@@ -13,6 +13,44 @@ fi
 
 source "$PERLBREW_ROOT/etc/bashrc"
 
+function clean_up {
+  kill $PROG
+  wait 2>/dev/null
+}
+
+function show-verbose {
+  "$@"
+}
+
+function show-on-fail {
+  (
+    while true; do
+      sleep 5
+      printf '.'
+    done
+  ) &
+  local prog=$!
+  trap "clean_up $prog; exit 1" SIGHUP SIGINT SIGTERM
+  local log_file="$(mktemp -t perl-install-log-XXXXXX)"
+  local status
+  if "$@" > "$log_file" 2>&1; then
+    status="$?"
+  else
+    status="$?"
+  fi
+  kill $prog
+  wait $prog 2>/dev/null || true
+  trap - SIGHUP SIGINT SIGTERM
+  if [ "$status" != 0 ]; then
+    echo ' Failed!'
+    cat "$log_file" 1>&2
+  else
+    echo ' Done.'
+  fi
+  rm "$log_file"
+  return "$status"
+}
+
 function perlbrew_check {
   perlbrew list | cut -c3- | awk '{ print $1 }' | grep -q -x -F "$1"
 }
@@ -34,15 +72,13 @@ function perlbrew_build {
   [[ "${perl_version}-" =~ '-dbg-' ]] && brewopts="$brewopts -DDEBUGGING"
   [[ "${perl_version}-" =~ '-shrplib-' ]] && brewopts="$brewopts -Duseshrplib"
 
-  echo "Building Perl ${perl_version}..."
-  local perlbuild="$(perlbrew install --as "$perl_version" $brewopts "$brewver" 2>&1)"
+  printf "Building Perl ${perl_version} ..."
+  show-on-fail perlbrew install --as "$perl_version" $brewopts "$brewver"
+
   if ! perlbrew_check "$perl_version"; then
     echo "Perl $perl_version was not installed - compilation failed...?" 1>&2
-    echo "$perlbuild" 1>&2
-    echo 1>&2
     return 1
   fi
-  echo "Done."
 
   local ver_num="$("$PERLBREW_ROOT/perls/$perl_version/bin/perl" -e'print $]*1_000_000')"
   if [ "$ver_num" -lt 5008000 ]; then
