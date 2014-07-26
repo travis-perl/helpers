@@ -44,7 +44,7 @@ function perlbrew_build {
   fi
   echo "Done."
 
-  local ver_num="$(perlbrew exec --with "$perl_version" perl -e'print $]*1_000_000' | tail -1)"
+  local ver_num="$("$PERLBREW_ROOT/perls/$perl_version/bin/perl" -e'print $]*1_000_000')"
   if [ "$ver_num" -lt 5008000 ]; then
     echo "Setting up baseline toolchain..."
     (
@@ -74,7 +74,7 @@ elif [ -z "$REBUILD_PERL" ] && git ls-remote --exit-code https://github.com/haar
   git clone --depth=1 --branch="perl-$perl_version" https://github.com/haarg/perl-travis-builds "$PERLBREW_ROOT/perls/$perl_version"
   echo Done.
 else
-  build_perl "$perl_version"
+  perlbrew_build "$perl_version"
 fi
 
 if [ -n "$local_lib" ]; then
