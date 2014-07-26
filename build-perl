@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [ -z "$PERLBREW_ROOT" ]; then
   echo "Must be run under perlbrew!"
   exit 1
@@ -15,54 +17,62 @@ function perlbrew_check {
   perlbrew list | cut -c3- | awk '{ print $1 }' | grep -q -x -F "$1"
 }
 
+function perlbrew_build {
+  local perl_version="$1"
+  local brewver="${perl_version/-*/}"
+  if [[ "$brewver" =~ ^[0-9].[0-9][0-9]?$ ]]; then
+    brewver="$(perlbrew available | cut -c3- | grep "perl-$brewver.")"
+  fi
+
+  brewopts="--notest --noman --verbose"
+  local minor_version="$(sed -n -E -e's/^5\.([0-9]+).*/\1/p' <<< "$brewver")"
+  local cores="$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)"
+
+  [[ "$brewver" == blead || "$minor_version" -ge 14 ]] && brewopts="$brewopts -j $((cores + 1))"
+  [[ "${perl_version}-" =~ '-thr-' ]] && brewopts="$brewopts -Duseithreads"
+  [[ "${perl_version}-" =~ '-mb-' ]]  && brewopts="$brewopts -Dusemorebits"
+  [[ "${perl_version}-" =~ '-dbg-' ]] && brewopts="$brewopts -DDEBUGGING"
+  [[ "${perl_version}-" =~ '-shrplib-' ]] && brewopts="$brewopts -Duseshrplib"
+
+  echo "Building Perl ${perl_version}..."
+  local perlbuild="$(perlbrew install --as "$perl_version" $brewopts "$brewver" 2>&1)"
+  if ! perlbrew_check "$perl_version"; then
+    echo "Perl $perl_version was not installed - compilation failed...?" 1>&2
+    echo "$perlbuild" 1>&2
+    echo 1>&2
+    return 1
+  fi
+  echo "Done."
+
+  local ver_num="$(perlbrew exec --with "$perl_version" perl -e'print $]*1_000_000' | tail -1)"
+  if [ "$ver_num" -lt 5008000 ]; then
+    echo "Setting up baseline toolchain..."
+    (
+      perlbrew use "$perl_version"
+      $HELPER_ROOT/cpan-config
+      $HELPER_ROOT/cpan-install ExtUtils::MakeMaker~6.68 PEVANS/Scalar-List-Utils-1.39.tar.gz SMUELLER/PathTools-3.40.tar.gz CPAN~2.00
+      $HELPER_ROOT/cpan-config
+    )
+    echo "Done."
+  fi
+}
+
 perlbrew install-cpanm -f > /dev/null
 
-perl_version="$1"
+full_version="$1"
+local_lib="${full_version/*@/}"
+perl_version="${full_version/@*/}"
+
+if [ "$local_lib" == "$full_version" ]; then
+  unset local_lib
+fi
 
 if perlbrew_check "$perl_version"; then
   echo "Perl ${perl_version} already installed."
-  exit 0;
-elif [ -z "$REBUILD_PERL" ]; then
-  if git ls-remote --exit-code https://github.com/haarg/perl-travis-builds "refs/heads/perl-$perl_version" > /dev/null; then
-    echo "Downloading pre-built Perl ${perl_version}..."
-    git clone --depth=1 --branch="perl-$perl_version" https://github.com/haarg/perl-travis-builds "$PERLBREW_ROOT/perls/$perl_version"
-    echo Done.
-    exit 0
-  fi
-fi
-
-brewver="${perl_version/-*/}"
-if [[ "$brewver" =~ ^[0-9].[0-9][0-9]?$ ]]; then
-  brewver="$(perlbrew available | cut -c3- | grep "perl-$brewver.")"
-fi
-
-brewopts="--notest --noman --verbose"
-minor_version="$(sed -n -E -e's/^5\.([0-9]+).*/\1/p' <<< "$brewver")"
-cores="$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)"
-
-[[ "$brewver" == blead || "$minor_version" -ge 14 ]] && brewopts="$brewopts -j $((cores + 1))"
-[[ "${perl_version}-" =~ '-thr-' ]] && brewopts="$brewopts -Duseithreads"
-[[ "${perl_version}-" =~ '-mb-' ]]  && brewopts="$brewopts -Dusemorebits"
-[[ "${perl_version}-" =~ '-dbg-' ]] && brewopts="$brewopts -DDEBUGGING"
-[[ "${perl_version}-" =~ '-shrplib-' ]] && brewopts="$brewopts -Duseshrplib"
-
-echo "Building Perl ${perl_version}..."
-perlbuild="$(perlbrew install --as "$perl_version" $brewopts "$brewver" 2>&1)"
-if ! perlbrew_check "$perl_version"; then
-  echo "Perl $perl_version was not installed - compilation failed...?" 1>&2
-  echo "$perlbuild" 1>&2
-  echo 1>&2
-  exit 1
-fi
-
-echo "Done."
-
-perlbrew use "$perl_version"
-ver_num="$(perl -e'print $]*1_000_000')"
-if [ "$ver_num" -lt 5008000 ]; then
-  echo "Setting up baseline toolchain..."
-  $HELPER_ROOT/cpan-config
-  $HELPER_ROOT/cpan-install ExtUtils::MakeMaker~6.68 PEVANS/Scalar-List-Utils-1.39.tar.gz SMUELLER/PathTools-3.40.tar.gz CPAN~2.00
-  $HELPER_ROOT/cpan-config
-  echo "Done."
+elif [ -z "$REBUILD_PERL" ] && git ls-remote --exit-code https://github.com/haarg/perl-travis-builds "refs/heads/perl-$perl_version" > /dev/null; then
+  echo "Downloading pre-built Perl ${perl_version}..."
+  git clone --depth=1 --branch="perl-$perl_version" https://github.com/haarg/perl-travis-builds "$PERLBREW_ROOT/perls/$perl_version"
+  echo Done.
+else
+  build_perl "$perl_version"
 fi
