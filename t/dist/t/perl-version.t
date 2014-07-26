@@ -3,6 +3,7 @@ use warnings;
 use Config;
 use Test::More tests => 5;
 my $want = $ENV{TRAVIS_PERL_VERSION};
+$want =~ s/@.*//;
 
 (my $version = $want) =~ s/-.*//;
 my $got_version = $Config{version};
