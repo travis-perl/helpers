@@ -1,0 +1,8 @@
+moose   Moose Moo
+moo     Moo
+dzil    Dist::Zilla Pod::Weaver
+test    Test::Most
+cat     Catalyst Catalyst::Devel Catalyst::View::TT
+dbic    DBIx::Class DBIx::Class::Schema::Loader
+lwp     LWP
+travis  Dist::Zilla Moose Test::Pod Test::Pod::Coverage Test::Exception Test::Kwalitee Dist::Zilla::Plugin::Bootstrap::lib LWP Module::Install Test::Most

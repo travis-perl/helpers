@@ -1,0 +1,13 @@
+#!/bin/bash
+
+local_lib="$1"
+
+while read ll modules; do
+  if [ "$local_lib" == "$ll" ]; then
+    echo $modules
+    exit 0
+  fi
+done < $HELPER_ROOT/local-libs.txt
+
+echo "Invalid local::lib!" 1>&2
+exit 1

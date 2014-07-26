@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [ -z "$PERLBREW_ROOT" ]; then
+  echo "Must be run under perlbrew!"
+  exit 1
+fi
+if [ -z "$1" ]; then
+  echo "Perl to build must be specified!"
+  exit 1
+fi
+
+source "$PERLBREW_ROOT/etc/bashrc"
+
+full_version="$1"
+local_lib="${full_version/*@/}"
+perl_version="${full_version/@*/}"
+if [ "$local_lib" == "$full_version" ]; then
+  perl_version="$PERLBREW_PERL"
+  full_version="$perl_version@$local_lib"
+fi
+
+if perlbrew lib list | cut -c3- | grep -q -x -F "$full_version"; then
+  echo "local::lib $local_lib already built"
+  exit 0
+fi
+
+perlbrew lib create "$full_version"
+perlbrew use "$full_version"
+
+$HELPER_ROOT/cpan-install $($HELPER_ROOT/modules-for-local-lib $local_lib)
