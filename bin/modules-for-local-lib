@@ -1,13 +1,17 @@
 #!/bin/bash
 
 local_lib="$1"
-
+found=''
 while read ll modules; do
   if [ "$local_lib" == "$ll" ]; then
-    echo $modules
-    exit 0
+    found=1
+    for module in $modules; do
+      echo $module
+    done
   fi
 done < $HELPER_ROOT/share/local-libs.txt
 
-echo "Invalid local::lib!" 1>&2
-exit 1
+if [ -z "$found" ]; then
+  echo "Invalid local::lib!" 1>&2
+  exit 1
+fi
