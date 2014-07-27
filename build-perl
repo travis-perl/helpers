@@ -105,9 +105,9 @@ fi
 
 if perlbrew_check "$perl_version"; then
   echo "Perl ${perl_version} already installed."
-elif [ -z "$REBUILD_PERL" ] && git ls-remote --exit-code https://github.com/haarg/perl-travis-builds "refs/heads/perl-$perl_version" > /dev/null; then
+elif [ -z "$REBUILD_PERL" ] && "$HELPER_ROOT/get-prebuilt" "perl/$perl_version" --check; then
   echo "Downloading pre-built Perl ${perl_version}..."
-  git clone --depth=1 --branch="perl-$perl_version" https://github.com/haarg/perl-travis-builds "$PERLBREW_ROOT/perls/$perl_version"
+  "$HELPER_ROOT/get-prebuilt" "perl/$perl_version" "$PERLBREW_ROOT/perls/$perl_version"
   echo Done.
 else
   perlbrew_build "$perl_version"

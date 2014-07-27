@@ -1,0 +1,28 @@
+#!/bin/bash
+set -e
+
+source="https://github.com/haarg/perl-travis-builds"
+repo="$HOME/perl-travis-builds.git"
+branch="$1"
+
+if [ -z "$dest" ]; then
+  echo "Not enough parameters!" 1>&2
+  exit 2
+elif [ "$dest" == "--check" ]; then
+  [ -e "$repo" ] \
+    && git --git-repo="$repo" rev-parse --verify -q "refs/heads/$branch" >/dev/null \
+    && exit 0
+  git ls-remote --exit-code "$source" "refs/heads/perl-$perl_version" > /dev/null
+  exit 0
+fi
+
+dest="$2"
+
+if [ ! -e "$repo" ]; then
+  git init --bare "$repo"
+  git --git-dir="$repo" remote add origin "$source"
+fi
+
+git --git-dir="$repo" fetch --depth 1 origin "$branch"
+git --git-dir="$repo" update-ref "refs/heads/$branch" "refs/remotes/origin/$branch"
+git clone -s --branch "$branch" "$repo" "$dest"
