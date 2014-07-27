@@ -9,9 +9,11 @@ fi
 export HELPER_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export SYSTEM_CORES=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)
 MODERN_PERL="$(
-  perlbrew exec perl -MConfig -e'
-    print STDERR ($]*1000000)." ".($^X=~m{/}?$^X:$Config{perlpath})."\n";
-  ' 2>&1 >/dev/null |
+  for perl in "$PERLBREW_ROOT/perls/"*/bin/perl; do
+    "$perl" -MConfig -e'
+      print STDERR ($]*1000000)." ".($^X=~m{/}?$^X:$Config{perlpath})."\n";
+    '
+  done |
   sort -n |
   tail -1 |
   cut -c9-
