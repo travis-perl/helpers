@@ -124,7 +124,7 @@ function cpan-git-install {
   local clone_dir="$(mktemp -d -t local-lib-XXXXXX)/repo"
   git clone "$repo" $branch "$clone_dir"
   cd "$clone_dir"
-  $HELPER_ROOT/build-dist build_dir
+  $HELPER_ROOT/bin/build-dist build_dir
   cd build_dir
   do-install .
 }
@@ -141,7 +141,7 @@ function dynamic_deps {
   if [[ "$PERL_VERSION" -ge 5008000 ]]; then
     cpanm --showdeps -q . --with-recommends $AUTHOR_OPTS
   else
-    $HELPER_ROOT/cpan-prereqs
+    $HELPER_ROOT/bin/cpan-prereqs
   fi
 }
 

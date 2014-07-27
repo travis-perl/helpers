@@ -27,4 +27,4 @@ fi
 perlbrew lib create "$full_version"
 perlbrew use "$full_version"
 
-$HELPER_ROOT/cpan-install $($HELPER_ROOT/modules-for-local-lib $local_lib)
+$HELPER_ROOT/bin/cpan-install $($HELPER_ROOT/bin/modules-for-local-lib $local_lib)

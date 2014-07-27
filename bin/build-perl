@@ -85,9 +85,9 @@ function perlbrew_build {
     echo "Setting up baseline toolchain..."
     (
       perlbrew use "$perl_version"
-      $HELPER_ROOT/cpan-config
-      $HELPER_ROOT/cpan-install ExtUtils::MakeMaker~6.68 PEVANS/Scalar-List-Utils-1.39.tar.gz SMUELLER/PathTools-3.40.tar.gz CPAN~2.00
-      $HELPER_ROOT/cpan-config
+      $HELPER_ROOT/bin/cpan-config
+      $HELPER_ROOT/bin/cpan-install ExtUtils::MakeMaker~6.68 PEVANS/Scalar-List-Utils-1.39.tar.gz SMUELLER/PathTools-3.40.tar.gz CPAN~2.00
+      $HELPER_ROOT/bin/cpan-config
     )
     echo "Done."
   fi
@@ -107,14 +107,14 @@ if [ "$perl_version" == "system" ]; then
   echo "Using system provided perl."
 elif perlbrew_check "$perl_version"; then
   echo "Perl ${perl_version} already installed."
-elif [ -z "$REBUILD_PERL" ] && "$HELPER_ROOT/get-prebuilt" "perl/$perl_version" --check; then
+elif [ -z "$REBUILD_PERL" ] && "$HELPER_ROOT/bin/get-prebuilt" "perl/$perl_version" --check; then
   echo "Downloading pre-built Perl ${perl_version}..."
-  "$HELPER_ROOT/get-prebuilt" "perl/$perl_version" "$PERLBREW_ROOT/perls/$perl_version"
+  "$HELPER_ROOT/bin/get-prebuilt" "perl/$perl_version" "$PERLBREW_ROOT/perls/$perl_version"
   echo Done.
 else
   perlbrew_build "$perl_version"
 fi
 
 if [ -n "$local_lib" ]; then
-  $HELPER_ROOT/local-lib-installer "$perl_version@$local_lib"
+  $HELPER_ROOT/bin/local-lib-installer "$perl_version@$local_lib"
 fi
