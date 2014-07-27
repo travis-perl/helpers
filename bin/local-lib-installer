@@ -18,10 +18,11 @@ local_lib="${full_version/*@/}"
 perl_version="${full_version/@*/}"
 if [ "$local_lib" == "$full_version" ]; then
   perl_version="$PERLBREW_PERL"
+  [ -z "$perl_version" ] && perl_version="system"
   full_version="$perl_version@$local_lib"
 fi
 
-if perlbrew lib list | cut -c3- | grep -q -x -F "$full_version"; then
+if [ -e "$PERLBREW_HOME/libs/$full_version" ]; then
   echo "local::lib $local_lib already built"
   exit 0
 elif [ -z "$REBUILD_PERL" ] && "$HELPER_ROOT/bin/get-prebuilt" "libs/$perl_version/$local_lib" --check; then
@@ -31,7 +32,8 @@ elif [ -z "$REBUILD_PERL" ] && "$HELPER_ROOT/bin/get-prebuilt" "libs/$perl_versi
   exit 0
 fi
 
-if [ -z "$PERLBREW_PERL" ]; then
+if [ "$perl_version" == "system" ]; then
+  perlbrew off
   eval "$(LL_NO_INSTALL=1 $HELPER_ROOT/bin/local-lib $local_lib)"
 else
   perlbrew lib create "$full_version"
