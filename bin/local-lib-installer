@@ -11,6 +11,8 @@ fi
 
 source "$PERLBREW_ROOT/etc/bashrc"
 
+set -e
+
 full_version="$1"
 local_lib="${full_version/*@/}"
 perl_version="${full_version/@*/}"
@@ -22,9 +24,18 @@ fi
 if perlbrew lib list | cut -c3- | grep -q -x -F "$full_version"; then
   echo "local::lib $local_lib already built"
   exit 0
+elif [ -z "$REBUILD_PERL" ] && "$HELPER_ROOT/bin/get-prebuilt" "libs/$perl_version/$local_lib" --check; then
+  echo "Downloading pre-built local::lib $local_lib for Perl ${perl_version}..."
+  "$HELPER_ROOT/bin/get-prebuilt" "libs/$perl_version/$local_lib" "$PERLBREW_HOME/libs/$full_version"
+  echo Done.
+  exit 0
 fi
 
-perlbrew lib create "$full_version"
-perlbrew use "$full_version"
+if [ -z "$PERLBREW_PERL" ]; then
+  eval "$(LL_NO_INSTALL=1 $HELPER_ROOT/bin/local-lib $local_lib)"
+else
+  perlbrew lib create "$full_version"
+  perlbrew use "$full_version"
+fi
 
 $HELPER_ROOT/bin/cpan-install $($HELPER_ROOT/bin/modules-for-local-lib $local_lib)
