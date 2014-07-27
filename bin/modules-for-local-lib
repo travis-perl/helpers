@@ -7,7 +7,7 @@ while read ll modules; do
     echo $modules
     exit 0
   fi
-done < $HELPER_ROOT/local-libs.txt
+done < $HELPER_ROOT/share/local-libs.txt
 
 echo "Invalid local::lib!" 1>&2
 exit 1

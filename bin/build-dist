@@ -42,7 +42,7 @@ elif [ -e 'Makefile.PL' ]; then
     AUTHOR_DEPS='ExtUtils::MakeMaker~6.31 Module::Install'
     while read command module; do
       grep -q -E "$command" 'Makefile.PL' && AUTHOR_DEPS="$AUTHOR_DEPS $module"
-    done < $HELPER_ROOT/module-install-commands.txt
+    done < $HELPER_ROOT/share/module-install-commands.txt
     $HELPER_ROOT/bin/cpan-install $AUTHOR_DEPS
   else
     echo "Building with Makefile.PL (ExtUtils::MakeMaker)"

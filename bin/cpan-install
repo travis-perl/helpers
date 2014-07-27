@@ -82,7 +82,7 @@ function os-install {
         $OS_INSTALLER "$os_dep" || true
       done
     fi
-  done < $HELPER_ROOT/os-prereqs.txt
+  done < $HELPER_ROOT/share/os-prereqs.txt
 }
 
 function cpan-installer {
