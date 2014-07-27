@@ -37,39 +37,7 @@ unset CONTINUOUS_INTEGRATION
 
 exec </dev/null
 
-function clean_up {
-  kill $PROG
-  wait 2>/dev/null
-}
-
-function show-verbose {
-  "$@"
-}
-
-function show-on-fail {
-  (
-    while true; do
-      sleep 3
-      printf '.'
-    done
-  ) &
-  local PROG=$!
-  trap "clean_up $PROG; exit 1" SIGHUP SIGINT SIGTERM
-  local log_file="$(mktemp -t cpan-install-log-XXXXXX)"
-  "$@" > "$log_file" 2>&1
-  local STATUS="$?"
-  kill $PROG
-  wait $PROG 2>/dev/null
-  trap - SIGHUP SIGINT SIGTERM
-  if [ "$STATUS" != 0 ]; then
-    echo ' Failed!'
-    cat "$log_file"
-    rm "$log_file"
-    return $?
-  fi
-  rm "$log_file"
-  echo ' Done'
-}
+source "$HELPER_ROOT/lib/util.bash"
 
 function os-install {
   local dep="$1"

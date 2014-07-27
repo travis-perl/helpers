@@ -12,44 +12,7 @@ if [ -z "$1" ]; then
 fi
 
 source "$PERLBREW_ROOT/etc/bashrc"
-
-function clean_up {
-  kill $PROG
-  wait 2>/dev/null
-}
-
-function show-verbose {
-  "$@"
-}
-
-function show-on-fail {
-  (
-    while true; do
-      sleep 5
-      printf '.'
-    done
-  ) &
-  local prog=$!
-  trap "clean_up $prog; exit 1" SIGHUP SIGINT SIGTERM
-  local log_file="$(mktemp -t perl-install-log-XXXXXX)"
-  local status
-  if "$@" > "$log_file" 2>&1; then
-    status="$?"
-  else
-    status="$?"
-  fi
-  kill $prog
-  wait $prog 2>/dev/null || true
-  trap - SIGHUP SIGINT SIGTERM
-  if [ "$status" != 0 ]; then
-    echo ' Failed!'
-    cat "$log_file" 1>&2
-  else
-    echo ' Done.'
-  fi
-  rm "$log_file"
-  return "$status"
-}
+source "$HELPER_ROOT/lib/util.bash"
 
 function perlbrew_check {
   perlbrew list | cut -c3- | awk '{ print $1 }' | grep -q -x -F "$1"
