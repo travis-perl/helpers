@@ -61,10 +61,7 @@ perlbrew install-cpanm -f > /dev/null
 full_version="$1"
 local_lib="${full_version/*@/}"
 perl_version="${full_version/@*/}"
-
-if [ "$local_lib" == "$full_version" ]; then
-  unset local_lib
-fi
+[ "$local_lib" == "$full_version" ] && unset local_lib
 
 if [ "$perl_version" == "system" ]; then
   echo "Using system provided perl."
