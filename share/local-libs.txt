@@ -4,6 +4,7 @@ test    Test::Most
 cat     Catalyst Catalyst::Devel Catalyst::View::TT
 dbic    DBIx::Class DBIx::Class::Schema::Loader
 lwp     LWP
+cover   Devel::Cover Devel::Cover::Report::Coveralls
 
 dzil    Dist::Zilla Pod::Weaver Dist::Zilla::Plugin::PodWeaver
 dzil    Dist::Zilla::Plugin::Git Pod::Elemental::Transformer::List
