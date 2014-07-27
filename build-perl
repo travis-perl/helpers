@@ -103,7 +103,9 @@ if [ "$local_lib" == "$full_version" ]; then
   unset local_lib
 fi
 
-if perlbrew_check "$perl_version"; then
+if [ "$perl_version" == "system" ]; then
+  echo "Using system provided perl."
+elif perlbrew_check "$perl_version"; then
   echo "Perl ${perl_version} already installed."
 elif [ -z "$REBUILD_PERL" ] && "$HELPER_ROOT/get-prebuilt" "perl/$perl_version" --check; then
   echo "Downloading pre-built Perl ${perl_version}..."

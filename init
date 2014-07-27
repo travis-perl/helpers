@@ -35,7 +35,14 @@ function local-lib {
 
 function build-perl {
   $HELPER_ROOT/build-perl "$TRAVIS_PERL_VERSION" || return 1
-  perlbrew use "$TRAVIS_PERL_VERSION" || return 1
+  if [ "${TRAVIS_PERL_VERSION/@*/}" == "system" ]; then
+    perlbrew off
+    if [ "${TRAVIS_PERL_VERSION/*@/}" != "$TRAVIS_PERL_VERSION" ]; then
+      local-lib "${TRAVIS_PERL_VERSION/*@/}"
+    fi
+  else
+    perlbrew use "$TRAVIS_PERL_VERSION" || return 1
+  fi
   if [ "$SPLIT_BUILD" == "0" ]; then
     MODERN_PERL="env PERL5LIB= $(which perl)"
   fi
