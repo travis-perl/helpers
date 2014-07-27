@@ -17,13 +17,9 @@ function show-on-fail {
   local prog="$!"
   trap "clean-up $prog; echo 'Aborted.'; exit 1" SIGHUP SIGINT SIGTERM
   local log_file="$(mktemp -t log-XXXXXX)"
-  local status
-  if "$@" > "$log_file" 2>&1; then
-    status="$?"
-  else
-    status="$?"
-  fi
-  clean-up $prog
+  local status=0
+  ( "$@" > "$log_file" 2>&1 ) || status="$?"
+  clean-up "$prog"
   trap - SIGHUP SIGINT SIGTERM
   if [ "$status" != 0 ]; then
     echo ' Failed!'
