@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-source="https://github.com/haarg/perl-travis-builds"
+source="$PREBUILT_REPO"
+[ -z "$source" ] && source="https://github.com/haarg/perl-travis-builds"
 repo="$HOME/perl-travis-builds.git"
 branch="$1"
 
