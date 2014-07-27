@@ -47,6 +47,7 @@ function perlbrew_build {
   if [ "$ver_num" -lt 5008000 ]; then
     echo "Setting up baseline toolchain..."
     (
+      set -x
       perlbrew use "$perl_version"
       $HELPER_ROOT/bin/cpan-config
       $HELPER_ROOT/bin/cpan-install ExtUtils::MakeMaker~6.68 PEVANS/Scalar-List-Utils-1.39.tar.gz SMUELLER/PathTools-3.40.tar.gz CPAN~2.00
