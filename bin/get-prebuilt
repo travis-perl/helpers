@@ -5,6 +5,7 @@ source="$PREBUILT_REPO"
 [ -z "$source" ] && source="https://github.com/haarg/perl-travis-builds"
 repo="$HOME/perl-travis-builds.git"
 branch="$1"
+dest="$2"
 
 if [ -z "$dest" ]; then
   echo "Not enough parameters!" 1>&2
@@ -16,8 +17,6 @@ elif [ "$dest" == "--check" ]; then
   git ls-remote --exit-code "$source" "refs/heads/perl-$perl_version" > /dev/null
   exit 0
 fi
-
-dest="$2"
 
 if [ ! -e "$repo" ]; then
   git init --bare "$repo"
