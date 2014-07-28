@@ -45,16 +45,20 @@ These helpers will build perl versions for you if they aren't available.
 Additional helpers will build a dist package using a newer perl than the tests
 are run with, or aid with installing dependencies or reporting code coverage.
 
-The helpers are meant to be usable indivitually, so you can pick only the ones
+The helpers are meant to be usable individually, so you can pick only the ones
 needed for your use case.
 
 Perl Building
 -------------
 If the specified perl version is already installed on the Travis testing
 machine, it will be used as is.  Any requested perl version that isn't available
-will be built for you.  If the patch level isn't included in the version, the
-latest in that series will be used.  Additionally, some build flags can be
-specified by adding them as dash separated suffixes (e.g. 5.10.1-thr-mb).
+will be built for you.  Additionally, a number of commonly tested versions are
+pre-built and will be automatically downloaded and used to speed up testing.
+The pre-built perl versions are listed in the [.travis.yml for the builds
+repo](https://github.com/haarg/perl-travis-builds/blob/master/.travis.yml).
+If the patch level isn't included in the version, the latest in that series will
+be used.  Additionally, some build flags can be specified by adding them as dash
+separated suffixes (e.g. 5.10.1-thr-mb).
 
   * thr
     Builds a perl with thread support.  Controls the ```useithreads``` flag.
@@ -63,8 +67,8 @@ specified by adding them as dash separated suffixes (e.g. 5.10.1-thr-mb).
     Builds a debugging perl.  Controls the ```DEBUGGING``` flag.
 
   * mb
-    Builds a perl with 64-bit and long double support.  Controls the
-    ```usemorebits``` flag.
+    Builds a perl with 64-bit and long double support.  Controls
+    the ```usemorebits``` flag.
 
   * shrplib
     Builds a shared libperl used by perl.  Needed for some dynamic loading
@@ -127,6 +131,11 @@ done, or are just set by the commands.
 
     The path to the generated dist.  Set by the `build-dist` command.
 
+  * `REBUILD_PERL`
+
+    If set, prebuilt versions of perl will not automatically be downloaded and
+    used.
+
 Commands
 --------
   * init
@@ -182,6 +191,19 @@ Commands
     Outputs a coverage report.  If Devel::Cover::Report::Coveralls is
     available, it will send the report to Coveralls.  Does nothing if
     `COVERAGE` is false.
+
+  * local-lib
+
+    Activates a local::lib directory.  Without a parameter, creates a new
+    local::lib directory and activates it.  Any parameters given are taken as
+    names of predefined local::libs.
+
+local::lib
+----------
+A number of [predefined local::lib](share/local-libs.txt) directories are
+available for use.  Pre-built perl versions will also include pre-built
+local::lib directories.  If there is no pre-built copy of the local::lib
+available, it will be built when requested.
 
 Notes
 -----
