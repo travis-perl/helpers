@@ -9,9 +9,11 @@ fi
 export HELPER_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export SYSTEM_CORES=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)
 MODERN_PERL="$(
-  perlbrew exec perl -MConfig -e'
-    print STDERR ($]*1000000)." ".($^X=~m{/}?$^X:$Config{perlpath})."\n";
-  ' 2>&1 >/dev/null |
+  for perl in "$PERLBREW_ROOT/perls/"*/bin/perl; do
+    "$perl" -MConfig -e'
+      print STDERR ($]*1000000)." ".($^X=~m{/}?$^X:$Config{perlpath})."\n";
+    '
+  done |
   sort -n |
   tail -1 |
   cut -c9-
@@ -26,16 +28,23 @@ export MODERN_PERL="env PERL5LIB= $MODERN_PERL"
 
 function build-dist {
   export BUILD_DIR="$(pwd)/build_dir"
-  $HELPER_ROOT/build-dist "$BUILD_DIR"
+  $HELPER_ROOT/bin/build-dist "$BUILD_DIR"
 }
 
 function local-lib {
-  eval "$($HELPER_ROOT/local-lib "$@")"
+  eval "$($HELPER_ROOT/bin/local-lib "$@")"
 }
 
 function build-perl {
-  $HELPER_ROOT/build-perl "$TRAVIS_PERL_VERSION" || return 1
-  perlbrew use "$TRAVIS_PERL_VERSION" || return 1
+  $HELPER_ROOT/bin/build-perl "$TRAVIS_PERL_VERSION" || return 1
+  if [ "${TRAVIS_PERL_VERSION/@*/}" == "system" ]; then
+    perlbrew off
+    if [ "${TRAVIS_PERL_VERSION/*@/}" != "$TRAVIS_PERL_VERSION" ]; then
+      local-lib "${TRAVIS_PERL_VERSION/*@/}"
+    fi
+  else
+    perlbrew use "$TRAVIS_PERL_VERSION" || return 1
+  fi
   if [ "$SPLIT_BUILD" == "0" ]; then
     MODERN_PERL="env PERL5LIB= $(which perl)"
   fi
@@ -46,7 +55,7 @@ function build-perl {
 }
 
 function cpan-install {
-  $HELPER_ROOT/cpan-install "$@"
+  $HELPER_ROOT/bin/cpan-install "$@"
 }
 
 function coverage-setup {

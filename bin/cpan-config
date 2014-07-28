@@ -13,8 +13,8 @@ use File::Spec;
 my %config = (
   urllist => [ $ENV{CPAN_MIRROR} || 'http://www.cpan.org/' ],
   prerequisites_policy  => 'follow',
-  prefs_dir             => "$ENV{HELPER_ROOT}/distroprefs",
-  patches_dir           => "$ENV{HELPER_ROOT}/patches",
+  prefs_dir             => "$ENV{HELPER_ROOT}/share/distroprefs",
+  patches_dir           => "$ENV{HELPER_ROOT}/share/patches",
   recommends_policy     => 0,
 );
 

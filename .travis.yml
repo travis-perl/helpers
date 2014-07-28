@@ -5,6 +5,7 @@ perl:
   - "5.8.8-thr"
   - "5.8.8-mb"
   - "5.8.8-dbg"
+  - "5.8.8@moo"
   - "blead"
 before_install:
   - source ./init

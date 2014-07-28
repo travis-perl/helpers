@@ -1,0 +1,14 @@
+moose   Moose Moo
+moo     Moo Type::Tiny
+test    Test::Most
+cat     Catalyst Catalyst::Devel Catalyst::View::TT
+dbic    DBIx::Class DBIx::Class::Schema::Loader
+lwp     LWP LWP::Protocol::https
+cover   Devel::Cover Devel::Cover::Report::Coveralls
+
+dzil    Dist::Zilla Pod::Weaver Dist::Zilla::Plugin::PodWeaver
+dzil    Dist::Zilla::Plugin::Git Pod::Elemental::Transformer::List
+
+travis  Dist::Zilla Moose Test::Pod Test::Pod::Coverage Test::Exception
+travis  Test::Kwalitee Dist::Zilla::Plugin::Bootstrap::lib LWP Module::Install
+travis  Test::Most

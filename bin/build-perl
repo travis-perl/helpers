@@ -1,0 +1,81 @@
+#!/bin/bash
+
+set -e
+
+if [ -z "$PERLBREW_ROOT" ]; then
+  echo "Must be run under perlbrew!"
+  exit 1
+fi
+if [ -z "$1" ]; then
+  echo "Perl to build must be specified!"
+  exit 1
+fi
+
+source "$PERLBREW_ROOT/etc/bashrc"
+source "$HELPER_ROOT/lib/util.bash"
+
+function perlbrew_check {
+  perlbrew list | cut -c3- | awk '{ print $1 }' | grep -q -x -F "$1"
+}
+
+function perlbrew_build {
+  local perl_version="$1"
+  local brewver="${perl_version/-*/}"
+  if [[ "$brewver" =~ ^[0-9].[0-9][0-9]?$ ]]; then
+    brewver="$(perlbrew available | cut -c3- | grep "perl-$brewver.")"
+  fi
+
+  brewopts="--notest --noman --verbose"
+  local minor_version="$(sed -n -E -e's/^5\.([0-9]+).*/\1/p' <<< "$brewver")"
+  local cores="$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)"
+
+  [[ "$brewver" == blead || "$minor_version" -ge 14 ]] && brewopts="$brewopts -j $((cores + 1))"
+  [[ "${perl_version}-" =~ '-thr-' ]] && brewopts="$brewopts -Duseithreads"
+  [[ "${perl_version}-" =~ '-mb-' ]]  && brewopts="$brewopts -Dusemorebits"
+  [[ "${perl_version}-" =~ '-dbg-' ]] && brewopts="$brewopts -DDEBUGGING"
+  [[ "${perl_version}-" =~ '-shrplib-' ]] && brewopts="$brewopts -Duseshrplib"
+
+  printf "Building Perl ${perl_version} ..."
+  show-on-fail perlbrew install --as "$perl_version" $brewopts "$brewver"
+
+  if ! perlbrew_check "$perl_version"; then
+    echo "Perl $perl_version was not installed - compilation failed...?" 1>&2
+    return 1
+  fi
+
+  local ver_num="$("$PERLBREW_ROOT/perls/$perl_version/bin/perl" -e'print $]*1_000_000')"
+  if [ "$ver_num" -lt 5008000 ]; then
+    echo "Setting up baseline toolchain..."
+    (
+      set -x
+      perlbrew use "$perl_version"
+      $HELPER_ROOT/bin/cpan-config
+      $HELPER_ROOT/bin/cpan-install ExtUtils::MakeMaker~6.68 PEVANS/Scalar-List-Utils-1.39.tar.gz SMUELLER/PathTools-3.40.tar.gz CPAN~2.00
+      $HELPER_ROOT/bin/cpan-config
+    )
+    echo "Done."
+  fi
+}
+
+perlbrew install-cpanm -f > /dev/null
+
+full_version="$1"
+local_lib="${full_version/*@/}"
+perl_version="${full_version/@*/}"
+[ "$local_lib" == "$full_version" ] && unset local_lib
+
+if [ "$perl_version" == "system" ]; then
+  echo "Using system provided perl."
+elif perlbrew_check "$perl_version"; then
+  echo "Perl ${perl_version} already installed."
+elif [ -z "$REBUILD_PERL" ] && "$HELPER_ROOT/bin/get-prebuilt" "perl/$perl_version" --check; then
+  echo "Downloading pre-built Perl ${perl_version}..."
+  "$HELPER_ROOT/bin/get-prebuilt" "perl/$perl_version" "$PERLBREW_ROOT/perls/$perl_version"
+  echo Done.
+else
+  perlbrew_build "$perl_version"
+fi
+
+if [ -n "$local_lib" ]; then
+  $HELPER_ROOT/bin/local-lib-installer "$perl_version@$local_lib"
+fi

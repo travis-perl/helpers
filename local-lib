@@ -1,9 +1,0 @@
-#!/bin/sh
-
-ll_root="$1"
-[ -z "$ll_root" ] && ll_root="$(mktemp -d -t local-lib-XXXXXX)"
-echo "export PERL_LOCAL_LIB_ROOT; PERL_LOCAL_LIB_ROOT=\"$ll_root\";"
-echo "export PATH; PATH=\"$ll_root/bin:\$PATH\";"
-echo "export PERL5LIB; PERL5LIB=\"$ll_root/lib/perl5:\$PERL5LIB\";"
-echo "export PERL_MM_OPT; PERL_MM_OPT=\"INSTALL_BASE=$ll_root\";"
-echo "export PERL_MB_OPT; PERL_MB_OPT=\"--install_base $ll_root\";"

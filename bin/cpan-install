@@ -37,39 +37,7 @@ unset CONTINUOUS_INTEGRATION
 
 exec </dev/null
 
-function clean_up {
-  kill $PROG
-  wait 2>/dev/null
-}
-
-function show-verbose {
-  "$@"
-}
-
-function show-on-fail {
-  (
-    while true; do
-      sleep 3
-      printf '.'
-    done
-  ) &
-  local PROG=$!
-  trap "clean_up $PROG; exit 1" SIGHUP SIGINT SIGTERM
-  local log_file="$(mktemp -t cpan-install-log-XXXXXX)"
-  "$@" > "$log_file" 2>&1
-  local STATUS="$?"
-  kill $PROG
-  wait $PROG 2>/dev/null
-  trap - SIGHUP SIGINT SIGTERM
-  if [ "$STATUS" != 0 ]; then
-    echo ' Failed!'
-    cat "$log_file"
-    rm "$log_file"
-    return $?
-  fi
-  rm "$log_file"
-  echo ' Done'
-}
+source "$HELPER_ROOT/lib/util.bash"
 
 function os-install {
   local dep="$1"
@@ -82,7 +50,7 @@ function os-install {
         $OS_INSTALLER "$os_dep" || true
       done
     fi
-  done < $HELPER_ROOT/os-prereqs.txt
+  done < $HELPER_ROOT/share/os-prereqs.txt
 }
 
 function cpan-installer {
@@ -124,7 +92,7 @@ function cpan-git-install {
   local clone_dir="$(mktemp -d -t local-lib-XXXXXX)/repo"
   git clone "$repo" $branch "$clone_dir"
   cd "$clone_dir"
-  $HELPER_ROOT/build-dist build_dir
+  $HELPER_ROOT/bin/build-dist build_dir
   cd build_dir
   do-install .
 }
@@ -141,7 +109,7 @@ function dynamic_deps {
   if [[ "$PERL_VERSION" -ge 5008000 ]]; then
     cpanm --showdeps -q . --with-recommends $AUTHOR_OPTS
   else
-    $HELPER_ROOT/cpan-prereqs
+    $HELPER_ROOT/bin/cpan-prereqs
   fi
 }
 
@@ -216,3 +184,4 @@ function do-install {
 }
 
 do-install "$@"
+true
