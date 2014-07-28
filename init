@@ -11,7 +11,7 @@ export SYSTEM_CORES=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n 
 MODERN_PERL="$(
   for perl in "$PERLBREW_ROOT/perls/"*/bin/perl; do
     "$perl" -MConfig -e'
-      print STDERR ($]*1000000)." ".($^X=~m{/}?$^X:$Config{perlpath})."\n";
+      print ($]*1000000)." ".($^X=~m{/}?$^X:$Config{perlpath})."\n";
     '
   done |
   sort -n |
