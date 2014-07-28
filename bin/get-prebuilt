@@ -14,7 +14,7 @@ elif [ "$dest" == "--check" ]; then
   [ -e "$repo" ] \
     && git --git-repo="$repo" rev-parse --verify -q "refs/heads/$branch" >/dev/null \
     && exit 0
-  git ls-remote --exit-code "$source" "refs/heads/perl-$perl_version" > /dev/null
+  git ls-remote --exit-code "$source" "refs/heads/$branch" > /dev/null
   exit 0
 fi
 
