@@ -14,6 +14,12 @@ fi
 source "$PERLBREW_ROOT/etc/bashrc"
 source "$HELPER_ROOT/lib/util.bash"
 
+if [ -n "$VERBOSE" ] && [ "$VERBOSE" -eq 1 ]; then
+  INSTALL_WRAPPER='show-verbose'
+else
+  INSTALL_WRAPPER="show-on-fail"
+fi
+
 function perlbrew_check {
   perlbrew list | cut -c3- | awk '{ print $1 }' | grep -q -x -F "$1"
 }
@@ -36,7 +42,7 @@ function perlbrew_build {
   [[ "${perl_version}-" =~ '-shrplib-' ]] && brewopts="$brewopts -Duseshrplib"
 
   printf "Building Perl ${perl_version} ..."
-  show-on-fail perlbrew install --as "$perl_version" $brewopts "$brewver"
+  $INSTALL_WRAPPER perlbrew install --as "$perl_version" $brewopts "$brewver"
 
   if ! perlbrew_check "$perl_version"; then
     echo "Perl $perl_version was not installed - compilation failed...?" 1>&2
