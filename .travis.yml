@@ -6,7 +6,10 @@ perl:
   - "5.8.8-mb"
   - "5.8.8-dbg"
   - "5.8.8@moo"
-  - "blead"
+matrix:
+  include:
+    - perl: "blead"
+      env: VERBOSE=1
 before_install:
   - source ./init
   - cd t/dist
