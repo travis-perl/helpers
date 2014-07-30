@@ -6,6 +6,8 @@ perl:
   - "5.8.8-mb"
   - "5.8.8-dbg"
   - "5.8.8@moo"
+  - "5.17"
+  - "5.20"
 matrix:
   include:
     - perl: "blead"
