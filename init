@@ -22,7 +22,6 @@ MODERN_PERL="$(
 export MODERN_PERL="env PERL5LIB= $MODERN_PERL"
 
 [ -z "$AUTHOR_TESTING"  ] && export AUTHOR_TESTING=1
-[ -z "$CPAN_MIRROR"     ] && export CPAN_MIRROR='http://www.cpan.org/'
 [ -z "$SPLIT_BUILD"     ] && export SPLIT_BUILD=1
 [ -z "$COVERAGE"        ] && export COVERAGE=0
 
