@@ -20,7 +20,7 @@ function show-on-fail {
   (
     now="$start"
     while (( now < expire )); do
-      sleep 1
+      sleep 5
       printf '.'
       now=$(date +%s)
     done
