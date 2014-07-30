@@ -23,6 +23,6 @@ if [ ! -e "$repo" ]; then
   git --git-dir="$repo" remote add origin "$source"
 fi
 
-git --git-dir="$repo" fetch --depth 1 origin "$branch"
+git --git-dir="$repo" fetch --depth 2 origin "$branch"
 git --git-dir="$repo" update-ref "refs/heads/$branch" "refs/remotes/origin/$branch"
 git clone -s --branch "$branch" "$repo" "$dest"
