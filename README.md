@@ -12,11 +12,12 @@ Example .travis.yml
       - "5.8.4"                   # installs perl 5.8.4
       - "5.8.4-thr"               # installs perl 5.8.4 with threading
       - "5.20"                    # installs latest perl 5.20 (if not already available)
-      - "blead"                   # installs perl from git
     matrix:
       include:
         - perl: 5.18
           env: COVERAGE=1         # enables coverage+coveralls reporting
+      allow_failures:
+        - perl: "blead"           # install perl from git, but ignore failures
     before_install:
       - git clone git://github.com/haarg/perl-travis-helper ~/perl-travis-helper
       - source ~/perl-travis-helper/init
