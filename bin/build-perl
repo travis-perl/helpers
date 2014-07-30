@@ -28,7 +28,7 @@ function perlbrew_build {
   local perl_version="$1"
   local brewver="${perl_version/-*/}"
   if [[ "$brewver" =~ ^[0-9].[0-9][0-9]?$ ]]; then
-    brewver="$(perlbrew available | cut -c3- | grep "perl-$brewver.")"
+    brewver="$(perlbrew available --all | cut -c3- | grep "^perl-${brewver}." | sort -r -n -t. -k3 | head -1)"
   fi
 
   brewopts="--notest --noman --verbose"
