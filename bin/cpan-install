@@ -144,7 +144,9 @@ function do-install {
       --toolchain)
         install-module 'ExtUtils::MakeMaker~6.30'
         install-module 'Exporter~5.57'
+        install-module 'Scalar::Util~1.13'
         install-module 'Test::Harness~3.01'
+        install-module 'Test::More~0.47'
       ;;
       --deps)
         echo "Configure prerequisites:"
