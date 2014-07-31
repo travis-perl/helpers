@@ -11,7 +11,14 @@ function show-verbose {
 
 function show-on-fail {
   local log_file="$(mktemp -t log-XXXXXX)"
-  ( exec "$@" > "$log_file" 2>&1 < /dev/null ) &
+  (
+    set -e
+    if [ "$(type -t "$1")" == "file" ]; then
+      exec "$@" > "$log_file" 2>&1 < /dev/null
+    else
+      "$@" > "$log_file" 2>&1 < /dev/null
+    fi
+  ) &
   local child="$!"
   local start=$(date +%s)
   local timeout="$TIMEOUT"
