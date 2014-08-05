@@ -13,3 +13,8 @@ dzil    Dist::Zilla::Plugin::Git Pod::Elemental::Transformer::List
 !travis   Dist::Zilla Moose Test::Pod Test::Pod::Coverage Test::Exception
 !travis   Test::Kwalitee Dist::Zilla::Plugin::Bootstrap::lib LWP Module::Install
 !travis   Test::Most
+
+!base-5.6   ExtUtils::MakeMaker~6.68
+!base-5.6   PEVANS/Scalar-List-Utils-1.39.tar.gz
+!base-5.6   SMUELLER/PathTools-3.40.tar.gz
+!base-5.6   CPAN~2.00

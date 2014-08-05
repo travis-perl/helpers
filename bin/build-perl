@@ -46,18 +46,6 @@ function perlbrew_build {
     echo "Perl $perl_version was not installed - compilation failed...?" 1>&2
     return 1
   fi
-
-  local ver_num="$("$PERLBREW_ROOT/perls/$perl_version/bin/perl" -e'print $]*1_000_000')"
-  if [ "$ver_num" -lt 5008000 ]; then
-    echo "Setting up baseline toolchain..."
-    (
-      perlbrew use "$perl_version"
-      $HELPER_ROOT/bin/cpan-config
-      $HELPER_ROOT/bin/cpan-install ExtUtils::MakeMaker~6.68 PEVANS/Scalar-List-Utils-1.39.tar.gz SMUELLER/PathTools-3.40.tar.gz CPAN~2.00
-      $HELPER_ROOT/bin/cpan-config
-    )
-    echo "Done."
-  fi
 }
 
 perlbrew install-cpanm -f > /dev/null

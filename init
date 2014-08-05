@@ -35,6 +35,11 @@ function local-lib {
 }
 
 function build-perl {
+  if [[ ( "$TRAVIS_PERL_VERSION" =~ ^5\.6[.-] || \
+          "$TRAVIS_PERL_VERSION" =~ ^5\.6$ ) &&
+        ! "$TRAVIS_PERL_VERSION" =~ @ ]]; then
+    TRAVIS_PERL_VERSION="$TRAVIS_PERL_VERSION@base-5.6"
+  fi
   $HELPER_ROOT/bin/build-perl "$TRAVIS_PERL_VERSION" || return 1
   if [ "${TRAVIS_PERL_VERSION/@*/}" == "system" ]; then
     perlbrew off
