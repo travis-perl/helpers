@@ -1,23 +1,12 @@
 #!/bin/bash
-
 set -e
 
-if [ -z "$PERLBREW_ROOT" ]; then
-  echo "Must be run under perlbrew!"
-  exit 1
-fi
+[ -z "$HELPER_ROOT" ] && export HELPER_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+source "$HELPER_ROOT/lib/util.bash"
+
 if [ -z "$1" ]; then
   echo "Perl to build must be specified!"
   exit 1
-fi
-
-source "$PERLBREW_ROOT/etc/bashrc"
-source "$HELPER_ROOT/lib/util.bash"
-
-if [ -n "$VERBOSE" ] && [ "$VERBOSE" -eq 1 ]; then
-  INSTALL_WRAPPER='show-verbose'
-else
-  INSTALL_WRAPPER="show-on-fail"
 fi
 
 function perlbrew_check {
@@ -43,16 +32,15 @@ function perlbrew_build {
 
   brewopts="--notest --noman --verbose"
   local minor_version="$(sed -n -E -e's/^5\.([0-9]+).*/\1/p' <<< "$brewver")"
-  local cores="$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)"
 
-  [[ "$brewver" == blead || "$minor_version" -ge 14 ]] && brewopts="$brewopts -j $((cores + 1))"
+  [[ "$brewver" == blead || "$minor_version" -ge 14 ]] && brewopts="$brewopts -j $(system-cores + 1)"
   [[ "${perl_version}-" =~ '-thr-' ]] && brewopts="$brewopts -Duseithreads"
   [[ "${perl_version}-" =~ '-mb-' ]]  && brewopts="$brewopts -Dusemorebits"
   [[ "${perl_version}-" =~ '-dbg-' ]] && brewopts="$brewopts -DDEBUGGING"
   [[ "${perl_version}-" =~ '-shrplib-' ]] && brewopts="$brewopts -Duseshrplib"
 
   printf "Building Perl ${perl_version} ..."
-  $INSTALL_WRAPPER perlbrew install --as "$perl_version" $brewopts "$brewver"
+  run-with-progress perlbrew install --as "$perl_version" $brewopts "$brewver"
 
   if ! perlbrew_check "$perl_version"; then
     echo "Perl $perl_version was not installed - compilation failed...?" 1>&2

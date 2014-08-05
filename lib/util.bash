@@ -53,3 +53,32 @@ function show-on-fail {
   rm -f "$log_file"
   return "$status"
 }
+
+function run-with-progress {
+  if [ -n "$VERBOSE" ] && [ "$VERBOSE" -eq 1 ]; then
+    show-verbose "$@"
+  else
+    show-on-fail "$@"
+  fi
+}
+
+if [ "$(type -t perlbrew || true)" != "function" ]; then
+  function perlbrew {
+    if [ -z "$PERLBREW_ROOT" ]; then
+      if [ -e "$HOME/perl5/perlbrew/etc/bashrc" ]; then
+        export PERLBREW_ROOT="$HOME/perl5/perlbrew"
+      fi
+    fi
+    unset -f perlbrew
+    source "$PERLBREW_ROOT/etc/bashrc"
+    perlbrew "$@"
+  }
+fi
+
+function system-cores {
+  local cores="$SYSTEM_CORES"
+  if [ -z "$SYSTEM_CORES" ]; then
+    cores="$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)"
+  fi
+  echo "$((cores $@))"
+}

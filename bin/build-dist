@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+[ -z "$HELPER_ROOT" ] && export HELPER_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+source "$HELPER_ROOT/lib/util.bash"
+
 BUILD_DIR=$1
 export PERL5LIB=
 PATH="$(dirname "$(which "$($MODERN_PERL -e'print $^X')")"):$PATH"

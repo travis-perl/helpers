@@ -1,4 +1,7 @@
 #!/bin/bash
+[ -z "$HELPER_ROOT" ] && export HELPER_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+source "$HELPER_ROOT/lib/util.bash"
+
 if [ -z "$MODERN_PERL" ]; then
   MODERN_PERL=perl
 fi
@@ -17,12 +20,6 @@ else
   OS_INSTALLER="echo No installer available for "
 fi
 
-if [ -n "$VERBOSE" ] && [ "$VERBOSE" -eq 1 ]; then
-  INSTALL_WRAPPER='show-verbose'
-else
-  INSTALL_WRAPPER="show-on-fail"
-fi
-
 [ -n "$CPAN_MIRROR" ] && export PERL_CPANM_OPT="--mirror $CPAN_MIRROR $PERL_CPANM_OPT"
 export PERL_AUTOINSTALL_PREFER_CPAN=1
 export PERL_MM_USE_DEFAULT=1
@@ -36,8 +33,6 @@ unset SMOKE_TESTING
 unset CONTINUOUS_INTEGRATION
 
 exec </dev/null
-
-source "$HELPER_ROOT/lib/util.bash"
 
 function os-install {
   local dep="$1"
@@ -101,7 +96,7 @@ function install-module {
   for dep in "$@"; do
     os-install "$dep"
     printf "Installing (without testing) $dep ..."
-    $INSTALL_WRAPPER $INSTALL_CMD $dep
+    run-with-progress $INSTALL_CMD $dep
   done
 }
 
