@@ -3,7 +3,10 @@
 local_lib="$1"
 found=''
 while read ll modules; do
-  if [ "$local_lib" == "$ll" ]; then
+  if [ -z "$ll" ] || [ "${ll:0:1}" == "#" ]; then
+    continue
+  fi
+  if [ "$local_lib" == "$ll" ] || [ '!'"$local_lib" == "$ll" ]; then
     found=1
     for module in $modules; do
       echo "$module"
