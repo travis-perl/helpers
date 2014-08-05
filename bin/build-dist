@@ -3,7 +3,7 @@ set -e
 
 BUILD_DIR=$1
 export PERL5LIB=
-PATH="$(dirname $(which $($MODERN_PERL -e'print $^X'))):$PATH"
+PATH="$(dirname "$(which "$($MODERN_PERL -e'print $^X')")"):$PATH"
 eval "$($HELPER_ROOT/bin/local-lib)"
 
 function auto-install {

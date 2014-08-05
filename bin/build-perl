@@ -93,5 +93,5 @@ else
 fi
 
 if [ -n "$local_lib" ]; then
-  $HELPER_ROOT/bin/local-lib-installer "$perl_version@$local_lib"
+  "$HELPER_ROOT/bin/local-lib-installer" "$perl_version@$local_lib"
 fi

@@ -6,10 +6,10 @@ while read ll modules; do
   if [ "$local_lib" == "$ll" ]; then
     found=1
     for module in $modules; do
-      echo $module
+      echo "$module"
     done
   fi
-done < $HELPER_ROOT/share/local-libs.txt
+done < "$HELPER_ROOT/share/local-libs.txt"
 
 if [ -z "$found" ]; then
   echo "Invalid local::lib!" 1>&2
