@@ -180,5 +180,11 @@ function do-install {
   done
 }
 
+if [[ "$PERL_VERSION" -lt 5008000 ]]; then
+  "$HELPER_ROOT/bin/cpan-config"
+fi
 do-install "$@"
+if [[ "$PERL_VERSION" -lt 5008000 ]]; then
+  "$HELPER_ROOT/bin/cpan-config"
+fi
 true
