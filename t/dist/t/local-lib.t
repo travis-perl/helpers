@@ -14,10 +14,11 @@ SKIP: {
   ::use_ok('Type::Tiny');
 }
 
-my @active_lls = grep { m{\Q$ENV{PERLBREW_HOME}/libs/} } @INC;
+my @active_lls = sort grep { m{\Q$ENV{PERLBREW_HOME}/libs/} } @INC;
 if ($local_lib) {
   is_deeply \@active_lls, [
-    "$ENV{PERLBREW_HOME}/libs/$version\@$local_lib/lib/perl5"
+    "$ENV{PERLBREW_HOME}/libs/$version\@$local_lib/lib/perl5",
+    "$ENV{PERLBREW_HOME}/libs/$version\@$local_lib/lib/perl5/$Config{archname}",
   ], 'Found correct local::lib in @INC';
 }
 else {
