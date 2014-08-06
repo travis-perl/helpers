@@ -6,6 +6,9 @@ my $want = $ENV{TRAVIS_PERL_VERSION};
 my ($full_version, $local_lib) = split /@/, $want;
 my ($version, @flags) = split /-/, $full_version;
 
+$local_lib ||= 'base-5.6'
+  if $version =~ /^5\.6\b/;
+
 SKIP: {
   package TestClass;
   ::skip "only testing for modules in moo local::lib", 2
