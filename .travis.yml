@@ -1,13 +1,14 @@
 language: perl
 perl:
-  - "5.18"
-  - "5.8.8"
-  - "5.8.8-thr"
+  - "5.8.8"       # common, prebuilt version
+  - "5.8.8-thr"   # various build flags
   - "5.8.8-mb"
   - "5.8.8-dbg"
-  - "5.8.8@moo"
-  - "5.17"
-  - "5.20"
+  - "5.8.8@moo"   # with local::lib
+  - "5.17"        # older dev version
+  - "5.17.11"     # will never be prebuilt
+  - "5.18"        # existing perl version
+  - 5.20          # work around lack of quoting
 matrix:
   include:
     - perl: "blead"
