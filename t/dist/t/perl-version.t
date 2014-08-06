@@ -3,10 +3,12 @@ use warnings;
 use Config;
 use Test::More tests => 5;
 my $want = $ENV{TRAVIS_PERL_VERSION};
-$want =~ s/@.*//;
+my ($full_version, $local_lib) = split /@/, $want;
+my ($version, @flags) = split /-/, $full_version;
+my %flags = map { $_ => 1 } @flags;
 
-(my $version = $want) =~ s/-.*//;
 my $got_version = $Config{version};
+
 if ($version =~ /^\d\.\d+$/) {
   like $got_version, qr/^\Q$version\E\b/, 'correct perl version selected';
 }
@@ -18,13 +20,14 @@ else {
 }
 
 for (
-  [ thr => 'useithreads' ],
-  [ mb  => 'usemorebits' ],
-  [ dbg => 'DEBUGGING' ],
+  [ thr     => 'useithreads' ],
+  [ mb      => 'usemorebits' ],
+  [ dbg     => 'DEBUGGING' ],
   [ shrplib => 'useshrplib' ],
 ) {
   my ($vflag, $dflag) = @$_;
-  my $want_flag = "${want}-" =~ /-${vflag}-/;
-  ok(($Config{config_args} =~ /-D$dflag\b/) eq $want_flag,
-    "built with" . ($want_flag ? '' : 'out') . " $dflag");
+  my $want_flag = $flags{$vflag};
+  my $got_flag = $Config{config_args} =~ /-D$dflag\b/;
+  ok $want_flag eq $got_flag,
+    "built with" . ($want_flag ? '' : 'out') . " $dflag";
 }
