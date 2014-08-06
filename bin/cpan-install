@@ -89,7 +89,7 @@ function cpan-git-install {
   cd "$clone_dir"
   $HELPER_ROOT/bin/build-dist build_dir
   cd build_dir
-  do-install .
+  install-items .
 }
 
 function install-module {
@@ -100,7 +100,7 @@ function install-module {
   done
 }
 
-function dynamic_deps {
+function dynamic-deps {
   if [[ "$PERL_VERSION" -ge 5008000 ]]; then
     cpanm --showdeps -q . --with-recommends $AUTHOR_OPTS
   else
@@ -108,7 +108,7 @@ function dynamic_deps {
   fi
 }
 
-function get_deps {
+function get-deps {
   local PHASE=$1
   local TYPE=$2
   local META_FILE
@@ -133,7 +133,7 @@ function get_deps {
   ' $META_FILE $PHASE $TYPE
 }
 
-function do-install {
+function install-items {
   for arg in "$@"; do
     case $arg in
       --toolchain)
@@ -145,12 +145,12 @@ function do-install {
       ;;
       --deps)
         echo "Configure prerequisites:"
-        for dep in $(get_deps configure requires); do
+        for dep in $(get-deps configure requires); do
           install-module $dep
         done
 
         echo "Other prerequisites:"
-        for dep in $(dynamic_deps); do
+        for dep in $(dynamic-deps); do
           case $dep in
             perl*) ;;
             *)
@@ -166,7 +166,7 @@ function do-install {
         fi
       ;;
       .)
-        do-install --deps
+        install-items --deps
         if [ -e 'Makefile' ]; then
           make install
         elif [ -e 'Build' ]; then
@@ -183,7 +183,7 @@ function do-install {
 if [[ "$PERL_VERSION" -lt 5008000 ]]; then
   "$HELPER_ROOT/bin/cpan-config"
 fi
-do-install "$@"
+install-items "$@"
 if [[ "$PERL_VERSION" -lt 5008000 ]]; then
   "$HELPER_ROOT/bin/cpan-config"
 fi
