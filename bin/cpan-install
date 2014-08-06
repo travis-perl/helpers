@@ -13,9 +13,13 @@ else
   INSTALL_CMD="cpan-installer"
 fi
 if which apt-get >/dev/null; then
+  OS_UPDATE="sudo apt-get update"
   OS_INSTALLER="sudo apt-get install"
+  OS_CHECKFILE="/var/lib/apt/periodic/update-success-stamp"
 elif which brew >/dev/null; then
+  OS_UPDATE="brew update"
   OS_INSTALLER="brew install"
+  OS_CHECKFILE="$(brew --prefix)/.git/FETCH_HEAD"
 else
   OS_INSTALLER="echo No installer available for "
 fi
@@ -36,11 +40,16 @@ exec </dev/null
 
 function os-install {
   local dep="$1"
-  local prereq
-  while read -a prereq; do
-    if [ "${prereq[0]}" == "${dep/~*}" ]; then
-      unset prereq[0]
-      for os_dep in "${prereq[@]}"; do
+  local mod
+  local prereqs
+  while read mod prereqs; do
+    if [ "$mod" == "${dep/~*}" ]; then
+      if [ -n "$OS_CHECKFILE" ]; then
+        if [ ! -e "$OS_CHECKFILE" ] || [ -n "$(find "$OS_CHECKFILE" -mmin +50)" ]; then
+          $OS_UPDATE
+        fi
+      fi
+      for os_dep in $prereqs; do
         echo "Installing OS package $os_dep..."
         $OS_INSTALLER "$os_dep" || true
       done
