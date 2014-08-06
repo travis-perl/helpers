@@ -137,11 +137,7 @@ function install-items {
   for arg in "$@"; do
     case $arg in
       --toolchain)
-        install-module 'ExtUtils::MakeMaker~6.30'
-        install-module 'Exporter~5.57'
-        install-module 'Scalar::Util~1.13'
-        install-module 'Test::Harness~3.01'
-        install-module 'Test::More~0.47'
+        install-module $($HELPER_ROOT/bin/modules-for-local-lib toolchain)
       ;;
       --deps)
         echo "Configure prerequisites:"

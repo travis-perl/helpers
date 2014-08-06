@@ -18,3 +18,6 @@ dzil    Dist::Zilla::Plugin::Git Pod::Elemental::Transformer::List
 !base-5.6   PEVANS/Scalar-List-Utils-1.39.tar.gz
 !base-5.6   SMUELLER/PathTools-3.40.tar.gz
 !base-5.6   CPAN~2.00
+
+!toolchain ExtUtils::MakeMaker~6.30 Exporter~5.57 Scalar::Util~1.13
+!toolchain Test::Harness~3.01 Test::More~0.47
