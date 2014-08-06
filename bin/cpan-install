@@ -51,8 +51,8 @@ function os-install {
         fi
       fi
       for os_dep in $prereqs; do
-        echo "Installing OS package $os_dep..."
-        $OS_INSTALLER "$os_dep" || true
+        printf "Installing OS package $os_dep ..."
+        run-with-progress $OS_INSTALLER "$os_dep" || true
       done
     fi
   done < $HELPER_ROOT/share/os-prereqs.txt
