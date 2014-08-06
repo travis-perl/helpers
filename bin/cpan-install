@@ -85,7 +85,7 @@ function cpan-git-install {
     branch="--branch $branch"
   fi
   local clone_dir="$(mktemp -d -t local-lib-XXXXXX)/repo"
-  git clone --depth 1 "$repo" $branch "$clone_dir"
+  git clone --depth 1 --single-branch "$repo" $branch "$clone_dir"
   cd "$clone_dir"
   $HELPER_ROOT/bin/build-dist build_dir
   cd build_dir
