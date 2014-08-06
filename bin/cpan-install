@@ -148,7 +148,9 @@ function install-items {
         echo "Other prerequisites:"
         for dep in $(dynamic-deps); do
           case $dep in
-            perl*) ;;
+            perl) ;;
+            perl@*) ;;
+            perl~*) ;;
             *)
               install-module $dep
             ;;
