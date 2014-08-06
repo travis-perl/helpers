@@ -25,6 +25,9 @@ export MODERN_PERL="env PERL5LIB= $MODERN_PERL"
 [ -z "$SPLIT_BUILD"     ] && export SPLIT_BUILD=1
 [ -z "$COVERAGE"        ] && export COVERAGE=0
 
+# work around potential quoting issues in .travis.yml
+[[ "$TRAVIS_PERL_VERSION" =~ ^5\.[1-4]$ ]] && TRAVIS_PERL_VERSION+="0"
+
 function build-dist {
   export BUILD_DIR="$(pwd)/build_dir"
   $HELPER_ROOT/bin/build-dist "$BUILD_DIR"
@@ -35,6 +38,7 @@ function local-lib {
 }
 
 function build-perl {
+  local TRAVIS_PERL_VERSION="$TRAVIS_PERL_VERSION"
   if [[ ( "$TRAVIS_PERL_VERSION" =~ ^5\.6[.-] || \
           "$TRAVIS_PERL_VERSION" =~ ^5\.6$ ) &&
         ! "$TRAVIS_PERL_VERSION" =~ @ ]]; then
