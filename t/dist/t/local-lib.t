@@ -1,0 +1,26 @@
+use strict;
+use warnings;
+use Test::More tests => 3;
+use Config;
+my $want = $ENV{TRAVIS_PERL_VERSION};
+my ($full_version, $local_lib) = split /@/, $want;
+my ($version, @flags) = split /-/, $full_version;
+
+SKIP: {
+  package TestClass;
+  ::skip "only testing for modules in moo local::lib", 2
+    unless $local_lib && $local_lib eq 'moo';
+  ::use_ok('Moo');
+  ::use_ok('Type::Tiny');
+}
+
+my @active_lls = grep { m{\Q$ENV{PERLBREW_HOME}/libs/} } @INC;
+if ($local_lib) {
+  is_deeply \@active_lls, [
+    "$ENV{PERLBREW_HOME}/libs/$version\@$local_lib/lib/perl5"
+  ], 'Found correct local::lib in @INC';
+}
+else {
+  is_deeply \@active_lls, [],
+    'No active local::lib found in @INC';
+}
