@@ -7,7 +7,7 @@ my ($full_version, $local_lib) = split /@/, $want;
 my ($version, @flags) = split /-/, $full_version;
 
 my $readme = "$ENV{PERLBREW_ROOT}/perls/$full_version/README";
-if ($full_version =~ /^5\.\d*[13579]\./) {
+if ($full_version =~ /^5\.\d*[13579]\./ || $full_version eq 'blead') {
   ok !-e $readme,
     "perl $full_version not prebuilt";
 }
