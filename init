@@ -10,8 +10,9 @@ export HELPER_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export SYSTEM_CORES=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)
 MODERN_PERL="$(
   for perl in "$PERLBREW_ROOT/perls/"*/bin/perl; do
-    "$perl" -MConfig -e'
-      print(($]*1000000)." ".($^X=~m{/}?$^X:$Config{perlpath})."\n");
+    "$perl" -MConfig -le'
+      print(($]*1000000)." ".($^X=~m{/}?$^X:$Config{perlpath}))
+        unless ($]*1000) % 2;
     '
   done |
   sort -n |
