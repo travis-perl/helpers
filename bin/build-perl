@@ -33,6 +33,7 @@ function perlbrew_build {
   brewopts="--notest --noman --verbose"
   local minor_version="$(sed -n -E -e's/^5\.([0-9]+).*/\1/p' <<< "$brewver")"
 
+  [[ "$brewver" == blead ]] && return 1
   [[ "$brewver" == blead || "$minor_version" -ge 14 ]] && brewopts="$brewopts -j $(system-cores + 1)"
   [[ "${perl_version}-" =~ '-thr-' ]] && brewopts="$brewopts -Duseithreads"
   [[ "${perl_version}-" =~ '-mb-' ]]  && brewopts="$brewopts -Dusemorebits"
