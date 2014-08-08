@@ -39,20 +39,25 @@ function local-lib {
 }
 
 function build-perl {
-  local TRAVIS_PERL_VERSION="$TRAVIS_PERL_VERSION"
-  if [[ ( "$TRAVIS_PERL_VERSION" =~ ^5\.6[.-] || \
-          "$TRAVIS_PERL_VERSION" =~ ^5\.6$ ) &&
-        ! "$TRAVIS_PERL_VERSION" =~ @ ]]; then
-    TRAVIS_PERL_VERSION="$TRAVIS_PERL_VERSION@base-5.6"
+  local perl_version="$TRAVIS_PERL_VERSION"
+  local full_version="${perl_version/@*/}"
+  local version="${full_version/-*/}"
+  local local_lib="${full_version/*@/}"
+  [ "$local_lib" == "$full_version" ] && unset local_lib
+
+  if [[ ( "$perl_version" =~ ^5\.6[.-] || \
+          "$perl_version" =~ ^5\.6$ ) &&
+        ! "$perl_version" =~ @ ]]; then
+    perl_version="$perl_version@base-5.6"
   fi
-  $HELPER_ROOT/bin/build-perl "$TRAVIS_PERL_VERSION" || return 1
-  if [ "${TRAVIS_PERL_VERSION/@*/}" == "system" ]; then
+  $HELPER_ROOT/bin/build-perl "$perl_version" || return 1
+  if [ "$full_version" == "system" ]; then
     perlbrew off
-    if [ "${TRAVIS_PERL_VERSION/*@/}" != "$TRAVIS_PERL_VERSION" ]; then
-      local-lib "${TRAVIS_PERL_VERSION/*@/}"
+    if [ -n "$local_lib" ]; then
+      local-lib "$local_lib"
     fi
   else
-    perlbrew use "$TRAVIS_PERL_VERSION" || return 1
+    perlbrew use "$perl_version" || return 1
   fi
   if [ "$SPLIT_BUILD" == "0" ]; then
     MODERN_PERL="env PERL5LIB= $(which perl)"
