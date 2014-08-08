@@ -50,7 +50,14 @@ function build-perl {
         ! "$perl_version" =~ @ ]]; then
     perl_version="$perl_version@base-5.6"
   fi
-  $HELPER_ROOT/bin/build-perl "$perl_version" || return 1
+  if ! $HELPER_ROOT/bin/build-perl "$perl_version"; then
+    local status="$?"
+    if [ "$version" == "blead" ]; then
+      echo "Failed to install blead perl - ignoring." 1>&2
+      exit 0
+    fi
+    return "$status"
+  fi
   if [ "$full_version" == "system" ]; then
     perlbrew off
     if [ -n "$local_lib" ]; then
