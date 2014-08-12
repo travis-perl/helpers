@@ -105,7 +105,7 @@ function prove {
     for lib in "${libs[@]}"; do
       args=("${args[@]}" -I"$lib")
     done
-    if [ -n "$HARNESS_PERL" ]; then
+    if [ -z "$HARNESS_PERL" ]; then
       local HARNESS_PERL="$perl"
       export HARNESS_PERL
     fi
