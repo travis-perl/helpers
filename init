@@ -108,6 +108,10 @@ function test-files {
   echo "$files"
 }
 
+function test-jobs {
+  echo "$(( COVERAGE ? 1 : SYSTEM_CORES + 1))"
+}
+
 function prove {
   local perl="$("$(which perl)" -e'print $^X')"
   local proveperl="$(head -1 `which prove` | awk '{ if (substr($1,1,2)=="#!") print substr($1,3) }')"
