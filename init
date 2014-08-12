@@ -92,9 +92,9 @@ function test-dirs {
 
 function test-files {
   local files="$(find $(test-dirs) -name '*.t' | sort)"
-  if [ -n "$TEST_PARTITIONS" ]; then
-    if [ -z "$TEST_PARTITION" ]; then
-      echo "TEST_PARTITION required with TEST_PARTITIONS option" 1>&2
+  if [ -n "$TEST_PARTITION" ]; then
+    if [ -z "$TEST_PARTITIONS" ]; then
+      echo "TEST_PARTITIONS required with TEST_PARTITION option" 1>&2
       return 1
     elif [ "$TEST_PARTITION" -lt 1 ] || [ "$TEST_PARTITION" -gt "$TEST_PARTITIONS" ]; then
       echo "TEST_PARTITION must be between 1 and TEST_PARTITIONS ($TEST_PARTITIONS)" 1>&2
