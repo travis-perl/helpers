@@ -91,7 +91,21 @@ function test-dirs {
 }
 
 function test-files {
-  find $(test-dirs) -name '*.t'
+  local files="$(find $(test-dirs) -name '*.t' | sort)"
+  if [ -n "$TEST_PARTITIONS" ]; then
+    if [ -z "$TEST_PARTITION" ]; then
+      echo "TEST_PARTITION required with TEST_PARTITIONS option" 1>&2
+      return 1
+    elif [ "$TEST_PARTITION" -lt 1 ] || [ "$TEST_PARTITION" -gt "$TEST_PARTITIONS" ]; then
+      echo "TEST_PARTITION must be between 1 and TEST_PARTITIONS ($TEST_PARTITIONS)" 1>&2
+      return 1
+    fi
+    local file_count=$(wc -l <<<"$files")
+    local partition_size="$(( file_count / TEST_PARTITIONS + file_count % TEST_PARTITIONS ))"
+    local partition_start="$(( (TEST_PARTITION - 1) * partition_size ))"
+    files="$(tail -$((file_count - partition_start)) <<<"$files" | head -$partition_size)"
+  fi
+  echo "$files"
 }
 
 function prove {
