@@ -26,5 +26,6 @@ readme_from                 Module::Install::ReadmeFromPod
 authority                   Module::Install::Authority
 auto_license                Module::Install::AutoLicense
 author_requires             Module::Install::AuthorRequires
+author_tests                Module::Install::AuthorTests
 contributors                Module::Install::Contributors
 installdirs                 Module::Install::InstallDirs
