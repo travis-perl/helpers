@@ -101,7 +101,7 @@ function test-files {
       return 1
     fi
     local file_count=$(wc -l <<<"$files")
-    local partition_size="$(( file_count / TEST_PARTITIONS + file_count % TEST_PARTITIONS ))"
+    local partition_size="$(( (file_count + TEST_PARTITIONS - 1) / TEST_PARTITIONS ))"
     local partition_start="$(( (TEST_PARTITION - 1) * partition_size ))"
     files="$(tail -$((file_count - partition_start)) <<<"$files" | head -$partition_size)"
   fi
