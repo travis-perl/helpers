@@ -1,2 +1,4 @@
 Test::Spelling  aspell
 GD              libgd2-xpm-dev
+GraphViz        graphviz
+XML::LibXML     libxml2-dev
