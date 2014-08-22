@@ -166,6 +166,23 @@ for arg; do
           command make "$@"
         fi
       }
+      function perl {
+        command perl "$@"
+        if [ "$#" == 1 ] && [ "$1" == "Build.PL" ]; then
+          coverage-setup
+          ./Build || return $?
+          local blib
+          if [ "$(find blib/arch/ -type f ! -empty)" == "" ]; then
+            blib="-l"
+          else
+            blib="-b"
+          fi
+          prove $blib -r -s -j$(test-jobs) $(test-files) \
+            && coverage-report
+          echo '#!/bin/sh' > Build
+          chmod +x Build
+        fi
+      }
     ;;
     *)
       echo "Invalid argument $arg!" 2>&1
