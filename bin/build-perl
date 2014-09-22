@@ -37,7 +37,8 @@ function perlbrew_build {
   [[ "${perl_version}-" =~ '-thr-' ]] && brewopts="$brewopts -Duseithreads"
   [[ "${perl_version}-" =~ '-mb-' ]]  && brewopts="$brewopts -Dusemorebits"
   [[ "${perl_version}-" =~ '-dbg-' ]] && brewopts="$brewopts -DDEBUGGING"
-  [[ "${perl_version}-" =~ '-shrplib-' ]] && brewopts="$brewopts -Duseshrplib"
+  [[ "${perl_version}-" =~ '-shrplib-' ]] && brewopts="$brewopts -Duseshrplib -Duseithreds" # :(
+  [[ "${perl_version}-" =~ '-extra-' ]] && brewopts="$brewopts -Duseshrplib -Duseithreads"
 
   printf "Building Perl ${perl_version} ..."
   run-with-progress perlbrew install --as "$perl_version" $brewopts "$brewver"
