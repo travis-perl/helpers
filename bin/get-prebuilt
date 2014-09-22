@@ -2,8 +2,8 @@
 set -e
 
 source="$PREBUILT_REPO"
-[ -z "$source" ] && source="https://github.com/haarg/perl-travis-builds"
-repo="$HOME/perl-travis-builds.git"
+[ -z "$source" ] && source="https://github.com/travis-perl/builds"
+repo="$HOME/travis-perl-builds.git"
 branch="$1"
 dest="$2"
 

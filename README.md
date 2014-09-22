@@ -20,8 +20,8 @@ Example .travis.yml
       allow_failures:
         - perl: "blead"           # ignore failures for blead perl
     before_install:
-      - git clone git://github.com/haarg/perl-travis-helper ~/perl-travis-helper
-      - source ~/perl-travis-helper/init
+      - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
+      - source ~/travis-perl-helpers/init
       - build-perl
       - perl -V
       - build-dist
@@ -57,7 +57,7 @@ machine, it will be used as is.  Any requested perl version that isn't available
 will be built for you.  Additionally, a number of commonly tested versions are
 pre-built and will be automatically downloaded and used to speed up testing.
 The pre-built perl versions are listed in the [.travis.yml for the builds
-repo](https://github.com/haarg/perl-travis-builds/blob/master/.travis.yml).
+repo](https://github.com/travis-perl/builds/blob/master/.travis.yml).
 If the patch level isn't included in the version, the latest in that series will
 be used.  Additionally, some build flags can be specified by adding them as dash
 separated suffixes (e.g. 5.10.1-thr-mb).
