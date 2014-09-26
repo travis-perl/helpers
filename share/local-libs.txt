@@ -9,7 +9,8 @@ cover   Devel::Cover Devel::Cover::Report::Coveralls
 dzil    Dist::Zilla Pod::Weaver Dist::Zilla::Plugin::PodWeaver
 dzil    Dist::Zilla::Plugin::Git Pod::Elemental::Transformer::List
 
-#not prebuilt
+# ! means not prebuilt
+
 !travis   Dist::Zilla Moose Test::Pod Test::Pod::Coverage Test::Exception
 !travis   Test::Kwalitee Dist::Zilla::Plugin::Bootstrap::lib LWP Module::Install
 !travis   Test::Most
