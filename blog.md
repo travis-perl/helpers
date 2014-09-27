@@ -13,7 +13,7 @@ service that is free for any public repositories on
 kind of testing I need though.  First, it only provides the last revision of
 each perl series.  Especially in the perl 5.8 and 5.10 series, there are
 substantial enough differences between them that testing only the latest isn't
-adequate.  Additionally, some of the testing needs to be done on perls build
+adequate.  Additionally, some of the testing needs to be done on perls built
 with threading, which isn't included on most of the versions available on
 Travis.  It also is sometimes useful to test without any additional modules
 pre-installed like Travis does.
