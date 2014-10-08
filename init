@@ -112,7 +112,10 @@ function test-files {
 }
 
 function test-jobs {
-  echo "$(( COVERAGE ? 1 : SYSTEM_CORES + 1))"
+  local prove_j="$(prove -V | perl -n -e '/TAP::Harness(?:::\S+)* v(.*?)\s/ && $1 >= 2.99_03 && print 1;')"
+  if [ "$prove_j" == 1 ] && [ "$COVERAGE" == 0 ]; then
+    echo "-j$((SYSTEM_CORES + 1))"
+  fi
 }
 
 function prove {
@@ -160,7 +163,7 @@ for arg; do
           else
             blib="-b"
           fi
-          prove $blib -r -s -j$(test-jobs) $(test-files) \
+          prove $blib -r -s $(test-jobs) $(test-files) \
             && coverage-report
         else
           command make "$@"
@@ -177,7 +180,7 @@ for arg; do
           else
             blib="-b"
           fi
-          prove $blib -r -s -j$(test-jobs) $(test-files) \
+          prove $blib -r -s $(test-jobs) $(test-files) \
             && coverage-report
           echo '#!/bin/sh' > Build
           chmod +x Build
