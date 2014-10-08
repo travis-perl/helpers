@@ -32,7 +32,7 @@ Example .travis.yml
     before_script:
       - coverage-setup
     script:
-      - prove -l -j$((SYSTEM_CORES + 1)) $(test-dirs)   # parallel testing
+      - prove -l $(test-jobs) $(test-dirs)   # parallel testing
     after_success:
       - coverage-report
 
