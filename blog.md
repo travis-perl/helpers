@@ -30,8 +30,8 @@ other functions to simplify testing perl modules on Travis.
 The Simple Version
 ------------------
 The helpers can be used individually to customize the building and testing
-process, but for most distributions the automatic mode will work.  A
-simple ```.travis.yml``` using my helper scripts would look like this:
+process, but for most distributions the automatic mode will work.  A simple
+`.travis.yml` using my helper scripts would look like this:
 
     language: perl
     perl:
@@ -46,11 +46,13 @@ simple ```.travis.yml``` using my helper scripts would look like this:
 
 This includes most of the features and will work for most distributions.  It
 includes building perl where needed, installing prerequisites, and will work
-with dists built using Dist::Zilla, ExtUtils::MakeMaker, Module::Build, or
-Module::Install.
+with dists built using [Dist::Zilla](https://metacpan.org/pod/Dist::Zilla),
+[ExtUtils::MakeMaker](https://metacpan.org/pod/ExtUtils::MakeMaker),
+[Module::Build](https://metacpan.org/pod/Module::Build), or
+[Module::Install](https://metacpan.org/pod/Module::Install).
 
-The ```--auto``` flag means that the testing process is roughly equivalent to
-the following Travis config.
+The `--auto` flag means that the testing process is roughly equivalent to the
+following Travis config.
 
     language: perl
     perl:
@@ -82,30 +84,30 @@ While the automatic mode supports most of the features the helpers provide, it
 isn't meant to be used with custom build steps.  If any customization of the
 build steps is needed, the automatic mode shouldn't be used.
 
-Perl Building - build-perl
---------------------------
-The first important helper function is ```build-perl```.  It takes the requested
+Perl Building - `build-perl`
+----------------------------
+The first important helper function is `build-perl`.  It takes the requested
 perl version from the build matrix and either downloads or builds it for you if
-it doesn't exist.  So for example, if ```5.16``` is requested, Travis will
-already have it available and nothing will be done.  But if ``5.16.0``` is
-requested, a fresh version of perl will be built.  If ```5.8.8``` is requested,
-a pre-built copy of perl 5.8.8 will be downloaded, as it's a commonly tested
-version so I've pre-built it.  Building perl generally takes around 4 minutes on
-Travis, so these pre-built copies can significantly speed up small test suites.
+it doesn't exist.  So for example, if `5.16` is requested, Travis will already
+have it available and nothing will be done.  But if `5.16.0` is requested, a
+fresh version of perl will be built.  If `5.8.8` is requested, a pre-built copy
+of perl 5.8.8 will be downloaded, as it's a commonly tested version so I've
+pre-built it.  Building perl generally takes around 4 minutes on Travis, so
+these pre-built copies can significantly speed up small test suites.
 
-Build flags can also be added to the versions.  ```5.8.5-thr``` will build a
-version of perl including support for threads.  ```5.8.5-dbg``` will include
-debugging support.  And ```5.16-thr``` will build the latest 5.16 release and
-include support for threads.
+Build flags can also be added to the versions.  `5.8.5-thr` will build a version
+of perl including support for threads.  `5.8.5-dbg` will include debugging
+support.  And `5.16-thr` will build the latest 5.16 release and include support
+for threads.
 
-If ```blead``` is requested, perl will be built from git.  This is helpful to
-see if your module will be impacted by future changes to perl, but as blead is
-not guaranteed stable it should usually be included in Travis's
-[allow_failures](http://docs.travis-ci.com/user/build-configuration/#Rows-That-are-Allowed-To-Fail)
+If `blead` is requested, perl will be built from git.  This is helpful to see if
+your module will be impacted by future changes to perl, but as blead is not
+guaranteed stable it should usually be included in Travis's
+[`allow_failures`](http://docs.travis-ci.com/user/build-configuration/#Rows-That-are-Allowed-To-Fail)
 section.
 
-Pre-installed Modules - local-lib
---------------------------------
+Pre-installed Modules - `local-lib`
+----------------------------------
 When the helper scripts build or download a perl version, they don't have any
 extra modules pre-installed.  The default Travis builds all include a set of
 prerequisites pre-installed.  Both cases can be useful for different situations.
@@ -115,75 +117,80 @@ installing all of the prerequisites every time can delay testing by a
 significant amount.
 
 To help with this, each pre-built copy of perl also has a set of pre-built
-local::lib directories that can be switched to.  These can be used by adding
-them directly to the build matrix, attaching them to the perl version like
-```5.10.1@moose```.  The ```moose``` pre-built includes Moose and Moo.  If not
-using a pre-built perl, the modules in the named local::lib will be installed.
+[local::lib](https://metacpan.org/pod/local::lib) directories that can be
+switched to.  These can be used by adding them directly to the build matrix,
+attaching them to the perl version like `5.10.1@moose`.  The `moose` pre-built
+includes [Moose](https://metacpan.org/pod/Moose) and
+[Moo](https://metacpan.org/pod/Moo).  If not using a pre-built perl, the modules
+in the named local::lib will be installed.
 
 The full list of pre-built local::libs and the libraries in them can be seen in
 the
 [local-libs.txt](https://github.com/travis-perl/helpers/blob/master/share/local-libs.txt)
 file.
 
-Distribution Building - build-dist
-----------------------------------
+Distribution Building - `build-dist`
+------------------------------------
 There are a variety of tools used for distribution building.  Manually writing a
-Makefile.PL is one, but other options include Module::Build, Module::Install, or
-Dist::Zilla.  While tests can often be performed directly against the files in
-the repository without building, this won't include any of the extra checks done
-by or generated by the dist building tool.  It also can complicate the process
-of finding prerequisites.
+`Makefile.PL` is one, but other options include
+[Module::Build](https://metacpan.org/pod/Module::Build),
+[Module::Install](https://metacpan.org/pod/Module::Install), or
+[Dist::Zilla](https://metacpan.org/pod/Dist::Zilla).  While tests can often be
+performed directly against the files in the repository without building, this
+won't include any of the extra checks done by or generated by the dist building
+tool.  It also can complicate the process of finding prerequisites.
 
 The approach the helpers recommend is first generating a full dist like would be
 uploaded to CPAN, then testing against that.  Because the distribution building
 tool often won't work on all of the perl versions you wish to test against, it's
 helpful to use a different (newer) version of perl than the tests are run with.
 
-This is what the ```build-dist``` helper does.  It uses the latest pre-built
-version of perl to generate a distribution directory, automatically installing
-any modules needed.  It then sets the ```BUILD_DIR``` environment variable to
-the location of the built distribution.
+This is what the `build-dist` helper does.  It uses the latest pre-built version
+of perl to generate a distribution directory, automatically installing any
+modules needed.  It then sets the `BUILD_DIR` environment variable to the
+location of the built distribution.
 
-Prerequisite Installation - cpan-install
-----------------------------------------
-For most cases, prerequisite installation could be handled by ```cpanm```, but
-the ```cpan-install``` helper provides a few niceties.  It provides more helpful
-output than cpanm in the event of a failure, but is still concise in the common
-case.  It also tweaks the set of modules to be installed.  The developer
-prerequisites and recommended modules of the distribution being tested will be
-installed, but not those of its prerequisites.
+Prerequisite Installation - `cpan-install`
+------------------------------------------
+For most cases, prerequisite installation could be handled by `cpanm`, but the
+`cpan-install` helper provides a few niceties.  It provides more helpful output
+than cpanm in the event of a failure, but is still concise in the common case.
+It also tweaks the set of modules to be installed.  The developer prerequisites
+and recommended modules of the distribution being tested will be installed, but
+not those of its prerequisites.
 
 It also includes better compatibility with ancient versions of perl.
 
 Coverage Reporting
 ------------------
 Setting up coverage reporting in Travis is relatively simple.  You just need to
-install the Devel::Cover module and run the cover command appropriately.  But
-coverage reporting slows down testing substantially and can also prevent some
-tests from running (such as those using threads).  So it's useful to limit
-coverage testing to only some of the perls you are testing with.  With that in
-mind, the helper scripts include several coverage related commands that are
-no-ops unless the COVERAGE environment variable is set.
+install the [Devel::Cover](http://metacpan.org/pod/Devel::Cover) module and run
+the cover command appropriately.  But coverage reporting slows down testing
+substantially and can also prevent some tests from running (such as those using
+threads).  So it's useful to limit coverage testing to only some of the perls
+you are testing with.  With that in mind, the helper scripts include several
+coverage related commands that are no-ops unless the `COVERAGE` environment
+variable is set.
 
 Running the Tests
 -----------------
 For running the actual tests, the helpers do very little.  It's recommended to
-use the standard ```prove``` command, with whatever options are wanted.
+use the standard `prove` command, with whatever options are wanted.
 
 There are a few helpers that can be used with prove though.  If you want to run
-tests in parallel, the ```test-jobs``` returns a recommended number of
-processes to use.  The number is one more than the number CPUs available.  It
-also will always return 1 if COVERAGE is enabled, since Devel::Cover is
-currently buggy when used with parallel testing.
+tests in parallel, the `test-jobs` returns a recommended number of processes to
+use.  The number is one more than the number CPUs available.  It also will
+always return 1 if `COVERAGE` is enabled, since
+[Devel::Cover](https://metacpan.org/pod/Devel::Cover) is currently buggy when
+used with parallel testing.
 
-The ```test-files``` returns all of the test scripts to run.  This is generated
-by searching for ```.t``` files recursively in the ```t``` and ```xt```
-directories.  However, if the AUTHOR_TESTING environment variable is set to 0,
-it will only return files in ```t```.  It can also help with very slow test
-runs.  If the TEST_PARTITION and TEST_PARTITIONS environment variables are set,
-it will return only a subset of the tests.  This allows you to split the tests
-across multiple Travis builds in parallel, making the full test run take less
-time.
+The `test-files` returns all of the test scripts to run.  This is generated by
+searching for `.t` files recursively in the `t` and `xt` directories.  However,
+if the `AUTHOR_TESTING` environment variable is set to 0, it will only return
+files in `t`.  It can also help with very slow test runs.  If the
+`TEST_PARTITION` and `TEST_PARTITIONS` environment variables are set, it will
+return only a subset of the tests.  This allows you to split the tests across
+multiple Travis builds in parallel, making the full test run take less time.
 
 Bits and Pieces
 ---------------
@@ -193,5 +200,8 @@ helpers can be ignored.
 
 Overall, having these helpers has allowed me to set up testing easier for a
 variety of different projects, and allowed me to expand the versions of perl
-tests.  They have been used to add perl 5.8 and blead testing to Moose, and 5.6
-testing to Moo and ExtUtils::MakeMaker.
+tests.  They have been used to add perl 5.8 and blead testing to
+[Moose](https://metacpan.org/pod/Moose), and perl 5.6 testing to
+[Moo](https://metacpan.org/pod/Moo) and
+[ExtUtils::MakeMaker](https://metacpan.org/pod/ExtUtils::MakeMaker).
+
