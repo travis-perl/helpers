@@ -117,21 +117,41 @@ function test-jobs {
 
 function prove {
   local perl="$("$(which perl)" -e'print $^X')"
-  local proveperl="$(head -1 `which prove` | awk '{ if (substr($1,1,2)=="#!") print substr($1,3) }')"
+  local p5l="$PERL5LIB"
+  local prove
   local -a args
-  if [ "$proveperl" != "$perl" ]; then
-    local IFS=":"
-    local -a libs=($PERL5LIB)
-    local PERL5LIB=
-    for lib in "${libs[@]}"; do
-      args=("${args[@]}" -I"$lib")
-    done
-    if [ -z "$HARNESS_PERL" ]; then
-      local HARNESS_PERL="$perl"
-      export HARNESS_PERL
+  local old_IFS="$IFS"
+  local IFS=":"
+  local -a libs=($p5l)
+  IFS="$old_IFS"
+  local PERL5LIB="$p5l"
+
+  for prove in $(which -a prove); do
+    local proveperl="$(head -1 "$prove" | awk '{ if (substr($1,1,2)=="#!") print substr($1,3) }')"
+    local oldprove
+    if [ "$proveperl" != "$perl" ]; then
+      PERL5LIB=""
     fi
-  fi
-  command prove "${args[@]}" "$@"
+    # support for -j option
+    "$proveperl" -M'App::Prove 2.99_03' -e1 2>/dev/null || oldprove=1
+    PERL5LIB="$p5l"
+    if [ -n "$oldprove" ]; then
+      continue
+    fi
+
+    if [ "$proveperl" != "$perl" ]; then
+      for lib in "${libs[@]}"; do
+        args+=(-I"$lib")
+      done
+      if [ -z "$HARNESS_PERL" ]; then
+        local HARNESS_PERL="$perl"
+        export HARNESS_PERL
+      fi
+      PERL5LIB=
+    fi
+    break
+  done
+  command $prove "${args[@]}" "$@"
 }
 
 echo "Perl Travis Helpers: $(git --git-dir="$HELPER_ROOT/.git" describe --all --long HEAD)"
