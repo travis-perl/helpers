@@ -17,7 +17,7 @@ function auto-install {
   local status=0
   until $command >$run_log 2>&1; do
     status=$?
-    deps="$(perl -lne'if (/^Can'\''t locate (\S+)\.pm in \@INC/) { my $m = $1; $m =~ s{/}{::}g; print $m;} elsif (/^(\S+) version (\S+) required--this is only version /) { print "$1~$2" }' "$run_log")"
+    deps="$(perl -lne'if (/\bCan'\''t locate (\S+)\.pm in \@INC/) { my $m = $1; $m =~ s{/}{::}g; print $m;} elsif (/^(\S+) version (\S+) required--this is only version /) { print "$1~$2" }' "$run_log")"
     [ -z "$deps" ]              && break
     [ "$deps" == "$last_deps" ] && break
     status=0
