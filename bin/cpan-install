@@ -30,7 +30,11 @@ export PERL_MM_USE_DEFAULT=1
 export NONINTERACTIVE_TESTING=1
 export PERL_MM_NONINTERACTIVE=1
 
-[ "$AUTHOR_TESTING" -ne 0 ] && AUTHOR_OPTS='--with-develop'
+xt_deps=
+if [ -z "$AUTHOR_TESTING" ] || [ "$AUTHOR_TESTING" -ne 0 ]; then
+  xt_deps=1
+fi
+
 unset AUTHOR_TESTING
 unset RELEASE_TESTING
 unset SMOKE_TESTING
@@ -111,8 +115,17 @@ function install-module {
 }
 
 function dynamic-deps {
+  local AUTHOR_TESTING="$xt_deps"
+  local SMOKE_TESTING=1
+  local CONTINUOUS_INTEGRATION=1
   if [[ "$PERL_VERSION" -ge 5008000 ]]; then
-    cpanm --showdeps -q . --with-recommends $AUTHOR_OPTS
+    cpanm --showdeps -q . --with-recommends
+    if [ -n "$xt_deps" ]; then
+      get-deps x_test requires
+      get-deps x_test recommends
+      get-deps develop requires | grep -v ^Dist::Zilla::
+      get-deps develop recommends | grep -v ^Dist::Zilla::
+    fi
   else
     $HELPER_ROOT/bin/cpan-prereqs
   fi
