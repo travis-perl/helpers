@@ -26,7 +26,7 @@ for (
   [ shrplib => 'useshrplib' ],
 ) {
   my ($vflag, $dflag) = @$_;
-  my $want_flag = $flags{$vflag};
+  my $want_flag = !!$flags{$vflag};
   my $got_flag = $Config{config_args} =~ /-D$dflag\b/;
   ok $want_flag eq $got_flag,
     "built with" . ($want_flag ? '' : 'out') . " $dflag";
