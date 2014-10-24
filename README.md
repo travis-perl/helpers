@@ -115,7 +115,7 @@ done, or are just set by the commands.
 
     Defaults to http://www.cpan.org/.
 
-  * `HELPER_ROOT`
+  * `HELPERS_ROOT`
 
     The root directory of the helper scripts.  Set by init.
 

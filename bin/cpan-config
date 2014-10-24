@@ -21,7 +21,7 @@ use File::Basename qw(dirname);
 use Cwd;
 use File::Spec;
 
-my $helper_root = $ENV{HELPER_ROOT} ||= Cwd::abs_path(dirname(__FILE__).'/..');
+my $helper_root = $ENV{HELPERS_ROOT} ||= Cwd::abs_path(dirname(__FILE__).'/..');
 
 {
   package FakeFrontEnd;

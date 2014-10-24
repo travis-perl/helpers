@@ -25,19 +25,19 @@ fi
 if [ -e "$PERLBREW_HOME/libs/$full_version" ]; then
   echo "local::lib $local_lib already built"
   exit 0
-elif [ -z "$REBUILD_PERL" ] && "$HELPER_ROOT/bin/get-prebuilt" "libs/$perl_version/$local_lib" --check; then
+elif [ -z "$REBUILD_PERL" ] && "$HELPERS_ROOT/bin/get-prebuilt" "libs/$perl_version/$local_lib" --check; then
   echo "Downloading pre-built local::lib $local_lib for Perl ${perl_version}..."
-  "$HELPER_ROOT/bin/get-prebuilt" "libs/$perl_version/$local_lib" "$PERLBREW_HOME/libs/$full_version"
+  "$HELPERS_ROOT/bin/get-prebuilt" "libs/$perl_version/$local_lib" "$PERLBREW_HOME/libs/$full_version"
   echo Done.
   exit 0
 fi
 
 if [ "$perl_version" == "system" ]; then
   perlbrew off
-  eval "$(LL_NO_INSTALL=1 $HELPER_ROOT/bin/local-lib $local_lib)"
+  eval "$(LL_NO_INSTALL=1 $HELPERS_ROOT/bin/local-lib $local_lib)"
 else
   perlbrew lib create "$full_version"
   perlbrew use "$full_version"
 fi
 
-$HELPER_ROOT/bin/cpan-install $($HELPER_ROOT/bin/modules-for-local-lib $local_lib)
+$HELPERS_ROOT/bin/cpan-install $($HELPERS_ROOT/bin/modules-for-local-lib $local_lib)

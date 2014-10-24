@@ -1,13 +1,13 @@
 #!/bin/bash
 set -e
 
-[ -z "$HELPER_ROOT" ] && export HELPER_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-source "$HELPER_ROOT/lib/util.bash"
+[ -z "$HELPERS_ROOT" ] && export HELPERS_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+source "$HELPERS_ROOT/lib/util.bash"
 
 BUILD_DIR=$1
 export PERL5LIB=
 PATH="$(dirname "$(which "$($MODERN_PERL -e'print $^X')")"):$PATH"
-eval "$($HELPER_ROOT/bin/local-lib)"
+eval "$($HELPERS_ROOT/bin/local-lib)"
 
 function auto-install {
   local command="$1"
@@ -21,7 +21,7 @@ function auto-install {
     [ -z "$deps" ]              && break
     [ "$deps" == "$last_deps" ] && break
     status=0
-    $HELPER_ROOT/bin/cpan-install $deps
+    $HELPERS_ROOT/bin/cpan-install $deps
     last_deps="$deps"
   done
   cat "$run_log"
@@ -31,13 +31,13 @@ function auto-install {
 
 if [ -e 'dist.ini' ] && [ -n "$DIST_INKT_PROFILE" ]; then
   echo "Building with Dist::Inkt ($DIST_INKT_PROFILE)"
-  $HELPER_ROOT/bin/cpan-install ExtUtils::MakeMaker~6.31 Dist::Inkt "$DIST_INKT_PROFILE"
+  $HELPERS_ROOT/bin/cpan-install ExtUtils::MakeMaker~6.31 Dist::Inkt "$DIST_INKT_PROFILE"
   distinkt-dist --TRAVIS --targetdir="$BUILD_DIR"
 elif [ -e 'dist.ini' ]; then
   echo "Building with Dist::Zilla"
-  $HELPER_ROOT/bin/cpan-install ExtUtils::MakeMaker~6.31 Dist::Zilla
+  $HELPERS_ROOT/bin/cpan-install ExtUtils::MakeMaker~6.31 Dist::Zilla
   AUTHOR_DEPS="$(dzil authordeps --missing | grep -v '^inc::')"
-  $HELPER_ROOT/bin/cpan-install $AUTHOR_DEPS
+  $HELPERS_ROOT/bin/cpan-install $AUTHOR_DEPS
   dzil build --in="$BUILD_DIR"
 elif [ -e 'Makefile.PL' ]; then
   if grep -q 'Module::Install' 'Makefile.PL'; then
@@ -45,8 +45,8 @@ elif [ -e 'Makefile.PL' ]; then
     AUTHOR_DEPS='ExtUtils::MakeMaker~6.31 Module::Install'
     while read command module; do
       grep -q -E "$command" 'Makefile.PL' && AUTHOR_DEPS="$AUTHOR_DEPS $module"
-    done < $HELPER_ROOT/share/module-install-commands.txt
-    $HELPER_ROOT/bin/cpan-install $AUTHOR_DEPS
+    done < $HELPERS_ROOT/share/module-install-commands.txt
+    $HELPERS_ROOT/bin/cpan-install $AUTHOR_DEPS
   else
     echo "Building with Makefile.PL (ExtUtils::MakeMaker)"
   fi
@@ -55,7 +55,7 @@ elif [ -e 'Makefile.PL' ]; then
   make distdir
 elif [ -e 'Build.PL' ]; then
   echo "Building with Build.PL (Module::Build)"
-  $HELPER_ROOT/bin/cpan-install Module::Build~0.36
+  $HELPERS_ROOT/bin/cpan-install Module::Build~0.36
   $MODERN_PERL Build.PL
   ./Build distdir
   DIST_DIR=$(perl -e'my $d = (do "_build/build_params")->[2]; print "$d->{dist_name}-$d->{dist_version}\n"')

@@ -12,7 +12,7 @@ while read ll modules; do
       echo "$module"
     done
   fi
-done < "$HELPER_ROOT/share/local-libs.txt"
+done < "$HELPERS_ROOT/share/local-libs.txt"
 
 if [ -z "$found" ]; then
   echo "Invalid local::lib!" 1>&2

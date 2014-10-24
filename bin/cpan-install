@@ -1,6 +1,6 @@
 #!/bin/bash
-[ -z "$HELPER_ROOT" ] && export HELPER_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-source "$HELPER_ROOT/lib/util.bash"
+[ -z "$HELPERS_ROOT" ] && export HELPERS_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+source "$HELPERS_ROOT/lib/util.bash"
 
 if [ -z "$MODERN_PERL" ]; then
   MODERN_PERL=perl
@@ -59,7 +59,7 @@ function os-install {
         run-with-progress $OS_INSTALLER "$os_dep" || true
       done
     fi
-  done < $HELPER_ROOT/share/os-prereqs.txt
+  done < $HELPERS_ROOT/share/os-prereqs.txt
 }
 
 function cpan-installer {
@@ -101,7 +101,7 @@ function cpan-git-install {
   local clone_dir="$(mktemp -d -t local-lib-XXXXXX)/repo"
   git clone --depth 1 --single-branch "$repo" $branch "$clone_dir"
   cd "$clone_dir"
-  $HELPER_ROOT/bin/build-dist build_dir
+  $HELPERS_ROOT/bin/build-dist build_dir
   cd build_dir
   install-items .
 }
@@ -127,7 +127,7 @@ function dynamic-deps {
       get-deps develop recommends | grep -v ^Dist::Zilla::
     fi
   else
-    $HELPER_ROOT/bin/cpan-prereqs
+    $HELPERS_ROOT/bin/cpan-prereqs
   fi
 }
 
@@ -160,7 +160,7 @@ function install-items {
   for arg in "$@"; do
     case $arg in
       --toolchain)
-        install-module $($HELPER_ROOT/bin/modules-for-local-lib toolchain)
+        install-module $($HELPERS_ROOT/bin/modules-for-local-lib toolchain)
       ;;
       --deps)
         echo "Configure prerequisites:"
@@ -202,10 +202,10 @@ function install-items {
 }
 
 if [[ "$PERL_VERSION" -lt 5008000 ]]; then
-  "$HELPER_ROOT/bin/cpan-config"
+  "$HELPERS_ROOT/bin/cpan-config"
 fi
 install-items "$@"
 if [[ "$PERL_VERSION" -lt 5008000 ]]; then
-  "$HELPER_ROOT/bin/cpan-config"
+  "$HELPERS_ROOT/bin/cpan-config"
 fi
 true
