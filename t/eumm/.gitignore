@@ -10,5 +10,6 @@
 *~
 *#
 .#*
-/Travis-Test-Dist-*
+/Travis-Test-Dist-EUMM-*/
+/Travis-Test-Dist-EUMM-*.tar.gz
 /cover_db/

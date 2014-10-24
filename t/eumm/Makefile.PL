@@ -3,7 +3,7 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-  NAME => 'Travis::Test::Dist',
+  NAME => 'Travis::Test::Dist::EUMM',
   VERSION => 0.01,
   ABSTRACT => 'test dist for travis',
   PREREQ_PM => {

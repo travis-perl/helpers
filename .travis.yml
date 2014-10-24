@@ -16,15 +16,11 @@ matrix:
       env: VERBOSE=1
 before_install:
   - source ./init
-  - cd t/dist
   - build-perl
   - perl -V
-  - build-dist
-  - cd $BUILD_DIR
-install:
-  - cpan-install --deps
+install: []
 script:
-  - prove -lv $(test-dirs)
+  - prove
   - cpan-install git://github.com/haarg/TravisCI-Helpers-InstallerTest.git
   - perl -MTravisCI::Helpers::InstallerTest=master
   - cpan-install git://github.com/haarg/TravisCI-Helpers-InstallerTest.git@another-branch
