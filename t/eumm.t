@@ -1,10 +1,9 @@
 #!/bin/bash
-errors=0
+. lib/tap.bash
 
-echo "1..2"
-
-cd t/eumm
 (
+  cd t/eumm
+  set -e
   set -x
   . $PERLBREW_ROOT/etc/bashrc
   . $HELPERS_ROOT/init
@@ -12,21 +11,22 @@ cd t/eumm
   cd $BUILD_DIR
   cpan-install --deps
   prove -lv $(test-dirs)
-) 1>&2
+) 2>&1 | note
 
-[ "$?" == "0" ] && echo "ok 1" || { echo "not ok 1"; (( errors++ )); }
+ok ${PIPESTATUS[0]} 'EUMM dist with explicit commands'
 
 (
+  cd t/eumm
+  set -e
   set -x
   . $PERLBREW_ROOT/etc/bashrc
   . $HELPERS_ROOT/init --auto
   cpanm --quiet --installdeps --notest .
   perl Makefile.PL && make test
-  true
-) 1>&2
+) 2>&1 | note
 
-[ "$?" == "0" ] && echo "ok 1" || { echo "not ok 1"; (( errors++ )); }
+ok ${PIPESTATUS[0]} 'EUMM dist with --auto'
 
-exit $errors
+done_testing
 
 # vim: ft=sh
