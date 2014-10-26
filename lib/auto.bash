@@ -15,39 +15,23 @@ function setup-auto {
       command cpanm "$@"
     fi
   }
-  [ -n "$HELPERS_DEBUG" ] && echo "## overriding make" 1>&2
-  function make {
-    if [ "$#" == 1 ] && [ "$1" == "test" ]; then
-      coverage-setup
-      command make
-      local blib
-      if [ "$(find blib/arch/ -type f ! -empty)" == "" ]; then
-        blib="-l"
-      else
-        blib="-b"
-      fi
-      prove $blib -r -s -j$(test-jobs) $(test-files) || return "$?"
-      coverage-report
-    else
-      command make "$@"
-    fi
-  }
-  [ -n "$HELPERS_DEBUG" ] && echo "## overriding perl" 1>&2
-  function perl {
-    command perl "$@" || return $?
-    if [ "$#" == 1 ] && [ "$1" == "Build.PL" ]; then
-      coverage-setup
-      ./Build || return $?
-      local blib
-      if [ "$(find blib/arch/ -type f ! -empty)" == "" ]; then
-        blib="-l"
-      else
-        blib="-b"
-      fi
-      local coverage_cmd
-      [ "$COVERAGE" -eq 0 ] || coverage_cmd="cover $@ $(_coverage-opts) || true"
-      mv Build Build.run
-      cat > Build <<END
+  if [ -e 'Build.PL' ]; then
+    [ -n "$HELPERS_DEBUG" ] && echo "## overriding perl (Build.PL)" 1>&2
+    function perl {
+      command perl "$@" || return $?
+      if [ "$#" == 1 ] && [ "$1" == "Build.PL" ]; then
+        coverage-setup
+        ./Build || return $?
+        local blib
+        if [ "$(find blib/arch/ -type f ! -empty)" == "" ]; then
+          blib="-l"
+        else
+          blib="-b"
+        fi
+        local coverage_cmd
+        [ "$COVERAGE" -eq 0 ] || coverage_cmd="cover $@ $(_coverage-opts) || true"
+        mv Build Build.run
+        cat > Build <<END
 #!/bin/sh
 set -e
 
@@ -60,7 +44,26 @@ else
   exec ./Build.run "\$@"
 fi
 END
-      chmod +x Build
-    fi
-  }
+        chmod +x Build
+      fi
+    }
+  else
+    [ -n "$HELPERS_DEBUG" ] && echo "## overriding make" 1>&2
+    function make {
+      if [ "$#" == 1 ] && [ "$1" == "test" ]; then
+        coverage-setup
+        command make
+        local blib
+        if [ "$(find blib/arch/ -type f ! -empty)" == "" ]; then
+          blib="-l"
+        else
+          blib="-b"
+        fi
+        prove $blib -r -s -j$(test-jobs) $(test-files) || return "$?"
+        coverage-report
+      else
+        command make "$@"
+      fi
+    }
+  fi
 }
