@@ -24,14 +24,14 @@ function setup-auto {
       else
         blib="-b"
       fi
-      prove $blib -r -s -j$(test-jobs) $(test-files) \
-        && coverage-report
+      prove $blib -r -s -j$(test-jobs) $(test-files) || return "$?"
+      coverage-report
     else
       command make "$@"
     fi
   }
   function perl {
-    command perl "$@"
+    command perl "$@" || return $?
     if [ "$#" == 1 ] && [ "$1" == "Build.PL" ]; then
       coverage-setup
       ./Build || return $?
@@ -41,9 +41,22 @@ function setup-auto {
       else
         blib="-b"
       fi
-      prove $blib -r -s -j$(test-jobs) $(test-files) \
-        && coverage-report
-      echo '#!/bin/sh' > Build
+      local coverage_cmd
+      [ "$COVERAGE" -eq 0 ] || coverage_cmd="cover $@ $(_coverage-opts) || true"
+      mv Build Build.run
+      cat > Build <<END
+#!/bin/sh
+set -e
+
+if [ "\$#" == "1" ] && [ "\$1" == "test" ]; then
+  ./Build.run
+  . "$HELPERS_ROOT/lib/prove.bash"
+  prove $blib -r -s -j$(test-jobs) $(test-files)
+  $coverage_cmd
+else
+  exec ./Build.run "\$@"
+fi
+END
       chmod +x Build
     fi
   }
