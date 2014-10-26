@@ -15,6 +15,7 @@ function auto-install {
   local deps
   local last_deps
   local status=0
+  [ -n "$HELPERS_DEBUG" ] && echo "Auto detecting prereqs for $command" 1>&2
   until $command >$run_log 2>&1; do
     status=$?
     deps="$(perl -lne'if (/\bCan'\''t locate (\S+)\.pm in \@INC/) { my $m = $1; $m =~ s{/}{::}g; print $m;} elsif (/^(\S+) version (\S+) required--this is only version /) { print "$1~$2" }' "$run_log")"
@@ -37,7 +38,9 @@ elif [ -e 'dist.ini' ]; then
   echo "Building with Dist::Zilla"
   $HELPERS_ROOT/bin/cpan-install ExtUtils::MakeMaker~6.31 Dist::Zilla
   AUTHOR_DEPS="$(dzil authordeps --missing --versions | grep -v '^inc::' | sed -e's/ = 0$//' -e's/ = /~/')"
+  [ -n "$HELPERS_DEBUG" ] && echo "Author Deps: $AUTHOR_DEPS" 1>&2
   $HELPERS_ROOT/bin/cpan-install $AUTHOR_DEPS
+  [ -n "$HELPERS_DEBUG" ] && echo "Prereqs installed. Building." 1>&2
   dzil build --in="$BUILD_DIR"
 elif [ -e 'Makefile.PL' ]; then
   if grep -q 'Module::Install' 'Makefile.PL'; then
