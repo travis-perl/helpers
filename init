@@ -77,13 +77,16 @@ function coverage-setup {
   export HARNESS_PERL_SWITCHES='-MDevel::Cover=-ignore,^x?t/,-blib,0'
 }
 
-function coverage-report {
-  [ "$COVERAGE" -eq 0 ] && return
+function _coverage-opts {
   local cover_opts
   if perl -mDevel::Cover::Report::Coveralls -e1 2>/dev/null; then
     cover_opts="$cover_opts -report coveralls"
   fi
-  cover "$@" $cover_opts
+  echo "$cover_opts"
+}
+function coverage-report {
+  [ "$COVERAGE" -eq 0 ] && return
+  cover "$@" $(_coverage-opts)
 }
 
 function test-dirs {
@@ -123,50 +126,8 @@ echo "Perl Travis Helpers: $(git --git-dir="$HELPERS_ROOT/.git" describe --all -
 for arg; do
   case "$arg" in
     --auto)
-      build-perl
-      perl -V
-      build-dist
-      cd $BUILD_DIR
-      function cpanm {
-        if [ "$*" == "--quiet --installdeps --notest ." ]; then
-          cpan-install --deps --coverage
-        else
-          command cpanm "$@"
-        fi
-      }
-      function make {
-        if [ "$#" == 1 ] && [ "$1" == "test" ]; then
-          coverage-setup
-          command make
-          local blib
-          if [ "$(find blib/arch/ -type f ! -empty)" == "" ]; then
-            blib="-l"
-          else
-            blib="-b"
-          fi
-          prove $blib -r -s -j$(test-jobs) $(test-files) \
-            && coverage-report
-        else
-          command make "$@"
-        fi
-      }
-      function perl {
-        command perl "$@"
-        if [ "$#" == 1 ] && [ "$1" == "Build.PL" ]; then
-          coverage-setup
-          ./Build || return $?
-          local blib
-          if [ "$(find blib/arch/ -type f ! -empty)" == "" ]; then
-            blib="-l"
-          else
-            blib="-b"
-          fi
-          prove $blib -r -s -j$(test-jobs) $(test-files) \
-            && coverage-report
-          echo '#!/bin/sh' > Build
-          chmod +x Build
-        fi
-      }
+      . "$HELPERS_ROOT/lib/auto.bash"
+      setup-auto
     ;;
     *)
       echo "Invalid argument $arg!" 1>&2
