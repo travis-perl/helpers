@@ -7,6 +7,7 @@ function setup-auto {
   build-dist
   echo "$ cd $BUILD_DIR" 1>&2
   cd $BUILD_DIR
+  [ -n "$HELPERS_DEBUG" ] && echo "## overriding cpanm" 1>&2
   function cpanm {
     if [ "$*" == "--quiet --installdeps --notest ." ]; then
       cpan-install --deps --coverage
@@ -14,6 +15,7 @@ function setup-auto {
       command cpanm "$@"
     fi
   }
+  [ -n "$HELPERS_DEBUG" ] && echo "## overriding make" 1>&2
   function make {
     if [ "$#" == 1 ] && [ "$1" == "test" ]; then
       coverage-setup
@@ -30,6 +32,7 @@ function setup-auto {
       command make "$@"
     fi
   }
+  [ -n "$HELPERS_DEBUG" ] && echo "## overriding perl" 1>&2
   function perl {
     command perl "$@" || return $?
     if [ "$#" == 1 ] && [ "$1" == "Build.PL" ]; then

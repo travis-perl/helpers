@@ -129,6 +129,9 @@ for arg; do
       . "$HELPERS_ROOT/lib/auto.bash"
       setup-auto
     ;;
+    --debug)
+      export HELPERS_DEBUG=1
+    ;;
     *)
       echo "Invalid argument $arg!" 1>&2
       return 1
