@@ -1,7 +1,11 @@
 function setup-auto {
+  echo "$ build-perl" 1>&2
   build-perl
+  echo "$ perl -V" 1>&2
   perl -V
+  echo "$ build-dist" 1>&2
   build-dist
+  echo "$ cd $BUILD_DIR" 1>&2
   cd $BUILD_DIR
   function cpanm {
     if [ "$*" == "--quiet --installdeps --notest ." ]; then
