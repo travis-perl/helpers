@@ -14,6 +14,11 @@ function plan {
   elif [ "$1" == "no" ]; then
     _tap_planned="$1"
     return 0
+  elif [ "$1" == "0" ]; then
+    _tap_planned="0"
+    echo "1..0 # SKIP $2"
+    trap EXIT
+    exit 0
   else
     _tap_planned="$1"
     echo "1..$1"
