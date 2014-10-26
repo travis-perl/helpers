@@ -20,7 +20,7 @@ before_install:
   - perl -V
 install: []
 script:
-  - prove
+  - prove -v
   - cpan-install git://github.com/haarg/TravisCI-Helpers-InstallerTest.git
   - perl -MTravisCI::Helpers::InstallerTest=master
   - cpan-install git://github.com/haarg/TravisCI-Helpers-InstallerTest.git@another-branch
