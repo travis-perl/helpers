@@ -207,7 +207,7 @@ for arg; do
       }
     ;;
     *)
-      echo "Invalid argument $arg!" 2>&1
+      echo "Invalid argument $arg!" 1>&2
       return 1
     ;;
   esac
