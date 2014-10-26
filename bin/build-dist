@@ -36,7 +36,7 @@ if [ -e 'dist.ini' ] && [ -n "$DIST_INKT_PROFILE" ]; then
 elif [ -e 'dist.ini' ]; then
   echo "Building with Dist::Zilla"
   $HELPERS_ROOT/bin/cpan-install ExtUtils::MakeMaker~6.31 Dist::Zilla
-  AUTHOR_DEPS="$(dzil authordeps --missing | grep -v '^inc::')"
+  AUTHOR_DEPS="$(dzil authordeps --missing --versions | grep -v '^inc::' | sed -e's/ = 0$//' -e's/ = /~/')"
   $HELPERS_ROOT/bin/cpan-install $AUTHOR_DEPS
   dzil build --in="$BUILD_DIR"
 elif [ -e 'Makefile.PL' ]; then
