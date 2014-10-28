@@ -138,6 +138,12 @@ done, or are just set by the commands.
     If set, prebuilt versions of perl will not automatically be downloaded and
     used.
 
+  * `TEST_PARTITION`, `TEST_PARTITIONS`
+
+    If set, `test-files` will divide all of the tests into partitions and
+    return the files from one of them.  This can be used to split up long
+    testing runs to keep them under the time limits imposed by Travis-CI.
+
 Commands
 --------
   * init
@@ -181,7 +187,10 @@ Commands
 
   * tests-files
 
-    Outputs all of the test files found in the directories returned from `test-dirs`
+    Outputs all of the test files found in the directories returned from
+    `test-dirs`.  If `TEST_PARTITIONS` and `TEST_PARTITION` are set, the tests
+    are divided into `TEST_PARTITIONS` equal sized groups, and group
+    `TEST_PARTITION` will be returned.
 
   * coverage-setup
 
