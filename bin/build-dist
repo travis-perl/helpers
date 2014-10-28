@@ -47,6 +47,7 @@ elif [ -e 'Build.PL' ]; then
   $HELPERS_ROOT/bin/cpan-install Module::Build~0.36
   auto-install "perl Build.PL"
   perl Build.PL
+  ./Build manifest
   ./Build distdir
   DIST_DIR=$(perl -e'my $d = (do "_build/build_params")->[2]; print "$d->{dist_name}-$d->{dist_version}\n"')
   mv "$DIST_DIR" "$BUILD_DIR"
