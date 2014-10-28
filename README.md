@@ -117,7 +117,7 @@ done, or are just set by the commands.
 
   * `HELPERS_ROOT`
 
-    The root directory of the helper scripts.  Set by init.
+    The root directory of the helper scripts.  Set by `init`.
 
   * `MODERN_PERL`
 
