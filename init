@@ -129,6 +129,10 @@ for arg; do
       . "$HELPERS_ROOT/lib/auto.bash"
       setup-auto
     ;;
+    --perl)
+      build-perl
+      perl -V
+    ;;
     --debug)
       export HELPERS_DEBUG=1
     ;;
