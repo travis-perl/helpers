@@ -118,29 +118,40 @@ function dynamic-deps {
   local AUTHOR_TESTING="$xt_deps"
   local SMOKE_TESTING=1
   local CONTINUOUS_INTEGRATION=1
-  if [[ "$PERL_VERSION" -ge 5008000 ]]; then
-    cpanm --showdeps -q . --with-recommends
-    if [ -n "$xt_deps" ]; then
-      get-deps x_test requires
-      get-deps x_test recommends
-      get-deps develop requires | grep -v ^Dist::Zilla::
-      get-deps develop recommends | grep -v ^Dist::Zilla::
+  (
+    if [[ "$PERL_VERSION" -ge 5008000 ]]; then
+      cpanm --showdeps -q . --with-recommends
+      META_FILE='META.json' get-deps build recommends
+      META_FILE='META.json' get-deps test recommends
+      META_FILE='META.json' get-deps runtime recommends
+      if [ -n "$xt_deps" ]; then
+        META_FILE='META.json' get-deps x_test requires
+        get-deps x_test requires
+        META_FILE='META.json' get-deps x_test recommends
+        get-deps x_test recommends
+        META_FILE='META.json' get-deps develop requires | grep -v '^Dist::Zilla::'
+        get-deps develop requires | grep -v ^Dist::Zilla::
+        META_FILE='META.json' get-deps develop recommends | grep -v '^Dist::Zilla::'
+        get-deps develop recommends | grep -v ^Dist::Zilla::
+      fi
+    else
+      $HELPERS_ROOT/bin/cpan-prereqs
     fi
-  else
-    $HELPERS_ROOT/bin/cpan-prereqs
-  fi
+  ) | sort -u
 }
 
 function get-deps {
   local PHASE=$1
   local TYPE=$2
-  local META_FILE
-  for meta in MYMETA.json MYMETA.yml META.json META.yml; do
-    if [ -e "$meta" ]; then
-      META_FILE="$meta"
-      break
-    fi
-  done
+  local META_FILE="$META_FILE"
+  if [ -z "$META_FILE" ]; then
+    for meta in MYMETA.json MYMETA.yml META.json META.yml; do
+      if [ -e "$meta" ]; then
+        META_FILE="$meta"
+        break
+      fi
+    done
+  fi
   if [ -z "$META_FILE" ]; then
     return
   fi
@@ -164,7 +175,7 @@ function install-items {
       ;;
       --deps)
         echo "Configure prerequisites:"
-        for dep in $(get-deps configure requires); do
+        for dep in $(get-deps configure requires) $(get-deps configure recommends); do
           install-module $dep
         done
 
