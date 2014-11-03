@@ -41,12 +41,11 @@ elif [ -e 'dist.ini' ]; then
   [ -n "$HELPERS_DEBUG" ] && echo "Author Deps: $AUTHOR_DEPS" 1>&2
   $HELPERS_ROOT/bin/cpan-install $AUTHOR_DEPS
   [ -n "$HELPERS_DEBUG" ] && echo "Prereqs installed. Building." 1>&2
-  dzil build --in="$BUILD_DIR"
+  dzil build --in="$BUILD_DIR" < /dev/null
 elif [ -e 'Build.PL' ]; then
   echo "Building with Build.PL (Module::Build)"
   $HELPERS_ROOT/bin/cpan-install Module::Build~0.36
-  auto-install "perl Build.PL"
-  perl Build.PL
+  auto-install "perl Build.PL" < /dev/null
   ./Build manifest
   ./Build distdir
   DIST_DIR=$(perl -e'my $d = (do "_build/build_params")->[2]; print "$d->{dist_name}-$d->{dist_version}\n"')
@@ -62,7 +61,7 @@ elif [ -e 'Makefile.PL' ]; then
   else
     echo "Building with Makefile.PL (ExtUtils::MakeMaker)"
   fi
-  auto-install "perl Makefile.PL DISTVNAME=$BUILD_DIR"
+  auto-install "perl Makefile.PL DISTVNAME=$BUILD_DIR" < /dev/null
   make manifest
   make distdir
 else
