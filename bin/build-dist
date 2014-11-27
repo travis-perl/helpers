@@ -8,7 +8,7 @@ perlbrew use $TRAVIS_PERL_VERSION
 
 BUILD_DIR=$1
 export PERL5LIB=
-PATH="$(dirname "$(which "$($MODERN_PERL -e'print $^X')")"):$PATH"
+PATH="$(dirname "$(which "$(perl -e'print $^X')")"):$PATH"
 eval "$($HELPERS_ROOT/bin/local-lib)"
 
 function auto-install {
