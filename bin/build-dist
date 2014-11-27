@@ -4,6 +4,8 @@ set -e
 [ -z "$HELPERS_ROOT" ] && export HELPERS_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 source "$HELPERS_ROOT/lib/util.bash"
 
+perlbrew use $TRAVIS_PERL_VERSION
+
 BUILD_DIR=$1
 export PERL5LIB=
 PATH="$(dirname "$(which "$($MODERN_PERL -e'print $^X')")"):$PATH"
