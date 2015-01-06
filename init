@@ -119,6 +119,11 @@ function test-jobs {
   echo "$(( COVERAGE ? 1 : SYSTEM_CORES + 1))"
 }
 
+function setup-auto {
+  . "$HELPERS_ROOT/lib/auto.bash"
+  setup-auto
+}
+
 . "$HELPERS_ROOT/lib/prove.bash"
 
 echo "Perl Travis Helpers: $(git --git-dir="$HELPERS_ROOT/.git" describe --all --long HEAD)"
@@ -126,7 +131,6 @@ echo "Perl Travis Helpers: $(git --git-dir="$HELPERS_ROOT/.git" describe --all -
 for arg; do
   case "$arg" in
     --auto)
-      . "$HELPERS_ROOT/lib/auto.bash"
       setup-auto
     ;;
     --perl)
