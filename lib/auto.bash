@@ -1,12 +1,12 @@
 function setup-auto {
   echo "$ build-perl" 1>&2
-  build-perl
+  build-perl || return $?
   echo "$ perl -V" 1>&2
-  perl -V
+  perl -V || return $?
   echo "$ build-dist" 1>&2
-  build-dist
+  build-dist || return $?
   echo "$ cd $BUILD_DIR" 1>&2
-  cd $BUILD_DIR
+  cd $BUILD_DIR || return $?
   [ -n "$HELPERS_DEBUG" ] && echo "## overriding cpanm" 1>&2
   function cpanm {
     if [ "$*" == "--quiet --installdeps --notest ." ]; then
