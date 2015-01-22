@@ -29,6 +29,15 @@ function perlbrew_build {
       echo "Unable to find perl for $perl_version!" >&2
       return 1
     fi
+  elif [[ "$brewver" == dev ]]; then
+    brewver="$(
+      perlbrew available \
+      | head -1 \
+      | cut -c8-
+    )"
+    if [[ "$brewver" =~ ^[0-9]\.[0-9][02468]\. ]]; then
+      echo "No development perl available!" 1>&2
+    fi
   fi
 
   brewopts="--notest --noman --verbose"
