@@ -12,8 +12,8 @@ my $got_version = $Config{version};
 if ($version =~ /^\d\.\d+$/) {
   like $got_version, qr/^\Q$version\E\b/, 'correct perl version selected';
 }
-elsif ($version eq 'blead') {
-  like $got_version, qr/^5\.\d*[13579]\b/, 'devel perl installed for blead';
+elsif ($version =~ /^(?:blead|dev)$/) {
+  like $got_version, qr/^5\.\d*[13579]\b/, "devel perl installed for $version";
 }
 else {
   is $got_version, $version, 'correct perl version installed';
