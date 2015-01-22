@@ -10,6 +10,7 @@ perl:
   - "5.17.11"     # will never be prebuilt
   - "5.18"        # existing perl version
   - 5.20          # work around lack of quoting
+  - dev
 matrix:
   include:
     - perl: "blead"
