@@ -16,11 +16,12 @@ function perlbrew_check {
 function perlbrew_build {
   local perl_version="$1"
   local brewver="${perl_version/-*/}"
-  if [[ "$brewver" =~ ^[0-9].[0-9][0-9]?$ ]]; then
+  if [[ "$brewver" =~ ^[0-9]\.[0-9][0-9]?$ ]]; then
     brewver="$(
       perlbrew available --all \
       | cut -c3- \
       | grep -E "^perl-${brewver/./\\.}\\.[0-9][0-9]?$" \
+      | cut -c6- \
       | sort -r -n -t. -k3 \
       | head -1
     )"
