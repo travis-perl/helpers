@@ -52,6 +52,7 @@ function perlbrew_build {
 
 perlbrew install-cpanm -f > /dev/null
 
+perl_alias=""
 full_version="$1"
 local_lib="${full_version/*@/}"
 perl_version="${full_version/@*/}"
@@ -66,6 +67,7 @@ if [[ "$perl_version" == dev ]]; then
   if [[ "$perl_version" =~ ^[0-9]\.[0-9][02468]\. ]]; then
     echo "No development perl available!" 1>&2
   fi
+  perl_alias=dev
 fi
 
 if [ "$perl_version" == "system" ]; then
@@ -78,6 +80,10 @@ elif [ -z "$REBUILD_PERL" ] && "$HELPERS_ROOT/bin/get-prebuilt" "perl/$perl_vers
   echo Done.
 else
   perlbrew_build "$perl_version"
+fi
+
+if [ -n "$perl_alias" ]; then
+  perlbrew alias create "$perl_version" "$perl_alias"
 fi
 
 if [ -n "$local_lib" ]; then
