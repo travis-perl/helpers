@@ -83,7 +83,7 @@ else
 fi
 
 if [ -n "$perl_alias" ]; then
-  perlbrew alias create "$perl_version" "$perl_alias"
+  perlbrew alias create -f "$perl_version" "$perl_alias"
 fi
 
 if [ -n "$local_lib" ]; then
