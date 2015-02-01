@@ -32,7 +32,7 @@ function setup-auto {
         [ "$COVERAGE" -eq 0 ] || coverage_cmd="cover $@ $(_coverage-opts) || true"
         mv Build Build.run
         cat > Build <<END
-#!/bin/sh
+#!/bin/bash
 set -e
 
 if [ "\$#" == "1" ] && [ "\$1" == "test" ]; then
