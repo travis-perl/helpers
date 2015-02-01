@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. "$HELPERS_ROOT/lib/debug.sh"
+
 local_lib="$1"
 found=''
 while read ll modules; do
