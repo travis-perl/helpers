@@ -22,9 +22,9 @@ before_install:
 install: []
 script:
   - prove -v
-  - cpan-install git://github.com/haarg/TravisCI-Helpers-InstallerTest.git
+  - cpan-install git://github.com/travis-perl/TravisCI-Helpers-InstallerTest.git
   - perl -MTravisCI::Helpers::InstallerTest=master
-  - cpan-install git://github.com/haarg/TravisCI-Helpers-InstallerTest.git@another-branch
+  - cpan-install git://github.com/travis-perl/TravisCI-Helpers-InstallerTest.git@another-branch
   - perl -MTravisCI::Helpers::InstallerTest=another-branch
   - cpan-install Test::Spelling
   - which aspell
