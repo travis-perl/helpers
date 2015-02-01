@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+. "$HELPERS_ROOT/lib/debug.sh"
+
 source="$PREBUILT_REPO"
 [ -z "$source" ] && source="https://github.com/travis-perl/builds"
 repo="$HOME/travis-perl-builds.git"

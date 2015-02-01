@@ -8,6 +8,9 @@ fi
 
 export HELPERS_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export HELPER_ROOT="$HELPERS_ROOT"
+
+. "$HELPERS_ROOT/lib/debug.sh"
+
 export SYSTEM_CORES=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)
 MODERN_PERL="$(
   for perl in "$PERLBREW_ROOT/perls/"*/bin/perl; do

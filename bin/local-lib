@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. "$HELPERS_ROOT/lib/debug.sh"
+
 declare -a ll_roots
 if [ -z "$1" ]; then
   ll_roots=("$(mktemp -d -t local-lib-XXXXXX)")

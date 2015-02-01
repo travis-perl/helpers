@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. "$HELPERS_ROOT/lib/debug.sh"
+
 if [ -z "$PERLBREW_ROOT" ]; then
   echo "Must be run under perlbrew!"
   exit 1
