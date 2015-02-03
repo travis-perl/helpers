@@ -1,9 +1,8 @@
 #!/bin/bash
 set -e
 
-. "$HELPERS_ROOT/lib/debug.sh"
-
 [ -z "$HELPERS_ROOT" ] && export HELPERS_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+source "$HELPERS_ROOT/lib/debug.sh"
 source "$HELPERS_ROOT/lib/util.bash"
 
 if [ -z "$1" ]; then

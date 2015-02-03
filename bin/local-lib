@@ -1,6 +1,6 @@
 #!/bin/bash
-
-. "$HELPERS_ROOT/lib/debug.sh"
+[ -z "$HELPERS_ROOT" ] && export HELPERS_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+source "$HELPERS_ROOT/lib/debug.sh"
 
 declare -a ll_roots
 if [ -z "$1" ]; then
