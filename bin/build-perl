@@ -60,9 +60,14 @@ perl_version="${full_version/@*/}"
 
 if [[ "$perl_version" == dev ]]; then
   perl_version="$(
-    perlbrew available \
-    | head -1 \
-    | cut -c8-
+    perlbrew available --all \
+    | perl -nle'
+      push @f, [$1,$2]
+        if /^[i ] (perl-5\.([0-9]*[13579]\.[0-9]+))$/;
+      END {
+        print ((sort { $b->[1] <=> $a->[1] } @f)[0][0])
+      }
+    '
   )"
   if [[ "$perl_version" =~ ^[0-9]\.[0-9][02468]\. ]]; then
     echo "No development perl available!" 1>&2
