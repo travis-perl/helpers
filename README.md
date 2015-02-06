@@ -3,42 +3,6 @@ Perl Module Travis-CI Helper
 This is a set of utilities meant to aid in testing modules on travis-ci.  It
 will automatically build perl if the version requested doesn't exist.
 
-Example .travis.yml
--------------------
-
-    language: perl
-    perl:
-      - "5.8"                     # normal preinstalled perl
-      - "5.8.4"                   # installs perl 5.8.4
-      - "5.8.4-thr"               # installs perl 5.8.4 with threading
-      - "5.20"                    # installs latest perl 5.20 (if not already available)
-      - "blead"                   # install perl from git
-    matrix:
-      include:
-        - perl: 5.18
-          env: COVERAGE=1         # enables coverage+coveralls reporting
-      allow_failures:
-        - perl: "blead"           # ignore failures for blead perl
-    before_install:
-      - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
-      - source ~/travis-perl-helpers/init
-      - build-perl
-      - perl -V
-      - build-dist
-      - cd $BUILD_DIR             # $BUILD_DIR is set by the build-dist command
-    install:
-      - cpan-install --deps       # installs prereqs, including recommends
-      - cpan-install --coverage   # installs converage prereqs, if enabled
-    before_script:
-      - coverage-setup
-    script:
-      - prove -l -j$((SYSTEM_CORES + 1)) $(test-dirs)   # parallel testing
-    after_success:
-      - coverage-report
-
-
-Description
------------
 While Travis-CI provides simple testing with perl or other languages, it has
 several limitations to address.  It only has a limited number of perl versions
 available, and only uses the default build options.
@@ -47,8 +11,33 @@ These helpers will build perl versions for you if they aren't available.
 Additional helpers will build a dist package using a newer perl than the tests
 are run with, or aid with installing dependencies or reporting code coverage.
 
-The helpers are meant to be usable individually, so you can pick only the ones
-needed for your use case.
+The helpers can be used individually, or _automatic mode_ can be used if using
+a standard testing setup.
+
+Example Simple .travis.yml
+--------------------------
+
+    language: perl
+    perl:
+      - "5.8"               # normal preinstalled perl
+      - "5.8.4"             # downloads a pre-built 5.8.4
+      - "5.8.4-thr"         # pre-built 5.8.4 with threading
+      - "5.12.2"            # builds perl 5.12.2 from source (pre-built not available)
+      - "5.20"              # installs latest perl 5.20 (if not already available)
+      - "dev"               # installs latest developer release of perl (e.g. 5.21.8)
+      - "blead"             # builds perl from git
+    matrix:
+      include:
+        - perl: 5.18
+          env: COVERAGE=1   # enables coverage+coveralls reporting
+      allow_failures:
+        - perl: blead       # ignore failures for blead perl
+    sudo: false             # faster builds as long as you don't need sudo access
+    before_install:
+      - eval $(curl https://travis-perl.github.io/init) --auto
+
+This will work for most distributions.  It will work with dists using a
+Makefile.PL, Build.PL, or Dist::Zilla.
 
 Perl Building
 -------------
@@ -63,23 +52,38 @@ be used.  Additionally, some build flags can be specified by adding them as dash
 separated suffixes (e.g. 5.10.1-thr-mb).
 
   * thr
-    Builds a perl with thread support.  Controls the ```useithreads``` flag.
+    Builds a perl with thread support.  Controls the `useithreads` flag.
 
   * dbg
-    Builds a debugging perl.  Controls the ```DEBUGGING``` flag.
+    Builds a debugging perl.  Controls the `DEBUGGING` flag.
 
   * mb
     Builds a perl with 64-bit and long double support.  Controls
-    the ```usemorebits``` flag.
+    the `usemorebits` flag.
 
   * shrplib
     Builds a shared libperl used by perl.  Needed for some dynamic loading
-    cases.  Controls the ```useshrplib``` flag.
+    cases.  Controls the `useshrplib` flag.
 
-Environment Variables
----------------------
-There are various environment variables that will either control how a build is
-done, or are just set by the commands.
+There are three other special versions that can be requested:
+
+  * system
+    Uses the default system perl.  This can be useful if there are perl modules
+    you want to install using apt-get.
+
+  * dev
+    Installs the latest development perl build available.  This will be
+    something like 5.21.8.
+
+  * blead
+    Installs perl from git.  This is bleading-edge version of perl, and will
+    occationally fail to build at all.  If used, it's usually recommended to
+    list in `allow_failures`.
+
+
+Control Environment Variables
+-----------------------------
+There are various environment variables that will control how a build is done.
 
   * `COVERAGE`
 
@@ -115,24 +119,6 @@ done, or are just set by the commands.
 
     Defaults to http://www.cpan.org/.
 
-  * `HELPERS_ROOT`
-
-    The root directory of the helper scripts.  Set by `init`.
-
-  * `MODERN_PERL`
-
-    The command that will be used to generate the dist.  Set by `init` and
-    `build-perl`.
-
-  * `SYSTEM_CORES`
-
-    The number of CPU cores the system has.  Useful for parallel testing.  Set
-    by `init`.
-
-  * `BUILD_DIR`
-
-    The path to the generated dist.  Set by the `build-dist` command.
-
   * `REBUILD_PERL`
 
     If set, prebuilt versions of perl will not automatically be downloaded and
@@ -144,22 +130,71 @@ done, or are just set by the commands.
     return the files from one of them.  This can be used to split up long
     testing runs to keep them under the time limits imposed by Travis-CI.
 
+Example Long .travis.yml
+------------------------
+The simple `.travis.yml` listed above is roughly equivalent to:
+
+    language: perl
+    perl:
+      - "5.8"
+      - "5.8.4"
+      - "5.8.4-thr"
+      - "5.12.2"
+      - "5.20"
+      - "dev"
+      - "blead"
+    matrix:
+      include:
+        - perl: 5.18
+          env: COVERAGE=1
+      allow_failures:
+        - perl: "blead"
+    sudo: false
+    before_install:
+      - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
+      - source ~/travis-perl-helpers/init
+      - build-perl
+      - perl -V
+      - build-dist
+      - cd $BUILD_DIR             # $BUILD_DIR is set by the build-dist command
+    install:
+      - cpan-install --deps       # installs prereqs, including recommends
+      - cpan-install --coverage   # installs converage prereqs, if enabled
+    before_script:
+      - coverage-setup
+    script:
+      - prove -l -j$(test-jobs) $(test-files)   # parallel testing
+    after_success:
+      - coverage-report
+
+Using this form rather than `--auto` allows many more parts of the process to be
+controlled.
+
 Commands
 --------
   * init
 
     Sets up the helper functions, and initializes environment variables.
+    Accepts two options:
+      * --perl
+        automatically runs the build-perl command for you
+
+      * --auto
+        Does as much as possible for you.  Runs build-perl, and uses other
+        commands as appropriate to do a full build and test.  If this option is
+        used, none of the other build phases should be customized, and none of
+        the commands should be used aside from cpan-install.
 
   * build-perl
 
-    Builds the requested perl version if needed, and switches to it.
+    Installs the requested perl version as needed, and switches to it.
 
   * build-dist
 
     Builds a dist directory for the module.  Sets the `BUILD_DIR` environment
     variable to the path of the built dist.  If `SPLIT_BUILD` is true, the
     latest preinstalled perl version will used.  If `SPLIT_BUILD` is false, the
-    requested perl version will be.
+    requested perl version will be used instead.
 
     If a `dist.ini` file exists in the repository, Dist::Zilla will be used to
     generate the dist.  Additional prerequisites will be installed as needed.
@@ -191,6 +226,12 @@ Commands
     `test-dirs`.  If `TEST_PARTITIONS` and `TEST_PARTITION` are set, the tests
     are divided into `TEST_PARTITIONS` equal sized groups, and group
     `TEST_PARTITION` will be returned.
+
+  * test-jobs
+
+    Outputs the recommended number of parallel test runs to use.  This will be
+    calculated based on the number of CPUs available.  If `COVERAGE` is true, it
+    will be 1, as Devel::Cover does not yet cope well with parallel testing.
 
   * coverage-setup
 
