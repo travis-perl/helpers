@@ -8,7 +8,7 @@ if [ -z "$MODERN_PERL" ]; then
 fi
 PERL_VERSION="$(perl -e'print $] * 1_000_000')"
 
-if [[ "$PERL_VERSION" -ge 5008000 ]]; then
+if [[ "$PERL_VERSION" -ge 5008001 ]]; then
   INSTALL_CMD="cpanm --verbose --no-interactive --no-man-pages --notest --skip-satisfied"
 else
   INSTALL_CMD="cpan-installer"
@@ -120,7 +120,7 @@ function dynamic-deps {
   local SMOKE_TESTING=1
   local CONTINUOUS_INTEGRATION=1
   (
-    if [[ "$PERL_VERSION" -ge 5008000 ]]; then
+    if [[ "$PERL_VERSION" -ge 5008001 ]]; then
       cpanm --showdeps -q . --with-recommends
       META_FILE='META.json' get-deps build recommends
       META_FILE='META.json' get-deps test recommends
