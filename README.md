@@ -130,6 +130,12 @@ There are various environment variables that will control how a build is done.
     return the files from one of them.  This can be used to split up long
     testing runs to keep them under the time limits imposed by Travis-CI.
 
+  * `TRAVIS_PERL_DEBUG`
+  
+    If set, then all the helper scripts will include `set +x`, causing them
+    echo all the commands that they run. This can be helpful when trying to
+    understand problems with using these helpers.
+
 Example Long .travis.yml
 ------------------------
 The simple `.travis.yml` listed above is roughly equivalent to:
