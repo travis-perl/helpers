@@ -103,7 +103,7 @@ function test-dirs {
 
 function test-files {
   local IFS=$'\n'
-  local -a files=($(find -s $(test-dirs) -name '*.t'))
+  local -a files=($(find $(test-dirs) -name '*.t' | sort))
   if [ -n "$TEST_PARTITION" ]; then
     if [ -z "$TEST_PARTITIONS" ]; then
       echo "TEST_PARTITIONS required with TEST_PARTITION option" 1>&2
