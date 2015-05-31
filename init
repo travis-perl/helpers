@@ -102,7 +102,8 @@ function test-dirs {
 }
 
 function test-files {
-  local files="$(find $(test-dirs) -name '*.t' | sort)"
+  local IFS=$'\n'
+  local -a files=($(find -s $(test-dirs) -name '*.t'))
   if [ -n "$TEST_PARTITION" ]; then
     if [ -z "$TEST_PARTITIONS" ]; then
       echo "TEST_PARTITIONS required with TEST_PARTITION option" 1>&2
@@ -111,12 +112,12 @@ function test-files {
       echo "TEST_PARTITION must be between 1 and TEST_PARTITIONS ($TEST_PARTITIONS)" 1>&2
       return 1
     fi
-    local file_count=$(wc -l <<<"$files")
+    local file_count=${#files[@]}
     local partition_size="$(( (file_count + TEST_PARTITIONS - 1) / TEST_PARTITIONS ))"
     local partition_start="$(( (TEST_PARTITION - 1) * partition_size ))"
-    files="$(tail -$((file_count - partition_start)) <<<"$files" | head -$partition_size)"
+    files=("${files[@]:$partition_start:$partition_size}")
   fi
-  echo "$files"
+  echo "${files[@]}"
 }
 
 function test-jobs {
