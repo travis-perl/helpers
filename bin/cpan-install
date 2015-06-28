@@ -124,7 +124,7 @@ function dynamic-deps {
       echo "Makefile.PL" 1>&2
       perl Makefile.PL 1>&2
       echo "showdeps:" 1>&2
-      cpanm --showdeps . --with-recommends 1>&2
+      cpanm --showdeps -v . --with-recommends 1>&2
       echo "META" 1>&2
       cat META.json 1>&2
       echo "MYMETA" 1>&2
