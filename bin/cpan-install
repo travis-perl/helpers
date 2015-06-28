@@ -121,6 +121,10 @@ function dynamic-deps {
   local CONTINUOUS_INTEGRATION=1
   (
     if [[ "$PERL_VERSION" -ge 5008001 ]]; then
+      echo "showdeps:" 1>&2
+      cpanm --showdeps . --with-recommends 1>&2
+      echo "done" 1>&2
+
       cpanm --showdeps -q . --with-recommends
       META_FILE='META.json' get-deps build recommends
       META_FILE='META.json' get-deps test recommends
