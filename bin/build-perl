@@ -73,8 +73,8 @@ if [[ "$perl_version" == "dev" ]] || [[ "$perl_version" == dev-* ]]; then
   if [ -z "$latest_dev" ]; then
     echo "No development perl available!" 1>&2
   fi
-  perl_version="${perl_version/dev/$latest_dev}"
   perl_alias="$perl_version"
+  perl_version="${perl_version/dev/$latest_dev}"
 fi
 
 if [ "$perl_version" == "system" ]; then
