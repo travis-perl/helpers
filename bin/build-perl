@@ -59,8 +59,8 @@ local_lib="${full_version/*@/}"
 perl_version="${full_version/@*/}"
 [ "$local_lib" == "$full_version" ] && unset local_lib
 
-if [[ "$perl_version" == dev ]]; then
-  perl_version="$(
+if [[ "$perl_version" == "dev" ]] || [[ "$perl_version" == dev-* ]]; then
+  latest_dev="$(
     perlbrew available --all \
     | perl -nle'
       push @f, [$1,$2]
@@ -70,10 +70,11 @@ if [[ "$perl_version" == dev ]]; then
       }
     '
   )"
-  if [ -z "$perl_version" ]; then
+  if [ -z "$latest_dev" ]; then
     echo "No development perl available!" 1>&2
   fi
-  perl_alias=dev
+  perl_version="${perl_version/dev/$latest_dev}"
+  perl_alias="$perl_version"
 fi
 
 if [ "$perl_version" == "system" ]; then
