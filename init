@@ -76,20 +76,24 @@ function cpan-install {
 }
 
 function coverage-setup {
-  [ "$COVERAGE" -eq 0 ] && return
+  [ "$COVERAGE" == "0" ] || [ "$COVERAGE" == "" ] && return
   cover -delete -silent
   export HARNESS_PERL_SWITCHES="${HARNESS_PERL_SWITCHES}${HARNESS_PERL_SWITCHES:+ }"'-MDevel::Cover=-ignore,^x?t/,-blib,0'
 }
 
 function _coverage-opts {
   local cover_opts
-  if perl -mDevel::Cover::Report::Coveralls -e1 2>/dev/null; then
+  if [ "$COVERAGE" == "codecov" ]; then
+    if perl -mDevel::Cover::Report::Codecov -e1 2>/dev/null; then
+      cover_opts="$cover_opts -report codecov"
+    fi
+  elif perl -mDevel::Cover::Report::Coveralls -e1 2>/dev/null; then
     cover_opts="$cover_opts -report coveralls"
   fi
   echo "$cover_opts"
 }
 function coverage-report {
-  [ "$COVERAGE" -eq 0 ] && return
+  [ "$COVERAGE" == "0" ] || [ "$COVERAGE" == "" ] && return
   cover "$@" $(_coverage-opts)
 }
 

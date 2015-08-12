@@ -193,9 +193,15 @@ function install-items {
         done
       ;;
       --coverage)
-        if [ "$COVERAGE" -eq 1 ]; then
+        if [ "$COVERAGE" == "1" ]; then
           install-module Devel::Cover
           install-module Devel::Cover::Report::Coveralls
+        elif [ "$COVERAGE" == "coveralls" ]; then
+          install-module Devel::Cover
+          install-module Devel::Cover::Report::Coveralls
+        elif [ "$COVERAGE" == "codecov" ]; then
+          install-module Devel::Cover
+          install-module Devel::Cover::Report::Codecov
         fi
       ;;
       .)
