@@ -130,10 +130,10 @@ function dynamic-deps {
         get-deps x_test requires
         META_FILE='META.json' get-deps x_test recommends
         get-deps x_test recommends
-        META_FILE='META.json' get-deps develop requires | grep -v '^Dist::Zilla::'
-        get-deps develop requires | grep -v ^Dist::Zilla::
-        META_FILE='META.json' get-deps develop recommends | grep -v '^Dist::Zilla::'
-        get-deps develop recommends | grep -v ^Dist::Zilla::
+        META_FILE='META.json' get-deps develop requires | grep -v '^Dist::Zilla'
+        get-deps develop requires | grep -v '^Dist::Zilla'
+        META_FILE='META.json' get-deps develop recommends | grep -v '^Dist::Zilla'
+        get-deps develop recommends | grep -v '^Dist::Zilla'
       fi
     else
       $HELPERS_ROOT/bin/cpan-prereqs
