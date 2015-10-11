@@ -30,6 +30,7 @@ export MODERN_PERL="env PERL5LIB= $MODERN_PERL"
 [ -z "$AUTHOR_TESTING"  ] && export AUTHOR_TESTING=1
 [ -z "$SPLIT_BUILD"     ] && export SPLIT_BUILD=1
 [ -z "$COVERAGE"        ] && export COVERAGE=0
+[ "$COVERAGE" == "1"    ] && export COVERAGE=coveralls # drop this eventually
 [ -z "$PERL_AUTOINSTALL_PREFER_CPAN" ]  && export PERL_AUTOINSTALL_PREFER_CPAN=1
 [ -z "$PERL_MM_USE_DEFAULT" ]           && export PERL_MM_USE_DEFAULT=1
 [ -z "$NONINTERACTIVE_TESTING" ]        && export NONINTERACTIVE_TESTING=1
@@ -83,18 +84,30 @@ function coverage-setup {
 
 function _coverage-opts {
   local cover_opts
-  if [ "$COVERAGE" == "codecov" ]; then
-    if perl -mDevel::Cover::Report::Codecov -e1 2>/dev/null; then
-      cover_opts="$cover_opts -report codecov"
+  local cover
+  if [ -n "$COVERAGE" ] && [ $COVERAGE != "0" ]; then
+    if [ "$COVERAGE" != "1" ]; then
+      for cover in $COVERAGE; do
+        cover="$(echo "${cover:0:1}" | tr a-z A-Z)${cover:1}"
+        # drop this when coveralls not implied
+        if perl -mDevel::Cover::Report::$cover -e1 2>/dev/null; then
+          cover_opts="$cover_opts -report $cover"
+        fi
+      done
     fi
-  elif perl -mDevel::Cover::Report::Coveralls -e1 2>/dev/null; then
-    cover_opts="$cover_opts -report coveralls"
   fi
   echo "$cover_opts"
 }
 function coverage-report {
   [ "$COVERAGE" == "0" ] || [ "$COVERAGE" == "" ] && return
-  cover "$@" $(_coverage-opts)
+  if [ "$COVERAGE" == "1" ]; then
+    cover "$@"
+  else
+    for cover in $COVERAGE; do
+      cover="$(echo "${cover:0:1}" | tr a-z A-Z)${cover:1}"
+      cover "$@" --report $cover
+    done
+  fi
 }
 
 function test-dirs {

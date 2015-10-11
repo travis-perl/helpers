@@ -169,6 +169,7 @@ function get-deps {
 }
 
 function install-items {
+  local arg
   for arg in "$@"; do
     case $arg in
       --toolchain)
@@ -193,15 +194,16 @@ function install-items {
         done
       ;;
       --coverage)
-        if [ "$COVERAGE" == "1" ]; then
+        if [ -n "$COVERAGE" ] && ! [ "$COVERAGE" == "0" ]; then
           install-module Devel::Cover
-          install-module Devel::Cover::Report::Coveralls
-        elif [ "$COVERAGE" == "coveralls" ]; then
-          install-module Devel::Cover
-          install-module Devel::Cover::Report::Coveralls
-        elif [ "$COVERAGE" == "codecov" ]; then
-          install-module Devel::Cover
-          install-module Devel::Cover::Report::Codecov
+          if [ "$COVERAGE" != "1" ]; then
+            local cover
+            for cover in $COVERAGE; do
+              cover="$(echo "${cover:0:1}" | tr a-z A-Z)${cover:1}"
+              # drop this when coveralls not implied
+              install-module Devel::Cover::Report::$cover
+            done
+          fi
         fi
       ;;
       .)
