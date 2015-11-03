@@ -139,7 +139,11 @@ function test-files {
 }
 
 function test-jobs {
-  echo "$(( COVERAGE ? 1 : SYSTEM_CORES + 1))"
+  if [ -n "$COVERAGE" ] && [ $COVERAGE != "0" ]; then
+    echo 1
+  else
+    echo "$(( SYSTEM_CORES + 1))"
+  fi
 }
 
 function setup-auto {

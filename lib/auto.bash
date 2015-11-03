@@ -29,7 +29,9 @@ function setup-auto {
           blib="-b"
         fi
         local coverage_cmd
-        [ "$COVERAGE" -eq 0 ] || coverage_cmd="cover $@ $(_coverage-opts) || true"
+        if [ "$COVERAGE" != "" ] && [ "$COVERAGE" != "0" ]; then
+          coverage_cmd="cover $(_coverage-opts)"
+        fi
         mv Build Build.run
         cat > Build <<END
 #!/bin/bash
