@@ -172,6 +172,15 @@ function install-items {
   local arg
   for arg in "$@"; do
     case $arg in
+        # If Travis caching is enabled and we pass --skip-satisfied, then we
+        # will _never_ update the installed modules in the cache. The caches
+        # don't expire unless you delete them manually, meaning that people
+        # could end up caching modules that are months or years out of date.
+      --update-prereqs)
+        if [[ $INSTALL_CMD =~ "--skip-satisfied" ]]; then
+          INSTALL_CMD="${INSTALL_CMD/--skip-satisfied/}"
+        fi
+      ;;
       --toolchain)
         install-module $($HELPERS_ROOT/bin/modules-for-local-lib toolchain)
       ;;

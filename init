@@ -73,7 +73,7 @@ function build-perl {
 }
 
 function cpan-install {
-  $HELPERS_ROOT/bin/cpan-install "$@"
+  $HELPERS_ROOT/bin/cpan-install "$CPAN_INSTALL_FLAGS" "$@"
 }
 
 function coverage-setup {
@@ -158,11 +158,13 @@ echo "Perl Travis Helpers: $(git --git-dir="$HELPERS_ROOT/.git" describe --all -
 for arg; do
   case "$arg" in
     --auto)
-      setup-auto
+      AUTO=1
     ;;
     --perl)
-      build-perl
-      perl -V
+      PERL=1
+    ;;
+    --always-upgrade-modules)
+      CPAN_INSTALL_FLAGS="--update-prereqs"
     ;;
     --debug)
       export HELPERS_DEBUG=1
@@ -173,5 +175,12 @@ for arg; do
     ;;
   esac
 done
+
+if [ -n "$AUTO" ]; then
+  setup-auto
+elif [ -n "$PERL" ]; then
+  build-perl
+  perl -V
+fi
 
 # vim: ft=sh
