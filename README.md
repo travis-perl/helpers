@@ -181,7 +181,7 @@ Commands
   * init
 
     Sets up the helper functions, and initializes environment variables.
-    Accepts two options:
+    Accepts three options:
       * --perl
         automatically runs the build-perl command for you
 
@@ -190,6 +190,12 @@ Commands
         commands as appropriate to do a full build and test.  If this option is
         used, none of the other build phases should be customized, and none of
         the commands should be used aside from cpan-install.
+
+      * --always-upgrade-modules
+        The `cpanm` command will be run without the `--skip-satisfied`
+        option. If you are using the Travis caching, you will want to add this
+        flag so that your local lib does not get progressively more out of
+        date over time.
 
   * build-perl
 
@@ -216,10 +222,13 @@ Commands
     the --deps flag can be given to install all dependencies of the current
     dist.
 
-    Also accepts the --coverage option.  If the COVERAGE environment variable
-    is set, this will attempt to install Devel::Cover and
+    This command accepts the --coverage option.  If the COVERAGE environment
+    variable is set, this will attempt to install Devel::Cover and
     Devel::Cover::Report::Coveralls.  If the environment variable is not set,
     does nothing.
+
+    Finally, you can pass --update-prereqs to make this script run without
+    passing `--skip-satisfied` to `cpanm`.
 
   * tests-dirs
 
