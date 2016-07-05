@@ -45,8 +45,8 @@ If the specified perl version is already installed on the Travis testing
 machine, it will be used as is.  Any requested perl version that isn't available
 will be built for you.  Additionally, a number of commonly tested versions are
 pre-built and will be automatically downloaded and used to speed up testing.
-The pre-built perl versions are listed in the [.travis.yml for the builds
-repo](https://github.com/travis-perl/builds/blob/master/.travis.yml).
+The pre-built perl versions are listed in the [.travis.yml for the builder
+repo](https://github.com/travis-perl/builder/blob/master/.travis.yml).
 If the patch level isn't included in the version, the latest in that series will
 be used.  Additionally, some build flags can be specified by adding them as dash
 separated suffixes (e.g. 5.10.1-thr-mb).
