@@ -253,8 +253,11 @@ Commands
   * local-lib
 
     Activates a local::lib directory.  Without a parameter, creates a new
-    local::lib directory and activates it.  Any parameters given are taken as
-    names of predefined local::libs.
+    local::lib directory and activates it. This can be valuable if you need to
+    isolate the prereqs you are installing from the core modules.  Any parameters
+    given are taken as names of [predefined local::libs](share/local-libs.txt) to
+    load. For example, `local-lib dzil` can save a lot of time for Dist::Zilla
+    based modules.
 
 local::lib
 ----------
