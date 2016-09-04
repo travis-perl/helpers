@@ -85,7 +85,7 @@ function coverage-setup {
 function _coverage-opts {
   local cover_opts
   local cover
-  if [ -n "$COVERAGE" ] && [ $COVERAGE != "0" ]; then
+  if [ -n "$COVERAGE" ] && [ "$COVERAGE" != "0" ]; then
     if [ "$COVERAGE" != "1" ]; then
       for cover in $COVERAGE; do
         cover="$(echo "${cover:0:1}" | tr a-z A-Z)${cover:1}"
@@ -139,7 +139,7 @@ function test-files {
 }
 
 function test-jobs {
-  if [ -n "$COVERAGE" ] && [ $COVERAGE != "0" ]; then
+  if [ -n "$COVERAGE" ] && [ "$COVERAGE" != "0" ]; then
     echo 1
   else
     echo "$(( SYSTEM_CORES + 1))"
