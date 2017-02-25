@@ -33,6 +33,7 @@ function setup-auto {
           coverage_cmd="cover $(_coverage-opts)"
         fi
         mv Build Build.run
+        # Echo test-files in the heredoc to eliminate the embedded newlines.
         cat > Build <<END
 #!/bin/bash
 set -e
@@ -40,7 +41,7 @@ set -e
 if [ "\$#" == "1" ] && [ "\$1" == "test" ]; then
   ./Build.run
   . "$HELPERS_ROOT/lib/prove.bash"
-  prove $blib -r -s -j$(test-jobs) $(test-files)
+  prove $blib -r -s -j$(test-jobs) $(echo `test-files`)
   $coverage_cmd
 else
   exec ./Build.run "\$@"
