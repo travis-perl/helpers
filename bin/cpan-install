@@ -3,6 +3,8 @@
 source "$HELPERS_ROOT/lib/debug.sh"
 source "$HELPERS_ROOT/lib/util.bash"
 
+perlbrew use "$TRAVIS_PERL_VERSION"
+
 if [ -z "$MODERN_PERL" ]; then
   MODERN_PERL=perl
 fi
