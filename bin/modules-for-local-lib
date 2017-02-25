@@ -2,6 +2,8 @@
 [ -z "$HELPERS_ROOT" ] && export HELPERS_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 source "$HELPERS_ROOT/lib/debug.sh"
 
+. "$HELPERS_ROOT/lib/debug.sh"
+
 local_lib="$1"
 found=''
 while read ll modules; do

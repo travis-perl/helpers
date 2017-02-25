@@ -3,6 +3,8 @@
 source "$HELPERS_ROOT/lib/debug.sh"
 source "$HELPERS_ROOT/lib/util.bash"
 
+. "$HELPERS_ROOT/lib/debug.sh"
+
 if [ -z "$MODERN_PERL" ]; then
   MODERN_PERL=perl
 fi
