@@ -22,7 +22,7 @@ ok ${PIPESTATUS[0]} 'EUMM dist with explicit commands'
   . $PERLBREW_ROOT/etc/bashrc
   . $HELPERS_ROOT/init --auto
   cpanm --quiet --installdeps --notest .
-  perl Makefile.PL && make test
+  perl Makefile.PL && make manifest && make test
 ) 2>&1 | note
 
 ok ${PIPESTATUS[0]} 'EUMM dist with --auto'
