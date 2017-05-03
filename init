@@ -113,7 +113,11 @@ function coverage-report {
 function test-dirs {
   local TEST_DIRS='t'
   if [ "$AUTHOR_TESTING" -ne 0 ] && [ -d xt ]; then
-    TEST_DIRS="$TEST_DIRS xt"
+    local EXTRA_TEST_DIRS="xt"
+    if [ "$RELEASE_TESTING" -eq 0 ] && [ -d xt/release ]; then
+      EXTRA_TEST_DIRS=$(ls -1d xt/* | grep -v '^xt/release$')
+    fi
+    TEST_DIRS="$TEST_DIRS $EXTRA_TEST_DIRS"
   fi
   echo "$TEST_DIRS"
 }
