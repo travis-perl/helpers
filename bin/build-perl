@@ -51,6 +51,7 @@ function perlbrew_build {
   fi
 }
 
+perlbrew self-upgrade > /dev/null
 perlbrew install-cpanm -f > /dev/null
 
 perl_alias=""
