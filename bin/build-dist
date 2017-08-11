@@ -57,7 +57,7 @@ elif [ -e 'Build.PL' ]; then
   auto-install "perl Build.PL" < /dev/null
   ./Build manifest
   ./Build distdir
-  DIST_DIR=$(perl -e'my $d = (do "_build/build_params")->[2]; print "$d->{dist_name}-$d->{dist_version}\n"')
+  DIST_DIR=$(perl -e'my $d = (do "./_build/build_params")->[2]; print "$d->{dist_name}-$d->{dist_version}\n"')
   mv "$DIST_DIR" "$BUILD_DIR"
 elif [ -e 'Makefile.PL' ]; then
   if grep -q 'Module::Install' 'Makefile.PL'; then
