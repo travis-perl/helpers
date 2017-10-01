@@ -193,9 +193,9 @@ Commands
 
       * --always-upgrade-modules
         The `cpanm` command will be run without the `--skip-satisfied`
-        option. If you are using the Travis caching, you will want to add this
-        flag so that your local lib does not get progressively more out of
-        date over time.
+        option. If you are using Travis caching to cache your installed Perl
+        prereqs, you will want to add this flag so that your local lib does
+        not get progressively more out of date over time.
 
   * build-perl
 
