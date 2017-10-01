@@ -77,7 +77,7 @@ There are three other special versions that can be requested:
 
   * blead
     Installs perl from git.  This is bleading-edge version of perl, and will
-    occationally fail to build at all.  If used, it's usually recommended to
+    occasionally fail to build at all.  If used, it's usually recommended to
     list in `allow_failures`.
 
 
@@ -165,7 +165,7 @@ The simple `.travis.yml` listed above is roughly equivalent to:
       - cd $BUILD_DIR             # $BUILD_DIR is set by the build-dist command
     install:
       - cpan-install --deps       # installs prereqs, including recommends
-      - cpan-install --coverage   # installs converage prereqs, if enabled
+      - cpan-install --coverage   # installs coverage prereqs, if enabled
     before_script:
       - coverage-setup
     script:
