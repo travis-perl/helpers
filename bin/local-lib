@@ -7,8 +7,12 @@ if [ -z "$1" ]; then
   ll_roots=("$(mktemp -d -t local-lib-XXXXXX)")
 else
   for lib; do
-    [ -z "$LL_NO_INSTALL" ] && $HELPERS_ROOT/bin/local-lib-installer "$lib"
-    ll_roots+=("$PERLBREW_HOME/libs/$PERLBREW_PERL@$lib")
+    if [ -z "$LL_NO_INSTALL" ]; then
+      # redirect since output of this gets eval-ed
+      if $HELPERS_ROOT/bin/local-lib-installer "$lib" 1>&2; then
+        ll_roots+=("$PERLBREW_HOME/libs/$PERLBREW_PERL@$lib")
+      fi
+    fi
   done
 fi
 
