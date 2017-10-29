@@ -264,18 +264,30 @@ Commands
   * local-lib
 
     Activates a local::lib directory.  Without a parameter, creates a new
-    local::lib directory and activates it. This can be valuable if you need to
+    local::lib directory and activates it. This is used by `build-dist`
+    for a `Dist::Zilla` distribution, and can be valuable if you need to
     isolate the prereqs you are installing from the core modules.  Any parameters
     given are taken as names of [predefined local::libs](share/local-libs.txt) to
     load. For example, `local-lib dzil` can save a lot of time for Dist::Zilla
-    based modules.
+    based modules. If you specified a prebuilt local::lib there is no
+    need to give it again. If you do want further local::libs, you can
+    give them to this command and they will be downloaded if pre-built,
+    or built if not, and added to the library path. This is taken care
+    of by the `build-perl` step.
 
 local::lib
 ----------
 A number of [predefined local::lib](share/local-libs.txt) directories are
 available for use.  Pre-built perl versions will also include pre-built
 local::lib directories.  If there is no pre-built copy of the local::lib
-available, it will be built when requested.
+available, it will be built when requested. The list of available pre-built
+versions of Perl is available
+[here](https://github.com/travis-perl/builder/blob/master/.travis.yml). To
+use one of these, specify like this:
+
+    perl:
+      - "5.6.2@moo"
+      - "5.8.4@moo"
 
 Notes
 -----
