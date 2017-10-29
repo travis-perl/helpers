@@ -116,7 +116,8 @@ There are various environment variables that will control how a build is done.
     generation process if it has heavy dependencies, such as Dist::Zilla, and
     testing is being done on a freshly built perl.
 
-    Makes a local::lib that is blank.
+    Makes a local::lib that symlinks to `${LOCAL_LIB_CACHE}-split`. If you
+    give that as a cached directory, it will make your builds go faster.
 
     Defaults to true.
 
@@ -297,6 +298,7 @@ Commands
         cache:
           directories:
           - $HOME/.perlbrew-cache # keeps between builds here
+          - $HOME/.perlbrew-cache-split # used by split builds
         perl:
           - "5.8.4@moo"
         before_install:

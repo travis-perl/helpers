@@ -4,7 +4,9 @@ source "$HELPERS_ROOT/lib/debug.sh"
 
 declare -a ll_roots
 if [ -z "$1" ]; then
-  ll_roots=("$(mktemp -d -t local-lib-XXXXXX)")
+  ll_roots=("${LOCAL_LIB_CACHE}-split") # can cache
+  [ -n "$TRAVIS_PERL_DEBUG" ] && \
+    (echo "ON SPLITDIR"; find "${LOCAL_LIB_CACHE}-split" -ls) 1>&2
 else
   for lib; do
     if [ "$lib" == "cache" ]; then
