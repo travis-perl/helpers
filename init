@@ -19,6 +19,7 @@ export SYSTEM_CORES="$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n
 [ -z "$AUTHOR_TESTING"  ] && export AUTHOR_TESTING=1
 [ -z "$SPLIT_BUILD"     ] && export SPLIT_BUILD=1
 [ "$COVERAGE" == "1"    ] && export COVERAGE=coveralls # drop this eventually
+[ -z "$LOCAL_LIB_CACHE" ] && export LOCAL_LIB_CACHE="$HOME/.perlbrew-cache"
 [ -z "$PERL_AUTOINSTALL_PREFER_CPAN" ]  && export PERL_AUTOINSTALL_PREFER_CPAN=1
 [ -z "$PERL_MM_USE_DEFAULT" ]           && export PERL_MM_USE_DEFAULT=1
 [ -z "$NONINTERACTIVE_TESTING" ]        && export NONINTERACTIVE_TESTING=1
@@ -50,6 +51,10 @@ function build-dist {
 
 function local-lib {
   eval "$("$HELPERS_ROOT/bin/local-lib" "$@")"
+}
+
+function local-lib-cachestore {
+  $HELPERS_ROOT/bin/local-lib-cache store
 }
 
 function build-perl {
