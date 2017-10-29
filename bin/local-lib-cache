@@ -27,14 +27,10 @@ set -e
 if [ "$1" == "use" ]; then
   perlbrew lib create "$full_version"
   perlbrew use "$full_version"
-  mkdir -p "$perlbrew_location"
-  cp -pr "$cache_location"/* "$perlbrew_location"
-elif [ "$1" == "store" ]; then
-  id
-  echo "BEFORE"; find "$perlbrew_location" "$cache_location" -ls
-  mkdir -p "$cache_location"
-  cp -pr "$perlbrew_location"/* "$cache_location"
-  echo "AFTER"; find "$cache_location" -ls
+  rm -rf "$perlbrew_location"
+  ln -s "$cache_location" "$perlbrew_location"
+  [ -n "$TRAVIS_PERL_DEBUG" ] && \
+    (id; echo "ON USE"; find "$perlbrew_location" "$cache_location" -ls)
 else
   echo "Unknown arg '$1'"
   exit 1

@@ -53,10 +53,6 @@ function local-lib {
   eval "$("$HELPERS_ROOT/bin/local-lib" "$@")"
 }
 
-function local-lib-cachestore {
-  $HELPERS_ROOT/bin/local-lib-cache store
-}
-
 function build-perl {
   local TRAVIS_PERL_VERSION="$TRAVIS_PERL_VERSION"
   if [[ ( "$TRAVIS_PERL_VERSION" =~ ^5\.6[.-] || \

@@ -303,14 +303,12 @@ Commands
           - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
           - source ~/travis-perl-helpers/init
           - build-perl
-          - local-lib cache # makes a local::lib from cached
+          - local-lib cache # makes a local::lib symlinked to cache
           - perl -V
           - build-dist
           - cd $BUILD_DIR
         install:
           - cpan-install --deps # installs prereqs, including recommends
-        before_cache:
-          - local-lib-cachestore # saves for local::lib next time
 
     Alternatively, this will also work and the `build-perl` will do the
     `local-lib` step for you:
