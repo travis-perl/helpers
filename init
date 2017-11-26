@@ -120,7 +120,7 @@ function test-dirs {
 
 function test-files {
   local file_list=""
-  if [ "$RELEASE_TESTING" -ne 0 ]; then
+  if [ -z "$RELEASE_TESTING" ] || [ "$RELEASE_TESTING" != "0" ]; then
     file_list="$(find $(test-dirs) -name '*.t' | sort)"
   else
     file_list="$(find $(test-dirs) -name '*.t' ! -path 'xt/release/*' | sort)"
