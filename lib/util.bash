@@ -22,7 +22,7 @@ function show-on-fail {
   local child="$!"
   local start=$(date +%s)
   local timeout="$TIMEOUT"
-  [ -z "$timeout"] && timeout=$(( 30*60 ))
+  [ -z "$timeout" ] && timeout=$(( 30*60 ))
   local expire=$((start + timeout))
   (
     now="$start"
