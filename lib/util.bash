@@ -46,6 +46,7 @@ function show-on-fail {
     cat "$log_file" 1>&2
   elif (( status > 128 )); then
     echo " Killed! (signal $((status - 128)))"
+    cat "$log_file" 1>&2
   else
     echo ' Failed!'
     cat "$log_file" 1>&2
