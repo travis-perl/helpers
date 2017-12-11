@@ -20,7 +20,7 @@ function perlbrew_build {
   if [[ "$brewver" =~ ^[0-9]\.[0-9][0-9]?$ ]]; then
     brewver="$(
       perlbrew available --all \
-      | cut -c3- \
+      | awk '{ print $1 }' \
       | grep -E "^perl-${brewver/./\\.}\\.[0-9][0-9]?$" \
       | cut -c6- \
       | sort -r -n -t. -k3 \
