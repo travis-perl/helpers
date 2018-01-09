@@ -204,7 +204,13 @@ function install-items {
       ;;
       --coverage)
         if [ -n "$COVERAGE" ] && ! [ "$COVERAGE" == "0" ]; then
-          install-module Devel::Cover
+          if [[ "$PERL_VERSION" -le 5008000 ]]; then
+            install-module Devel::Cover@1.22
+          elif [[ "$PERL_VERSION" -lt 5010000 ]]; then
+            install-module Devel::Cover@1.23
+          else
+            install-module Devel::Cover
+          fi
           if [ "$COVERAGE" != "1" ]; then
             local cover
             for cover in $COVERAGE; do
