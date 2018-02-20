@@ -10,8 +10,15 @@ PERL_VERSION="$(perl -e'print $] * 1_000_000')"
 
 if [[ "$PERL_VERSION" -ge 5008001 ]]; then
   INSTALL_CMD="perl -S cpanm --verbose --no-interactive --no-man-pages --notest --skip-satisfied"
+  if [ -z "$CPAN_MIRROR" ]; then
+    export CPAN_MIRROR="https://cpan.metacpan.org/"
+  fi
 else
   INSTALL_CMD="cpan-installer"
+  if [ -z "$CPAN_MIRROR" ]; then
+    pver="$(perl -e'printf "%.0f.%.0f.%.0f\n", int($]), ($] - int $])*1000, ($]*1000 - int($]*1000))*1_000')"
+    export CPAN_MIRROR="http://cp${pver}an.barnyard.co.uk/"
+  fi
 fi
 if which apt-get >/dev/null; then
   OS_UPDATE="sudo apt-get update"

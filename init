@@ -26,7 +26,6 @@ MODERN_PERL="$(
 [ -z "$MODERN_PERL" ] && MODERN_PERL="$(which perl)"
 export MODERN_PERL="env PERL5LIB= $MODERN_PERL"
 
-[ -z "$CPAN_MIRROR"  ]    && export CPAN_MIRROR="https://cpan.metacpan.org/"
 [ -z "$AUTHOR_TESTING"  ] && export AUTHOR_TESTING=1
 [ -z "$SPLIT_BUILD"     ] && export SPLIT_BUILD=1
 [ "$COVERAGE" == "1"    ] && export COVERAGE=coveralls # drop this eventually
@@ -64,10 +63,6 @@ function build-perl {
   fi
   if [ "$SPLIT_BUILD" == "0" ]; then
     MODERN_PERL="env PERL5LIB= $(which perl)"
-  fi
-  if [ "$(perl -e'print int $]*1000')" -lt 5008 ]; then
-    local pver="$(perl -e'printf "%.0f.%.0f.%.0f\n", int($]), ($] - int $])*1000, ($]*1000 - int($]*1000))*1_000')"
-    CPAN_MIRROR="http://cp${pver}an.barnyard.co.uk/"
   fi
 }
 
