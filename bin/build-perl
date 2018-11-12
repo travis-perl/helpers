@@ -42,6 +42,10 @@ function perlbrew_build {
   [[ "${perl_version}-" =~ '-shrplib-' ]] && brewopts="$brewopts -Duseshrplib -Duseithreds" # :(
   [[ "${perl_version}-" =~ '-extra-' ]] && brewopts="$brewopts -Duseshrplib -Duseithreads"
 
+  if [[ "$brewver" == blead ]]; then
+    brewver="https://github.com/Perl/perl5/archive/blead.tar.gz"
+  fi
+
   printf "Building Perl ${perl_version} ..."
   run-with-progress perlbrew install --as "$perl_version" $brewopts "$brewver"
 
