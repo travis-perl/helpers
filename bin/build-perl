@@ -39,7 +39,7 @@ function perlbrew_build {
   [[ "${perl_version}-" =~ '-thr-' ]] && brewopts="$brewopts -Duseithreads"
   [[ "${perl_version}-" =~ '-mb-' ]]  && brewopts="$brewopts -Dusemorebits"
   [[ "${perl_version}-" =~ '-dbg-' ]] && brewopts="$brewopts -DDEBUGGING"
-  [[ "${perl_version}-" =~ '-shrplib-' ]] && brewopts="$brewopts -Duseshrplib -Duseithreds" # :(
+  [[ "${perl_version}-" =~ '-shrplib-' ]] && brewopts="$brewopts -Duseshrplib -Duseithreads" # :(
   [[ "${perl_version}-" =~ '-extra-' ]] && brewopts="$brewopts -Duseshrplib -Duseithreads"
 
   if [[ "$brewver" == blead ]]; then
