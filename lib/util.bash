@@ -10,7 +10,8 @@ function show-verbose {
 }
 
 function show-on-fail {
-  local log_file="$(mktemp -t log-XXXXXX)"
+  local log_file
+  log_file="$(mktemp -t log-XXXXXX)"
   (
     set -e
     if [ "$(type -t "$1")" == "file" ]; then
@@ -20,7 +21,8 @@ function show-on-fail {
     fi
   ) &
   local child="$!"
-  local start=$(date +%s)
+  local start
+  start="$(date +%s)"
   local timeout="$TIMEOUT"
   [ -z "$timeout" ] && timeout=$(( 30*60 ))
   local expire=$((start + timeout))
@@ -81,5 +83,5 @@ function system-cores {
   if [ -z "$SYSTEM_CORES" ]; then
     cores="$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)"
   fi
-  echo "$((cores $@))"
+  echo "$(( cores "$@" ))"
 }

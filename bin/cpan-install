@@ -20,16 +20,16 @@ else
     export CPAN_MIRROR="http://cp${pver}an.barnyard.co.uk/"
   fi
 fi
-if which apt-get >/dev/null; then
-  OS_UPDATE="sudo apt-get update"
-  OS_INSTALLER="sudo apt-get install"
+if command -v apt-get >/dev/null; then
+  OS_UPDATE=(sudo apt-get update)
+  OS_INSTALLER=(sudo apt-get install)
   OS_CHECKFILE="/var/lib/apt/periodic/update-success-stamp"
-elif which brew >/dev/null; then
-  OS_UPDATE="brew update"
-  OS_INSTALLER="brew install"
+elif command -v brew >/dev/null; then
+  OS_UPDATE=(brew update)
+  OS_INSTALLER=(brew install)
   OS_CHECKFILE="$(brew --prefix)/.git/FETCH_HEAD"
 else
-  OS_INSTALLER="echo No installer available for "
+  OS_INSTALLER=(echo "No installer available for ")
 fi
 
 [ -n "$CPAN_MIRROR" ] && export PERL_CPANM_OPT="--mirror $CPAN_MIRROR $PERL_CPANM_OPT"
@@ -54,20 +54,20 @@ function os-install {
   local dep="$1"
   local mod
   local prereqs
-  while read mod prereqs; do
+  while read -r mod prereqs; do
     if [ "$mod" == "${dep/~*}" ]; then
       if [ -n "$OS_CHECKFILE" ]; then
         if [ ! -e "$OS_CHECKFILE" ] || [ -n "$(find "$OS_CHECKFILE" -mmin +50)" ]; then
           printf "Updating package manager ..."
-          run-with-progress $OS_UPDATE
+          run-with-progress "${OS_UPDATE[@]}"
         fi
       fi
       for os_dep in $prereqs; do
-        printf "Installing OS package $os_dep ..."
-        run-with-progress $OS_INSTALLER "$os_dep" || true
+        printf "Installing OS package %s ..." "$os_dep"
+        run-with-progress "${OS_INSTALLER[@]}" "$os_dep" || true
       done
     fi
-  done < $HELPERS_ROOT/share/os-prereqs.txt
+  done < "$HELPERS_ROOT/share/os-prereqs.txt"
 }
 
 function cpan-installer {
@@ -109,7 +109,7 @@ function cpan-git-install {
   local clone_dir="$(mktemp -d -t local-lib-XXXXXX)/repo"
   git clone --depth 1 --single-branch "$repo" $branch "$clone_dir"
   cd "$clone_dir"
-  $HELPERS_ROOT/bin/build-dist build_dir
+  "$HELPERS_ROOT/bin/build-dist" build_dir
   cd build_dir
   install-items .
 }
@@ -117,15 +117,17 @@ function cpan-git-install {
 function install-module {
   for dep in "$@"; do
     os-install "$dep"
-    printf "Installing (without testing) $dep ..."
-    run-with-progress $INSTALL_CMD $dep
+    printf "Installing (without testing) %s ..." "$dep"
+    run-with-progress $INSTALL_CMD "$dep"
   done
 }
 
 function dynamic-deps {
   local AUTHOR_TESTING="$xt_deps"
   local SMOKE_TESTING=1
+  export SMOKE_TESTING
   local CONTINUOUS_INTEGRATION=1
+  export CONTINUOUS_INTEGRATION
   (
     if [[ "$PERL_VERSION" -ge 5008001 ]]; then
       perl -S cpanm --showdeps -q . --with-recommends
@@ -143,7 +145,7 @@ function dynamic-deps {
         get-deps develop recommends | grep -v '^Dist::Zilla'
       fi
     else
-      $HELPERS_ROOT/bin/cpan-prereqs
+      "$HELPERS_ROOT/bin/cpan-prereqs"
     fi
   ) | sort -u
 }
@@ -172,7 +174,7 @@ function get-deps {
       my $version = $req->{$module};
       print $module . ($version ? "~$version" : "") . "\n";
     }
-  ' $META_FILE $PHASE $TYPE
+  ' "$META_FILE" "$PHASE" "$TYPE"
 }
 
 function install-items {
@@ -189,12 +191,12 @@ function install-items {
         fi
       ;;
       --toolchain)
-        install-module $($HELPERS_ROOT/bin/modules-for-local-lib toolchain)
+        install-module $("$HELPERS_ROOT/bin/modules-for-local-lib" toolchain)
       ;;
       --deps)
         echo "Configure prerequisites:"
         for dep in $(get-deps configure requires) $(get-deps configure recommends); do
-          install-module $dep
+          install-module "$dep"
         done
 
         echo "Other prerequisites:"
@@ -204,7 +206,7 @@ function install-items {
             perl@*) ;;
             perl~*) ;;
             *)
-              install-module $dep
+              install-module "$dep"
             ;;
           esac
         done
@@ -223,7 +225,7 @@ function install-items {
             for cover in $COVERAGE; do
               cover="$(echo "${cover:0:1}" | tr a-z A-Z)${cover:1}"
               # drop this when coveralls not implied
-              install-module Devel::Cover::Report::$cover
+              install-module "Devel::Cover::Report::$cover"
             done
           fi
         fi
@@ -237,7 +239,7 @@ function install-items {
         fi
       ;;
       *)
-        install-module $arg
+        install-module "$arg"
       ;;
     esac
   done

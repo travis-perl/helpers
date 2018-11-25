@@ -17,6 +17,7 @@ function perlbrew_check {
 function perlbrew_build {
   local perl_version="$1"
   local brewver="${perl_version/-*/}"
+  local minor_version
   if [[ "$brewver" =~ ^[0-9]\.[0-9][0-9]?$ ]]; then
     brewver="$(
       perlbrew available --all \
@@ -32,22 +33,22 @@ function perlbrew_build {
     fi
   fi
 
-  brewopts="--notest --noman --verbose"
-  local minor_version="$(sed -n -E -e's/^5\.([0-9]+).*/\1/p' <<< "$brewver")"
+  local brewopts=(--notest --noman --verbose)
+  minor_version="$(sed -n -E -e's/^5\.([0-9]+).*/\1/p' <<< "$brewver")"
 
-  [[ "$brewver" == blead || "$minor_version" -ge 14 ]] && brewopts="$brewopts -j $(system-cores + 1)"
-  [[ "${perl_version}-" =~ '-thr-' ]] && brewopts="$brewopts -Duseithreads"
-  [[ "${perl_version}-" =~ '-mb-' ]]  && brewopts="$brewopts -Dusemorebits"
-  [[ "${perl_version}-" =~ '-dbg-' ]] && brewopts="$brewopts -DDEBUGGING"
-  [[ "${perl_version}-" =~ '-shrplib-' ]] && brewopts="$brewopts -Duseshrplib -Duseithreads" # :(
-  [[ "${perl_version}-" =~ '-extra-' ]] && brewopts="$brewopts -Duseshrplib -Duseithreads"
+  [[ "$brewver" == blead || "$minor_version" -ge 14 ]] && brewopts+=(-j "$(system-cores + 1)")
+  [[ "${perl_version}-" =~ '-thr-' ]] && brewopts+=(-Duseithreads)
+  [[ "${perl_version}-" =~ '-mb-' ]]  && brewopts+=(-Dusemorebits)
+  [[ "${perl_version}-" =~ '-dbg-' ]] && brewopts+=(-DDEBUGGING)
+  [[ "${perl_version}-" =~ '-shrplib-' ]] && brewopts+=(-Duseshrplib -Duseithreads) # :(
+  [[ "${perl_version}-" =~ '-extra-' ]] && brewopts+=(-Duseshrplib -Duseithreads)
 
   if [[ "$brewver" == blead ]]; then
     brewver="https://github.com/Perl/perl5/archive/blead.tar.gz"
   fi
 
-  printf "Building Perl ${perl_version} ..."
-  run-with-progress perlbrew install --as "$perl_version" $brewopts "$brewver"
+  printf "Building Perl %s ..." "${perl_version}"
+  run-with-progress perlbrew install --as "$perl_version" "${brewopts[@]}" "$brewver"
 
   if ! perlbrew_check "$perl_version"; then
     echo "Perl $perl_version was not installed - compilation failed...?" 1>&2

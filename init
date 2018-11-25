@@ -1,4 +1,7 @@
-if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+if [ -z "$BASH_VERSION" ]; then
+  echo "This script can only used with bash, not other shells." 1>&2
+  exit 1
+elif [ "${BASH_SOURCE[0]}" = "$0" ]; then
   echo "This script must be sourced, not run directly." 1>&2
   exit 1
 elif [ -z "$PERLBREW_ROOT" ]; then
@@ -11,7 +14,7 @@ export HELPER_ROOT="$HELPERS_ROOT"
 
 . "$HELPERS_ROOT/lib/debug.sh"
 
-export SYSTEM_CORES=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)
+export SYSTEM_CORES="$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)"
 MODERN_PERL="$(
   for perl in "$PERLBREW_ROOT/perls/"*/bin/perl; do
     "$perl" -MConfig -le'
@@ -38,11 +41,11 @@ export MODERN_PERL="env PERL5LIB= $MODERN_PERL"
 
 function build-dist {
   export BUILD_DIR="$(pwd)/build_dir"
-  $HELPERS_ROOT/bin/build-dist "$BUILD_DIR"
+  "$HELPERS_ROOT/bin/build-dist" "$BUILD_DIR"
 }
 
 function local-lib {
-  eval "$($HELPERS_ROOT/bin/local-lib "$@")"
+  eval "$("$HELPERS_ROOT/bin/local-lib" "$@")"
 }
 
 function build-perl {
@@ -52,7 +55,7 @@ function build-perl {
         ! "$TRAVIS_PERL_VERSION" =~ @ ]]; then
     TRAVIS_PERL_VERSION="$TRAVIS_PERL_VERSION@base-5.6"
   fi
-  $HELPERS_ROOT/bin/build-perl "$TRAVIS_PERL_VERSION" || return 1
+  "$HELPERS_ROOT/bin/build-perl" "$TRAVIS_PERL_VERSION" || return 1
   if [ "${TRAVIS_PERL_VERSION/@*/}" == "system" ]; then
     perlbrew off
     if [ "${TRAVIS_PERL_VERSION/*@/}" != "$TRAVIS_PERL_VERSION" ]; then
@@ -62,12 +65,12 @@ function build-perl {
     perlbrew use "$TRAVIS_PERL_VERSION" || return 1
   fi
   if [ "$SPLIT_BUILD" == "0" ]; then
-    MODERN_PERL="env PERL5LIB= $(which perl)"
+    MODERN_PERL="env PERL5LIB= $(command -v perl)"
   fi
 }
 
 function cpan-install {
-  $HELPERS_ROOT/bin/cpan-install "$CPAN_INSTALL_FLAGS" "$@"
+  "$HELPERS_ROOT/bin/cpan-install" "$CPAN_INSTALL_FLAGS" "$@"
 }
 
 function coverage-setup {
@@ -84,8 +87,8 @@ function _coverage-opts {
       for cover in $COVERAGE; do
         cover="$(echo "${cover:0:1}" | tr a-z A-Z)${cover:1}"
         # drop this when coveralls not implied
-        if perl -mDevel::Cover::Report::$cover -e1 2>/dev/null; then
-          cover_opts="$cover_opts -report $cover"
+        if perl -m"Devel::Cover::Report::$cover" -e1 2>/dev/null; then
+          cover_opts="$cover_opts --report \"$cover\""
         fi
       done
     fi
@@ -99,7 +102,7 @@ function coverage-report {
   else
     for cover in $COVERAGE; do
       cover="$(echo "${cover:0:1}" | tr a-z A-Z)${cover:1}"
-      cover "$@" --report $cover
+      cover "$@" --report "$cover"
     done
   fi
 }
