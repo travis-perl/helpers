@@ -15,19 +15,6 @@ export HELPER_ROOT="$HELPERS_ROOT"
 . "$HELPERS_ROOT/lib/debug.sh"
 
 export SYSTEM_CORES="$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)"
-MODERN_PERL="$(
-  for perl in "$PERLBREW_ROOT/perls/"*/bin/perl; do
-    "$perl" -MConfig -le'
-      print(($]*1000000)." ".($^X=~m{/}?$^X:$Config{perlpath}))
-        unless ($]*1000) % 2;
-    '
-  done |
-  sort -n |
-  tail -1 |
-  cut -c9-
-)"
-[ -z "$MODERN_PERL" ] && MODERN_PERL="$(which perl)"
-export MODERN_PERL="env PERL5LIB= $MODERN_PERL"
 
 [ -z "$AUTHOR_TESTING"  ] && export AUTHOR_TESTING=1
 [ -z "$SPLIT_BUILD"     ] && export SPLIT_BUILD=1
@@ -35,6 +22,23 @@ export MODERN_PERL="env PERL5LIB= $MODERN_PERL"
 [ -z "$PERL_AUTOINSTALL_PREFER_CPAN" ]  && export PERL_AUTOINSTALL_PREFER_CPAN=1
 [ -z "$PERL_MM_USE_DEFAULT" ]           && export PERL_MM_USE_DEFAULT=1
 [ -z "$NONINTERACTIVE_TESTING" ]        && export NONINTERACTIVE_TESTING=1
+
+export MODERN_PERL
+if [ "$SPLIT_BUILD" != "0" ] && [ -z "$MODERN_PERL" ]; then
+  MODERN_PERL="$(
+    for perl in "$PERLBREW_ROOT/perls/"*/bin/perl; do
+      "$perl" -MConfig -le'
+        print(($]*1000000)." ".($^X=~m{/}?$^X:$Config{perlpath}))
+          unless ($]*1000) % 2;
+      '
+    done |
+    sort -n |
+    tail -1 |
+    cut -c9-
+  )"
+fi
+[ -z "$MODERN_PERL" ] && MODERN_PERL="$(command -v perl)"
+MODERN_PERL="env PERL5LIB= $MODERN_PERL"
 
 # work around potential quoting issues in .travis.yml
 [[ "$TRAVIS_PERL_VERSION" =~ ^5\.[1-4]$ ]] && TRAVIS_PERL_VERSION+="0"
