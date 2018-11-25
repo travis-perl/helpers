@@ -83,5 +83,5 @@ function system-cores {
   if [ -z "$SYSTEM_CORES" ]; then
     cores="$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo 1)"
   fi
-  echo "$(( cores "$@" ))"
+  echo "$((cores $@))"
 }
