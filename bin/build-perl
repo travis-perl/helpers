@@ -42,7 +42,7 @@ function perlbrew_build {
   [[ "${perl_version}-" =~ '-dbg-' ]] && brewopts+=(-DDEBUGGING)
   [[ "${perl_version}-" =~ '-shrplib-' ]] && brewopts+=(-Duseshrplib -Duseithreads) # :(
   [[ "${perl_version}-" =~ '-extra-' ]] && brewopts+=(-Duseshrplib -Duseithreads)
-  [[ "${perl_version}-" =~ '-qm-' ]] && brewopts+=(-Dquadmath)
+  [[ "${perl_version}-" =~ '-qm-' ]] && brewopts+=(-Dusequadmath)
 
   printf "Building Perl %s ..." "${perl_version}"
   run-with-progress perlbrew install --as "$perl_version" "${brewopts[@]}" "$brewver"
