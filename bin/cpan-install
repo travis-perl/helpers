@@ -88,6 +88,7 @@ function cpan-installer {
     ;;
   esac
   if [ -z "$bare" ] && perl -e"use $dep $version ();" &>/dev/null; then
+    echo "Version satisfied."
     return
   fi
   if perl -e'use CPAN 1.80 ();' &>/dev/null; then
@@ -118,6 +119,7 @@ function install-module {
   for dep in "$@"; do
     os-install "$dep"
     printf "Installing (without testing) %s ..." "$dep"
+    [[ "$VERBOSE" == 1 ]] && printf "\n"
     run-with-progress $INSTALL_CMD "$dep"
   done
 }
