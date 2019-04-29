@@ -26,6 +26,9 @@ Example Simple .travis.yml
       - "5.20"              # installs latest perl 5.20 (if not already available)
       - "dev"               # installs latest developer release of perl (e.g. 5.21.8)
       - "blead"             # builds perl from git
+    cache:
+      directories:
+        - $HOME/perl5
     matrix:
       include:
         - perl: 5.18
