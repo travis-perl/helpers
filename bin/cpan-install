@@ -15,10 +15,6 @@ if [[ "$PERL_VERSION" -ge 5008001 ]]; then
   fi
 else
   INSTALL_CMD="cpan-installer"
-  if [ -z "$CPAN_MIRROR" ]; then
-    pver="$(perl -e'printf "%.0f.%.0f.%.0f\n", int($]), ($] - int $])*1000, ($]*1000 - int($]*1000))*1_000')"
-    export CPAN_MIRROR="http://cp${pver}an.barnyard.co.uk/"
-  fi
 fi
 if command -v apt-get >/dev/null; then
   OS_UPDATE=(sudo apt-get update)
