@@ -1,9 +1,8 @@
 #!/usr/bin/env perl
 use strict;
-use warnings;
+BEGIN { $^W = 1 }
 use CPAN ();
 use Cwd;
-use File::Spec;
 
 {
   package FakeFrontEnd;
@@ -30,9 +29,9 @@ my $err;
   open OLDOUT, '>&STDOUT' or die "Can't dup STDOUT: $!";
   open OLDERR, '>&STDERR' or die "Can't dup STDERR: $!";
   open OLDIN,  '<&STDIN'  or die "Can't dup STDIN: $!";
-  open STDOUT, '>', File::Spec->devnull or die "Can't redirect STDOUT: $!";
-  open STDERR, '>', File::Spec->devnull or die "Can't redirect STDERR: $!";
-  open STDIN,  '<', File::Spec->devnull or die "Can't redirect STDIN: $!";
+  open STDOUT, '>/dev/null' or die "Can't redirect STDOUT: $!";
+  open STDERR, '>/dev/null' or die "Can't redirect STDERR: $!";
+  open STDIN,  '</dev/null' or die "Can't redirect STDIN: $!";
 
   $dist->{build_dir} = '.';
   eval {
@@ -58,7 +57,7 @@ my @prereqs = $dist->can('unsat_prereq') ? do {
       if $phase =~ /opt/;
     my $p = $r->{$phase};
     for my $req (keys %$p) {
-      no warnings;
+      $^W = 0;
       if ($p->{$req} > $r{$req} || $p->{$req} gt $r{$req}) {
         $r{$req} = $p->{$req};
       }

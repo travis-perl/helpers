@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 use strict;
-use warnings;
+BEGIN { $^W = 1 }
 
 my %myconfig;
 BEGIN {
@@ -19,7 +19,6 @@ use CPAN ();
 use ExtUtils::MakeMaker ();
 use File::Basename qw(dirname);
 use Cwd;
-use File::Spec;
 
 my $helper_root = $ENV{HELPERS_ROOT} ||= Cwd::abs_path(dirname(__FILE__).'/..');
 
@@ -39,12 +38,12 @@ my %config = (
 
 {
   $CPAN::Frontend = 'FakeFrontEnd';
-  no warnings 'redefine';
+  BEGIN { eval { require warnings; 'warnings'->unimport('redefine') } }
   local *ExtUtils::MakeMaker::prompt = sub ($;$) {
     $_[0] =~ /manual configuration/ ? 'no' : $_[1];
   };
-  open STDOUT, '>', File::Spec->devnull;
-  open STDERR, '>', File::Spec->devnull;
+  open STDOUT, '>/dev/null';
+  open STDERR, '>/dev/null';
   $CPAN::Config = { %config };
   eval { CPAN::Config->load };
   $CPAN::Config = { %config };
