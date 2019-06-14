@@ -45,6 +45,17 @@ function perlbrew_build {
   [[ "${perl_version}-" =~ '-qm-' ]] && brewopts+=(-Dusequadmath)
   [[ "${perl_version}-" =~ '-ld-' ]] && brewopts+=(-Duselongdouble)
 
+  if [[ "$minor_version" =~ ^[0-5]$ ]]; then
+    # Perl versions prior to 5.6 have version format 5.00X_YY
+    rel_version="$(sed -n -E -e's/^5\.[0-9]\.//p' <<< "$brewver")"
+    [ "$rel_version" = "0" ] && rel_version=""
+    [[ "$rel_version" =~ ^[0-9]$ ]] && rel_version="0$rel_version"
+    [ -n "$rel_version" ] && rel_version="_$rel_version"
+    brewver="5.00${minor_version}${rel_version}"
+    # perlbrew does not call patchperl correctly, upstream patch: https://github.com/gugod/App-perlbrew/pull/674
+    sed 's/push @preconfigure_commands, \$patchperl/push @preconfigure_commands, "chmod -R +w .", \$patchperl/' -i `which perlbrew`
+  fi
+
   printf "Building Perl %s ..." "${perl_version}"
   run-with-progress perlbrew install --as "$perl_version" "${brewopts[@]}" "$brewver"
 

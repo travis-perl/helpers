@@ -1,5 +1,6 @@
 language: perl
 perl:
+  - "5.5.3"       # very ancient
   - "5.6.2"       # ancient
   - "5.8.8"       # common, prebuilt version
   - "5.8.8-thr"   # various build flags
