@@ -30,7 +30,7 @@ my $helper_root = $ENV{HELPERS_ROOT} ||= Cwd::abs_path(dirname(__FILE__).'/..');
 
 my %config = (
   %myconfig,
-  urllist => [ $ENV{CPAN_MIRROR} || 'http://www.cpan.org/' ],
+  urllist => [ $ENV{CPAN_MIRROR} || 'https://cpan.metacpan.org/' ],
   prerequisites_policy  => 'follow',
   prefs_dir             => "$helper_root/share/distroprefs",
   patches_dir           => "$helper_root/share/patches",
