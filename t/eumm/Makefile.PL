@@ -1,5 +1,5 @@
 use strict;
-use warnings;
+BEGIN { $^W = 1 }
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
