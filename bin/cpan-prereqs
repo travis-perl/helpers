@@ -57,7 +57,7 @@ my @prereqs = $dist->can('unsat_prereq') ? do {
       if $phase =~ /opt/;
     my $p = $r->{$phase};
     for my $req (keys %$p) {
-      $^W = 0;
+      local $^W = 0;
       if ($p->{$req} > $r{$req} || $p->{$req} gt $r{$req}) {
         $r{$req} = $p->{$req};
       }
