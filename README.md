@@ -165,7 +165,7 @@ The simple `.travis.yml` listed above is roughly equivalent to:
       - cd $BUILD_DIR             # $BUILD_DIR is set by the build-dist command
     install:
       - cpan-install --deps       # installs prereqs, including recommends
-      - cpan-install --coverage   # installs converage prereqs, if enabled
+      - cpan-install --coverage   # installs coverage prereqs, if enabled
     before_script:
       - coverage-setup
     script:
