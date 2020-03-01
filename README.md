@@ -77,7 +77,7 @@ There are three other special versions that can be requested:
 
   * blead
     Installs perl from git.  This is bleading-edge version of perl, and will
-    occationally fail to build at all.  If used, it's usually recommended to
+    occasionally fail to build at all.  If used, it's usually recommended to
     list in `allow_failures`.
 
 
@@ -193,9 +193,9 @@ Commands
 
       * --always-upgrade-modules
         The `cpanm` command will be run without the `--skip-satisfied`
-        option. If you are using the Travis caching, you will want to add this
-        flag so that your local lib does not get progressively more out of
-        date over time.
+        option. If you are using Travis caching to cache your installed Perl
+        prereqs, you will want to add this flag so that your local lib does
+        not get progressively more out of date over time.
 
   * build-perl
 
