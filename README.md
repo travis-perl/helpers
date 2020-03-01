@@ -29,7 +29,9 @@ Example Simple .travis.yml
     matrix:
       include:
         - perl: 5.18
-          env: COVERAGE=1   # enables coverage+coveralls reporting
+          env: COVERAGE=1   # enables coverage reporting (coveralls by default),
+                            # or COVERAGE=report_name to use a specific report
+                            # module
       allow_failures:
         - perl: blead       # ignore failures for blead perl
     before_install:
@@ -86,10 +88,11 @@ There are various environment variables that will control how a build is done.
 
   * `COVERAGE`
 
-    If true, coverage will be reported after running tests.  Coverage results
-    will also be submitted to [Coveralls](https://coveralls.io/).  If false,
-    the `coverage-setup`, `coverage-report`, and `cpan-install --coverage`
-    commands will be no-ops.
+    If true, coverage will be reported after running tests. When value is
+    1 coverage results will be submitted to [Coveralls](https://coveralls.io/).
+    Otherwise the value is going to be used a Devel::Cover report module name.
+    If false, the `coverage-setup`, `coverage-report`, and `cpan-install
+    --coverage` commands will be no-ops.
 
     Defaults to false.
 
@@ -222,8 +225,8 @@ Commands
 
     This command accepts the --coverage option.  If the COVERAGE environment
     variable is set, this will attempt to install Devel::Cover and
-    Devel::Cover::Report::Coveralls.  If the environment variable is not set,
-    does nothing.
+    Devel::Cover::Report::$COVERAGE (Coveralls when value is 1).  If the
+    environment variable is not set, does nothing.
 
     Finally, you can pass --update-prereqs to make this script run without
     passing `--skip-satisfied` to `cpanm`.
@@ -253,9 +256,9 @@ Commands
 
   * coverage-report
 
-    Outputs a coverage report.  If Devel::Cover::Report::Coveralls is
-    available, it will send the report to Coveralls.  Does nothing if
-    `COVERAGE` is false.
+    Outputs a coverage report.  If Devel::Cover::Report::$COVERAGE is available,
+    it will use the corresponding report module. When set to 1 default module
+    name is Coveralls. Does nothing if `COVERAGE` is false.
 
   * local-lib
 
