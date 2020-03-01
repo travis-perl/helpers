@@ -32,7 +32,6 @@ Example Simple .travis.yml
           env: COVERAGE=1   # enables coverage+coveralls reporting
       allow_failures:
         - perl: blead       # ignore failures for blead perl
-    sudo: false             # faster builds as long as you don't need sudo access
     before_install:
       - eval $(curl https://travis-perl.github.io/init) --auto
 
@@ -155,7 +154,6 @@ The simple `.travis.yml` listed above is roughly equivalent to:
           env: COVERAGE=1
       allow_failures:
         - perl: "blead"
-    sudo: false
     before_install:
       - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
       - source ~/travis-perl-helpers/init
