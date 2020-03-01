@@ -40,7 +40,7 @@ set -e
 if [ "\$#" == "1" ] && [ "\$1" == "test" ]; then
   ./Build.run
   . "$HELPERS_ROOT/lib/prove.bash"
-  prove $blib -r -s -j$(test-jobs) $(test-files)
+  prove $blib -m -r -s -j$(test-jobs) $(test-files)
   $coverage_cmd
 else
   exec ./Build.run "\$@"
@@ -61,7 +61,7 @@ END
         else
           blib="-b"
         fi
-        prove $blib -r -s -j$(test-jobs) $(test-files) || return "$?"
+        prove $blib -m -r -s -j$(test-jobs) $(test-files) || return "$?"
         coverage-report
       else
         command make "$@"
