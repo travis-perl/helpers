@@ -38,7 +38,7 @@ Example Simple .travis.yml
       - eval $(curl https://travis-perl.github.io/init) --auto
 
 This will work for most distributions.  It will work with dists using a
-Makefile.PL, Build.PL, or Dist::Zilla.
+Makefile.PL, Build.PL, Dist::Zilla or Dist::Inkt.
 
 Perl Building
 -------------
@@ -209,8 +209,9 @@ Commands
     latest preinstalled perl version will used.  If `SPLIT_BUILD` is false, the
     requested perl version will be used instead.
 
-    If a `dist.ini` file exists in the repository, Dist::Zilla will be used to
-    generate the dist.  Additional prerequisites will be installed as needed.
+    If a `dist.ini` file exists in the repository, Dist::Zilla or
+    Dist::Inkt will be used to generate the dist.  Additional
+    prerequisites will be installed as needed.
 
     If a `Makefile.PL` file exists, ExtUtils::MakeMaker's distdir command will
     be used.
