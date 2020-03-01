@@ -20,7 +20,7 @@ before_install:
   - source ./init
   - build-perl
   - perl -V
-install: []
+install: ["true"] # giving empty array still does default steps, this replaces
 script:
   - prove -v
   - cpan-install git://github.com/travis-perl/TravisCI-Helpers-InstallerTest.git
