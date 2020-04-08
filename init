@@ -74,7 +74,7 @@ function build-perl {
 }
 
 function cpan-install {
-  "$HELPERS_ROOT/bin/cpan-install" "$CPAN_INSTALL_FLAGS" "$@"
+  "$HELPERS_ROOT/bin/cpan-install" $CPAN_INSTALL_FLAGS "$@"
 }
 
 function coverage-setup {
