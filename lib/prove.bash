@@ -35,5 +35,9 @@ function prove {
     PERL5LIB=
   fi
 
+  if [ -n "$HARNESS_VERBOSE" ] && [ "$HARNESS_VERBOSE" != "0" ]; then
+    args+=(-v)
+  fi
+
   command $prove "${args[@]}" "$@"
 }
