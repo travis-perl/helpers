@@ -4,15 +4,22 @@ source "$HELPERS_ROOT/lib/debug.sh"
 
 declare -a ll_roots
 if [ -z "$1" ]; then
-  ll_roots=("$(mktemp -d -t local-lib-XXXXXX)")
+  ll_roots=("${LOCAL_LIB_CACHE}-split") # can cache
+  [ -n "$TRAVIS_PERL_DEBUG" ] && \
+    (echo "ON SPLITDIR"; find "${LOCAL_LIB_CACHE}-split" -ls) 1>&2
 else
   for lib; do
-    if [ -z "$LL_NO_INSTALL" ]; then
-      # redirect since output of this gets eval-ed
-      if $HELPERS_ROOT/bin/local-lib-installer "$lib" 1>&2; then
-        ll_roots+=("$PERLBREW_HOME/libs/$PERLBREW_PERL@$lib")
+    if [ "$lib" == "cache" ]; then
+      $HELPERS_ROOT/bin/local-lib-cache use
+    else
+      if [ -z "$LL_NO_INSTALL" ]; then
+        # redirect since output of this gets eval-ed
+        if $HELPERS_ROOT/bin/local-lib-installer "$lib" 1>&2; then
+          ll_roots+=("$PERLBREW_HOME/libs/$PERLBREW_PERL@$lib")
+        fi
       fi
     fi
+    ll_roots+=("$PERLBREW_HOME/libs/$PERLBREW_PERL@$lib")
   done
 fi
 

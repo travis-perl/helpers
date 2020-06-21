@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# usage:
+#  $0 use
+#    copies from cache location to perlbrew location
+#  $0 store
+#    copies from perlbrew location to cache location
+
+# locations:
+cache_location="$LOCAL_LIB_CACHE"
+full_version="$PERLBREW_PERL@cache"
+perlbrew_location="$PERLBREW_HOME/libs/$full_version"
+
+[ -z "$HELPERS_ROOT" ] && export HELPERS_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+source "$HELPERS_ROOT/lib/debug.sh"
+exec 1>&2 # since local-lib calls this, then evals stdout - any echo to stderr
+
+if [ -z "$PERLBREW_ROOT" ]; then
+  echo "Must be run under perlbrew!"
+  exit 1
+fi
+
+source "$PERLBREW_ROOT/etc/bashrc"
+
+set -e
+
+if [ "$1" == "use" ]; then
+  perlbrew lib create "$full_version"
+  perlbrew use "$full_version"
+  rm -rf "$perlbrew_location"
+  ln -s "$cache_location" "$perlbrew_location"
+  [ -n "$TRAVIS_PERL_DEBUG" ] && \
+    (id; echo "ON USE"; find "$perlbrew_location" "$cache_location" -ls)
+else
+  echo "Unknown arg '$1'"
+  exit 1
+fi

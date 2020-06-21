@@ -116,7 +116,17 @@ There are various environment variables that will control how a build is done.
     generation process if it has heavy dependencies, such as Dist::Zilla, and
     testing is being done on a freshly built perl.
 
+    Makes a local::lib that symlinks to `${LOCAL_LIB_CACHE}-split`. If you
+    give that as a cached directory, it will make your builds go faster.
+
     Defaults to true.
+
+  * `LOCAL_LIB_CACHE`
+
+    The directory used to cache the local::lib used if you specify
+    `local-lib cache`.
+
+    Defaults to `$HOME/.perlbrew-cache`.
 
   * `CPAN_MIRROR`
 
@@ -277,6 +287,51 @@ Commands
     give them to this command and they will be downloaded if pre-built,
     or built if not, and added to the library path. This is taken care
     of by the `build-perl` step.
+
+    There is a special local::lib name you can give:
+    `cache`, which works together with [Travis's caching
+    feature](https://docs.travis-ci.com/user/caching). Its location
+    defaults to `$HOME/.perlbrew-cache` but can be overridden
+    by supplying the environment variable `LOCAL_LIB_CACHE`. Use it
+    like this:
+
+        cache:
+          directories:
+          - $HOME/.perlbrew-cache # keeps between builds here
+          - $HOME/.perlbrew-cache-split # used by split builds
+        perl:
+          - "5.8.4@moo"
+        before_install:
+          - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
+          - source ~/travis-perl-helpers/init
+          - build-perl
+          - local-lib cache # makes a local::lib symlinked to cache
+          - perl -V
+          - build-dist
+          - cd $BUILD_DIR
+        install:
+          - cpan-install --deps # installs prereqs, including recommends
+
+    Alternatively, this will also work and the `build-perl` will do the
+    `local-lib` step for you:
+
+        cache:
+          directories:
+          - $HOME/.perlbrew-cache # keeps between builds here
+        perl:
+          - "5.8.4@cache"
+        before_install:
+          - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
+          - source ~/travis-perl-helpers/init
+          - build-perl
+        # no need for local-lib cache
+          - perl -V
+          - build-dist
+          - cd $BUILD_DIR
+        install:
+          - cpan-install --deps # installs prereqs, including recommends
+        before_cache:
+          - local-lib-cachestore # saves for local::lib next time
 
 local::lib
 ----------
